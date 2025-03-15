@@ -11,16 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('leave_applications', function (Blueprint $table) {
+        Schema::create('leave_counters', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->date('commence_date');
-            $table->date('end_date');
-            $table->enum('leave_type', ['MEDICAL', 'HALF_DAY', 'SHORT', 'NO_PAY']);
-            $table->text('reason');
-            $table->string('attachment_url_1')->nullable();
-            $table->string('attachment_url_2')->nullable();
-            $table->string('attachment_url_3')->nullable();
+            $table->integer('total_casual')->default(20);
+            $table->integer('total_medical')->default(20);
+            $table->integer('total_short')->default(2);
             $table->timestamps();
         });
     }
@@ -30,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('leave_applications');
+        Schema::dropIfExists('leave_counters');
     }
 };

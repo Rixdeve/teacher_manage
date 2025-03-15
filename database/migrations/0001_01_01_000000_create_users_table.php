@@ -14,13 +14,12 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->foreignId('school_id')->constrained('schools')->onDelete('cascade');
-            $table->string('teacher_num')->nullable();
             $table->string('school_index')->nullable();
             $table->string('qr_code')->nullable()->unique();
             $table->string('first_name');
             $table->string('last_name');
             $table->string('user_email')->unique();
-            $table->enum('role', ['ADMIN', 'PRINCIPAL', 'ZONAL', 'TEACHER', 'SECTIONAL_HEAD', 'ZONAL_ADMIN', 'IT_CLERK'])->default('TEACHER');
+            $table->enum('role', ['CLERK', 'PRINCIPAL', 'ZONAL', 'TEACHER', 'SECTIONAL_HEAD', 'ZONAL_ADMIN', 'IT_CLERK'])->default('TEACHER');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('user_password');
             $table->string('profile_picture')->nullable();
