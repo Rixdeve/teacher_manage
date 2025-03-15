@@ -16,11 +16,12 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->date('commence_date');
             $table->date('end_date');
-            $table->enum('leave_type', ['MEDICAL', 'HALF_DAY', 'SHORT', 'NO_PAY']);
-            $table->text('reason');
+            $table->enum('leave_type', ['CASUAL', 'MEDICAL', 'HALF_DAY', 'SHORT', 'NO_PAY']);
+            $table->text('reason')->nullable();
             $table->string('attachment_url_1')->nullable();
             $table->string('attachment_url_2')->nullable();
             $table->string('attachment_url_3')->nullable();
+
             $table->timestamps();
         });
     }
