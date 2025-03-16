@@ -36,7 +36,7 @@ class UserFactory extends Factory
             'user_phone' => $this->faker->unique()->numerify('077#######'), // Valid phone number format
             'registered_date' => now(),
             'status' => $this->faker->randomElement(['ACTIVE', 'INACTIVE', 'ONLEAVE']),
-            'user_nic' => $this->faker->unique()->bothify('#########V'), // Random 9-digit NIC ending in 'V'
+            'user_nic' => $this->faker->unique()->bothify('#########'),
             'user_address_no' => $this->faker->buildingNumber(),
             'user_address_street' => $this->faker->streetName(),
             'user_address_city' => $this->faker->city(),
