@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('schools', function (Blueprint $table) {
-            $table->id();
+            $table->id()->from(100);
             $table->integer('school_number')->unique();
             $table->foreignId('zonal_id')->constrained('zone_offices')->onDelete('cascade');
             $table->string('school_name');

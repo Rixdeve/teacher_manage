@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('attendances', function (Blueprint $table) {
-            $table->id();
+            $table->id()->from(100);
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->enum('status', ['PENDING', 'PRESENT', 'ABSENT'])->default('PENDING');
             $table->date('date');
