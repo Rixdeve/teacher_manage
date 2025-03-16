@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Leave_status extends Model
+class LeaveStatus extends Model
 {
     use HasFactory;
 
@@ -34,7 +34,7 @@ class Leave_status extends Model
      */
     public function leaveApplication(): BelongsTo
     {
-        return $this->belongsTo(Leave_application::class, 'leave_id');
+        return $this->belongsTo(LeaveApplication::class, 'leave_id');
     }
 
     /**

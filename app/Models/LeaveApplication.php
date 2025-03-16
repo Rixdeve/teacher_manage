@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Leave_application extends Model
+class LeaveApplication extends Model
 {
     use HasFactory;
 
@@ -47,6 +47,6 @@ class Leave_application extends Model
      */
     public function leaveStatuses(): HasMany
     {
-        return $this->hasMany(Leave_status::class, 'leave_id');
+        return $this->hasMany(LeaveStatus::class, 'leave_id');
     }
 }

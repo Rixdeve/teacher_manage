@@ -82,7 +82,7 @@ class User extends Authenticatable
      */
     public function leaveApplications(): HasMany
     {
-        return $this->hasMany(Leave_application::class);
+        return $this->hasMany(LeaveApplication::class);
     }
 
     /**
@@ -90,7 +90,7 @@ class User extends Authenticatable
      */
     public function leaveStatuses(): HasMany
     {
-        return $this->hasMany(Leave_status::class);
+        return $this->hasMany(LeaveStatus::class);
     }
 
     /**
@@ -98,6 +98,6 @@ class User extends Authenticatable
      */
     public function leaveCounter(): HasOne
     {
-        return $this->hasOne(Leave_counter::class);
+        return $this->hasOne(LeaveCounter::class);
     }
 }

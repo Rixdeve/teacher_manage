@@ -41,7 +41,7 @@ class School extends Model
      */
     public function zone(): BelongsTo
     {
-        return $this->belongsTo(Zone_office::class, 'zonal_id');
+        return $this->belongsTo(ZoneOffice::class, 'zonal_id');
     }
 
     /**
