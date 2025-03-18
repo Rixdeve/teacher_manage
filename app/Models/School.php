@@ -35,6 +35,7 @@ class School extends Model
         'school_phone',
         'status',
     ];
+    // protected $guarded = [];
 
     /**
      * A school belongs to a zone office.
