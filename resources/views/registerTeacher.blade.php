@@ -32,12 +32,12 @@
             <h2 class="col-span-2 text-xl font-semibold">Teacher Details</h2>
             <div>
                 <label class="block text-black-700 font-medium">First Name</label>
-                <input type="text" id="first_name" name="first_name" placeholder="Vishaka Vidyalaya"
+                <input type="text" id="first_name" name="first_name" placeholder="Minaga"
                     class="p-2 border rounded-lg w-full" required />
             </div>
             <div>
                 <label class="block text-black-700 font-medium">Last Name</label>
-                <input type="text" id="last_name" name="last_name" placeholder="Vishaka Vidyalaya"
+                <input type="text" id="last_name" name="last_name" placeholder="Ranathunga"
                     class="p-2 border rounded-lg w-full" required />
             </div>
             <!-- <div>
@@ -47,10 +47,15 @@
             </div> -->
 
             <!-- can be zonal id from db -->
+            <div>
+                <label class="block text-black-700 font-medium">School Index</label>
+                <input type="number" id="school_index" name="school_index" placeholder="2"
+                    class="p-2 border rounded-lg w-full" required />
+            </div>
 
             <div>
                 <label class="block text-black-700 font-medium">Address Number</label>
-                <input type="text" id="user_address_no" name="user_address_no" placeholder="Vajira Road"
+                <input type="text" id="user_address_no" name="user_address_no" placeholder="12/1"
                     class="p-2 border rounded-lg w-full" required />
             </div>
             <div>
@@ -60,22 +65,21 @@
             </div>
             <div>
                 <label class="block text-black-700 font-medium">Address City</label>
-                <input type="text" id="user_address_city" name="user_address_city" placeholder="Vajira Road"
+                <input type="text" id="user_address_city" name="user_address_city" placeholder="Colombo 5"
                     class="p-2 border rounded-lg w-full" required />
             </div>
             <div>
                 <label class="block text-black-700 font-medium">NIC Number</label>
-                <input type="text" id="user_nic" name="user_nic" placeholder="Colombo 4"
+                <input type="text" id="user_nic" name="user_nic" placeholder="750123456V"
                     class="p-2 border rounded-lg w-full" required />
             </div>
             <div>
                 <label class="block text-black-700 font-medium">Date Of Birth</label>
-                <input type="text" id="user_dob" name="user_dob" placeholder="Colombo 4"
-                    class="p-2 border rounded-lg w-full" required />
+                <input type="date" id="user_dob" name="user_dob" class="p-2 border rounded-lg w-full" required />
             </div>
             <div>
                 <label class="block text-black-700 font-medium">Email</label>
-                <input type="email" id="user_email" name="user_email" placeholder="vishaka@email.com"
+                <input type="email" id="user_email" name="user_email" placeholder="minaga@email.com"
                     class="p-2 border rounded-lg w-full" required />
             </div>
             <!-- <div>
@@ -112,6 +116,15 @@
             </div>
         </form>
     </div>
+    <script>
+        // Calculate the maximum allowed date (18 years ago from today)
+        const today = new Date();
+        const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate())
+            .toISOString().split("T")[0];
+
+        // Set the max attribute to enforce the age restriction
+        document.getElementById("user_dob").setAttribute("max", maxDate);
+    </script>
 </body>
 
 </html>

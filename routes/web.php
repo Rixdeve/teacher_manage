@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\SchoolController;
+use App\Http\Controllers\TeacherController;
 use App\Models\School;
 use Illuminate\Support\Facades\Route;
 
@@ -19,21 +20,10 @@ Route::get('/zonalDashboard', function () {
     return view('zonalDashboard');
 });
 
+Route::get('/schoollDashboard', function () {
+    return view('schoollDashboard');
+});
 
+Route::get('/registerTeacher', action: [TeacherController::class, "index"])->name(name: 'registerTeacher');
 
-// Route::get('/register-school', function () {
-//     School::create([
-
-//         'school_number' => request('school_number'),
-//         'zonal_id' => '1',
-//         'school_name' => request('school_name'),
-//         'school_address_no' => request('school_address_no'),
-//         'school_address_street' => request('school_address_street'),
-//         'school_address_city' => request('school_address_city'),
-//         'school_email' => request('school_email'),
-//         'password' => 'School@123',
-//         'school_phone' => request('school_phone'),
-//         'status' => request('status')
-//     ]);
-//     return redirect('/zonalDashboard');
-// });
+Route::post('/registerTeacher', [TeacherController::class, "store"])->name('teacher.store');
