@@ -27,3 +27,7 @@ Route::get('/schoollDashboard', function () {
 Route::get('/registerTeacher', action: [TeacherController::class, "index"])->name(name: 'registerTeacher');
 
 Route::post('/registerTeacher', [TeacherController::class, "store"])->name('teacher.store');
+
+Route::get('/login', function () {
+    return view('login');
+});
