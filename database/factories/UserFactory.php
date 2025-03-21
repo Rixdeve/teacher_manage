@@ -29,7 +29,7 @@ class UserFactory extends Factory
             'first_name' => $this->faker->firstName(),
             'last_name' => $this->faker->lastName(),
             'user_email' => $this->faker->unique()->safeEmail(),
-            'role' => $this->faker->randomElement(['CLERK', 'PRINCIPAL', 'ZONAL', 'TEACHER', 'SECTIONAL_HEAD', 'ZONAL_ADMIN', 'IT_CLERK']),
+            'role' => $this->faker->randomElement(['CLERK', 'PRINCIPAL', 'ZONAL', 'TEACHER', 'SECTIONAL_HEAD', 'ZONAL_ADMIN']),
             'email_verified_at' => now(),
             'user_password' => static::$password ??= Hash::make('password'), // Securely hashed password
             'profile_picture' => null,

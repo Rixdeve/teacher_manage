@@ -29,7 +29,7 @@ class SchoolFactory extends Factory
             'school_address_city' => $this->faker->city(),
             'school_email' => $this->faker->unique()->safeEmail(),
             'password' => bcrypt('password'), // Securely hashed password
-            'school_phone' => $this->faker->unique()->numerify('077#######'), // Valid phone number format
+            'school_phone' => $this->faker->unique()->numerify('011#######'), // Valid phone number format
             'status' => $this->faker->randomElement(['ACTIVE', 'INACTIVE']),
         ];
     }

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('schools', function (Blueprint $table) {
             $table->id()->from(100);
-            $table->integer('school_number')->unique();
+            $table->string('school_number')->unique();
             $table->foreignId('zonal_id')->constrained('zone_offices')->onDelete('cascade');
             $table->string('school_name');
             $table->string('school_address_no');
