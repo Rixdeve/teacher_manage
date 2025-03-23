@@ -1531,11 +1531,13 @@
             <h2 class="text-5xl font-extrabold text-gray-800 mb-6">Login</h2>
             <p class="text-gray-500 mb-8 text-lg">Access your dashboard.</p>
 
-            <form class="w-3/4 bg-gray-400 p-8 rounded-lg shadow-md">
+            <form action="{{ route('login.submit') }}" method="POST" class="w-3/4 bg-gray-400 p-8 rounded-lg shadow-md">
+                @csrf
+
                 <div class="mb-6">
                     <label class="block text-gray-700 text-lg font-medium">Email</label>
                     <div class="relative">
-                        <input type="email"
+                        <input type="email" id="user_email" name="user_email"
                             class="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-sm bg-gray-50"
                             placeholder="Enter your email" />
                     </div>
@@ -1544,7 +1546,7 @@
                 <div class="mb-6">
                     <label class="block text-gray-700 text-lg font-medium">Password</label>
                     <div class="relative">
-                        <input type="password"
+                        <input type="password" id="user_password" name="user_password"
                             class="w-full p-4 border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-sm bg-gray-50"
                             placeholder="Enter your password" />
                     </div>

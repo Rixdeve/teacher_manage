@@ -7,6 +7,9 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Auth;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use App\Models\Attendance;
 
 // use function Laravel\Prompts\alert;
 
@@ -19,8 +22,8 @@ class TeacherController extends Controller
     }
     public function store(Request $request)
     {
-        // // ✅ Debugging: Check received input
         // dd($request->all());
+        $schoolId = Auth::user()->school_id;
 
         $request->validate([
             'first_name' => 'required|string|max:255',
@@ -42,9 +45,8 @@ class TeacherController extends Controller
             $imagePath = null; // Default if no image is uploaded
         }
         try {
-            // ✅ Store the new school in the database
             User::create([
-                'school_id' => 100, // Default value
+                'school_id' => $schoolId,
                 'role' => 'TEACHER',
                 'user_password' => Hash::make('Teacher@123'),
                 'first_name' => $request->first_name,
@@ -59,6 +61,8 @@ class TeacherController extends Controller
                 'user_phone' => $request->user_phone,
                 'profile_picture' => $imagePath,
                 'status' => $request->status,
+                'registered_date' => now(),
+
             ]);
             return redirect('/schoolDashboard')->with('success', 'Teacher registered successfully!');
         } catch (QueryException $e) {
@@ -68,5 +72,50 @@ class TeacherController extends Controller
         } catch (\Exception $e) {
             return redirect('/registerTeacher')->with('error', 'An error occurred!');
         }
+    }
+
+    public function showQRCode($id)
+    {
+        $teacher = User::findOrFail($id);
+        $qrContent = $teacher->id;
+
+        return view('teacher.qrcode', [
+            'teacher' => $teacher,
+            'qrCode' => QrCode::size(180)->generate($qrContent),
+        ]);
+    }
+
+
+
+    public function logAttendance($id)
+    {
+        $user = User::findOrFail($id);
+        $today = now()->toDateString();
+
+        $attendance = Attendance::firstOrNew([
+            'user_id' => $user->id,
+            'date' => $today
+        ]);
+
+        if (!$attendance->exists || is_null($attendance->check_in_time)) {
+            $attendance->status = 'PRESENT';
+            $attendance->check_in_time = now()->format('H:i:s');
+            $attendance->method = 'QR';
+            $attendance->save();
+
+            return response()->json(['message' => 'Check-in successful']);
+        }
+
+        if (is_null($attendance->check_out_time)) {
+            $attendance->check_out_time = now()->format('H:i:s');
+            $attendance->save();
+
+            return response()->json(['message' => 'Check-out successful']);
+        }
+        // if($attendance->check_in_time < now()->subHours(8)->format('H:i:s')){
+        //     return response()->json(['message' => 'Check-in time expired']);
+        // }
+
+        return response()->json(['message' => 'Already checked in and out today']);
     }
 }
