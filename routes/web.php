@@ -6,7 +6,8 @@ use App\Models\School;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AttendanceController;
-
+use App\Http\Controllers\PrincipalController;
+use App\Http\Controllers\ClerkController;
 
 Route::get('/teacher/{id}/qrcode', [TeacherController::class, 'showQRCode'])->name('teacher.qrcode');
 
@@ -32,6 +33,14 @@ Route::get('/registerTeacher', action: [TeacherController::class, "index"])->nam
 
 Route::post('/registerTeacher', [TeacherController::class, "store"])->name('teacher.store');
 
+
+Route::get('/registerPrincipal', action: [PrincipalController::class, "index"])->name(name: 'registerPrincipal');
+
+Route::post('/registerPrincipal', [PrincipalController::class, "store"])->name('principal.store');
+
+Route::get('/registerClerk', action: [ClerkController::class, "index"])->name(name: 'registerClerk');
+
+Route::post('/registerClerk', [ClerkController::class, "store"])->name('clerk.store');
 
 Route::get('/', [AuthController::class, 'index'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
