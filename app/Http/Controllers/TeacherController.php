@@ -18,7 +18,7 @@ class TeacherController extends Controller
 
     public function index()
     {
-        return view('registerTeacher');
+        return view('school.registerTeacher');
     }
     public function store(Request $request)
     {
@@ -79,7 +79,7 @@ class TeacherController extends Controller
         $teacher = User::findOrFail($id);
         $qrContent = $teacher->id;
 
-        return view('teacher.qrcode', [
+        return view('zonal.qrcode', [
             'teacher' => $teacher,
             'qrCode' => QrCode::size(180)->generate($qrContent),
         ]);

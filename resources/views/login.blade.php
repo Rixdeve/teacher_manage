@@ -1552,15 +1552,18 @@
                     </div>
                 </div>
 
-                <div class="flex justify-between items-center mb-6">
-                    <a href="#" class="text-blue-500 hover:underline text-md">Forgot password? <span
-                            class="font-bold">Reset</span></a>
-                </div>
+
 
                 <button
                     class="w-full bg-blue-600 text-white py-4 rounded-lg hover:bg-blue-700 transition text-lg font-semibold shadow-lg flex items-center justify-center gap-2">
                     <span>Login</span>
                 </button>
+                @if ($errors->has('login_error'))
+                <div class="text-red-500 text-sm mb-4">
+                    {{ $errors->first('login_error') }}
+                </div>
+                @endif
+
             </form>
         </div>
     </div>

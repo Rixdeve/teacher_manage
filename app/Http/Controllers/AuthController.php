@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\School;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -20,15 +23,22 @@ class AuthController extends Controller
             'user_password' => ['required'],
         ]);
 
-        if (Auth::attempt([
-            'user_email' => $credentials['user_email'],
-            'password' => $credentials['user_password'],
-        ])) {
-            $request->session()->regenerate();
-            $request->session()->regenerate();
+        $email = $credentials['user_email'];
+        $password = $credentials['user_password'];
 
-            // ✅ Redirect based on user role
-            $user = Auth::user();
+        // Try logging in a School first
+        $school = School::where('school_email', $email)->first();
+        if ($school && Hash::check($password, $school->password)) {
+            // Manually log in school by setting session
+            session(['school_id' => $school->id]);
+            return redirect('/schoolDashboard');
+        }
+
+        // Try logging in a User next
+        $user = User::where('user_email', $email)->first();
+        if ($user && Hash::check($password, $user->user_password)) {
+            Auth::login($user);
+            $request->session()->regenerate();
 
             switch ($user->role) {
                 case 'PRINCIPAL':
@@ -42,8 +52,6 @@ class AuthController extends Controller
                     return redirect()->intended('/zonalDashboard');
                 case 'SECTIONAL_HEAD':
                     return redirect()->intended('/sectionalDashboard');
-                case 'SCHOOL':
-                    return redirect()->intended('/schoolDashboard');
             }
         }
 
@@ -51,6 +59,7 @@ class AuthController extends Controller
             'user_email' => 'Invalid credentials.',
         ])->onlyInput('user_email');
     }
+
 
     public function logout(Request $request)
     {

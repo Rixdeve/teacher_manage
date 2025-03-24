@@ -61,6 +61,21 @@ class User extends Authenticatable
         'user_password' => 'hashed', // Ensures password is securely hashed
     ];
 
+    // public function getEmailForPasswordReset()
+    // {
+    //     return $this->user_email;
+    // }
+
+    // public function getAuthIdentifierName()
+    // {
+    //     return 'user_email';
+    // }
+    // public function getAuthPassword()
+    // {
+    //     return $this->user_password;
+    // }
+
+
     /**
      * A user belongs to a school.
      */

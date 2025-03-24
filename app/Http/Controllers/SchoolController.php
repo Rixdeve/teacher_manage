@@ -13,11 +13,10 @@ class SchoolController extends Controller
 
     public function index()
     {
-        return view('registerschool');
+        return view('zonal.registerschool');
     }
     public function store(Request $request)
     {
-        // // ✅ Debugging: Check received input
         // dd($request->all());
 
         $request->validate([
@@ -31,7 +30,6 @@ class SchoolController extends Controller
             'status' => 'required',
         ]);
         try {
-            // ✅ Store the new school in the database
             School::create([
                 'school_number' => $request->school_number,
                 'zonal_id' => 1, // Default value

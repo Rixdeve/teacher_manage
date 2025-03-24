@@ -63,7 +63,7 @@
             </div>
             <div>
                 <label class="block text-black-700 font-medium">Email</label>
-                <input type="email" id="school_email" name="school_email" placeholder="vishaka@email.com"
+                <input type="email" id="user_email" name="user_email" placeholder="vishaka@email.com"
                     class="p-2 border rounded-lg w-full" required />
             </div>
             <!-- <div>

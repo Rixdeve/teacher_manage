@@ -11,13 +11,14 @@ use Illuminate\Support\Facades\Auth;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Models\Attendance;
 
+// use function Laravel\Prompts\alert;
 
-class PrincipalController extends Controller
+class SectionalController extends Controller
 {
 
     public function index()
     {
-        return view('school.registerPrincipal');
+        return view('school.registerSectionhead');
     }
     public function store(Request $request)
     {
@@ -35,19 +36,19 @@ class PrincipalController extends Controller
             'user_dob' => 'required|date',
             'user_email' => 'required|email|unique:users,user_email',
             'user_phone' => 'required|numeric|digits:10|unique:users,user_phone',
-            'profile_picture' => 'required|image|mimes:jpg,png,jpeg|max:2048',
+            'profile_picture' => 'required|image|mimes:jpg,png,jpeg|max:2048', // Only images, max size 2MB
             'status' => 'required',
         ]);
         if ($request->hasFile('profile_picture')) {
             $imagePath = $request->file('profile_picture')->store('profile_pictures', 'public');
         } else {
-            $imagePath = null;
+            $imagePath = null; // Default if no image is uploaded
         }
         try {
             User::create([
                 'school_id' => $schoolId,
-                'role' => 'PRINCIPAL',
-                'user_password' => Hash::make('Principal@123'),
+                'role' => 'SECTIONAL_HEAD',
+                'user_password' => Hash::make('Section@123'),
                 'first_name' => $request->first_name,
                 'last_name' => $request->last_name,
                 'school_index' => $request->school_index,
@@ -63,13 +64,13 @@ class PrincipalController extends Controller
                 'registered_date' => now(),
 
             ]);
-            return redirect('/schoolDashboard')->with('success', 'Principal registered successfully!');
+            return redirect('/schoolDashboard')->with('success', 'Sectional Head registered successfully!');
         } catch (QueryException $e) {
             if ($e->errorInfo[1] == 1062) {
-                return redirect('/registerPrincipal')->with('error', 'Principal already exists!');
+                return redirect('/registerTeacher')->with('error', 'Seactional Head already exists!');
             }
         } catch (\Exception $e) {
-            return redirect('/registerPrincipal')->with('error', 'An error occurred!');
+            return redirect('/registerTeacher')->with('error', 'An error occurred!');
         }
     }
 
@@ -116,20 +117,5 @@ class PrincipalController extends Controller
         // }
 
         return response()->json(['message' => 'Already checked in and out today']);
-    }
-
-    public function dashboard()
-    {
-        $schoolId = Auth::user()->school_id;
-
-        $attendanceRecords = Attendance::with('user')
-            ->whereHas('user', function ($query) use ($schoolId) {
-                $query->where('school_id', $schoolId)
-                    ->whereIn('role', ['TEACHER', 'PRINCIPAL', 'SECTIONAL_HEAD']);
-            })
-            ->orderByDesc('date')
-            ->get();
-
-        return view('principal.principalDashboard', compact('attendanceRecords'));
     }
 }
