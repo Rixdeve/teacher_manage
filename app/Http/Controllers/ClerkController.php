@@ -10,6 +10,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Models\Attendance;
+use App\Models\School;
 
 // use function Laravel\Prompts\alert;
 
@@ -23,7 +24,7 @@ class ClerkController extends Controller
     public function store(Request $request)
     {
         // dd($request->all());
-        // $schoolId = Auth::user()->school_id;
+        $schoolId = session('school_id');
 
         $request->validate([
             'first_name' => 'required|string|max:255',
@@ -46,7 +47,7 @@ class ClerkController extends Controller
         }
         try {
             User::create([
-                'school_id' => 109,
+                'school_id' => $schoolId,
                 'role' => 'CLERK',
                 'user_password' => Hash::make('Clerk@123'),
                 'first_name' => $request->first_name,
@@ -72,6 +73,91 @@ class ClerkController extends Controller
         } catch (\Exception $e) {
             return redirect('/registerClerk')->with('error', 'An error occurred!');
         }
+    }
+    public function fetchUserAttendance(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'date' => 'required|date',
+        ]);
+
+        $attendance = Attendance::where('user_id', $request->user_id)
+            ->where('date', $request->date)
+            ->first();
+
+        return view('attendance.user_attendance', compact('attendance'));
+    }
+
+    public function updateUserAttendance(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'date' => 'required|date',
+            'status' => 'required|in:PRESENT,ABSENT',
+            'check_in_time' => 'nullable',
+            'check_out_time' => 'nullable',
+        ]);
+
+        Attendance::updateOrCreate(
+            ['user_id' => $request->user_id, 'date' => $request->date],
+            [
+                'status' => $request->status,
+                'check_in_time' => $request->check_in_time,
+                'check_out_time' => $request->check_out_time,
+                'method' => 'MANUAL',
+            ]
+        );
+
+        return redirect()->back()->with('success', 'Attendance updated successfully.');
+    }
+
+    public function liveAbsentees()
+    {
+        $schoolId = Auth::user()->school_id;
+        $today = now()->toDateString();
+
+        $absentees = \App\Models\User::whereIn('role', ['TEACHER', 'PRINCIPAL', 'SECTIONAL_HEAD'])
+            ->where('school_id', $schoolId)
+            ->whereDoesntHave('attendances', function ($query) use ($today) {
+                $query->where('date', $today)
+                    ->where('status', 'PRESENT');
+            })
+            ->get();
+
+        return view('clerk.absenteesclerk', compact('absentees')); // Or clerk.absentees
+    }
+
+    public function liveAttendanceView()
+    {
+        $clerk = Auth::user();
+        $schoolId = $clerk->school_id;
+        $today = now()->toDateString();
+
+        $attendances = Attendance::with('user')
+            ->whereDate('date', $today)
+            ->where('status', 'PRESENT')
+            ->whereHas('user', function ($query) use ($schoolId) {
+                $query->where('school_id', $schoolId)
+                    ->whereIn('role', ['TEACHER', 'PRINCIPAL', 'SECTIONAL_HEAD']);
+            })
+            ->get();
+
+        return view('clerk.liveAttendanceclerk', compact('attendances'));
+    }
+
+    public function dashboard()
+    {
+        $schoolId = Auth::user()->school_id;
+
+        $attendanceRecords = Attendance::with('user')
+            ->whereHas('user', function ($query) use ($schoolId) {
+                $query->where('school_id', $schoolId)
+                    ->whereIn('role', ['TEACHER', 'PRINCIPAL', 'SECTIONAL_HEAD']);
+            })
+            ->orderByDesc('date')
+            ->get();
+
+        return view('clerk.clerkDashboard', compact('attendanceRecords'));
     }
 
     // public function showQRCode($id)

@@ -38,6 +38,12 @@
                 </li>
                 <li
                     class="w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
+                    <a href="{{ url('/my_attendance') }}" class="flex items-center w-full">
+                        <img src="{{asset('storage/photos/immigration.png')}}" class="w-8 h-8 mr-2" alt="Attendance" />
+                        My Attendance</a>
+                </li>
+                <li
+                    class="w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
                     <a href="{{ url('/attendanceReport') }}" class="flex items-center w-full">
                         <img src="{{asset('storage/photos/chat-box.png')}}" class="w-8 h-8 mr-2" alt="Notifications" />
                         Write Notification</a>
@@ -78,10 +84,12 @@
                 <img src="{{asset('storage/photos/profilePic.jpg')}}"
                     class="h-10 w-10 rounded-full border border-gray-400" />
                 <div>
-                    <h3 class="font-semibold">
-                        {{ Auth::user()->first_name }} {{ Auth::user()->last_name }}
-                    </h3>
-                    <h3 class="text-gray-600 text-sm">Principal</h3>
+                    <a href="{{ url('/show') }}">
+                        <h3 class="font-semibold">
+                            {{ Auth::user()->first_name }} {{ Auth::user()->last_name }}
+                        </h3>
+                        <h3 class="text-gray-600 text-sm">{{ Auth::user()->role }}</h3>
+                    </a>
                 </div>
             </div>
 
@@ -101,6 +109,12 @@
                                     User ID
                                 </th>
                                 <th class="px-4 py-2 text-left border border-gray-300">
+                                    First Name
+                                </th>
+                                <th class="px-4 py-2 text-left border border-gray-300">
+                                    Last Name
+                                </th>
+                                <th class="px-4 py-2 text-left border border-gray-300">
                                     Status
                                 </th>
                                 <th class="px-4 py-2 text-left border border-gray-300">
@@ -115,15 +129,23 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-300">
+                            @foreach($attendanceRecords as $record)
                             <tr>
-                                <td class="px-4 py-2 border border-gray-300">1</td>
-                                <td class="px-4 py-2 border border-gray-300">Biometric</td>
-                                <td class="px-4 py-2 border border-gray-300">101</td>
-                                <td class="px-4 py-2 border border-gray-300">Present</td>
-                                <td class="px-4 py-2 border border-gray-300">2025-09-01</td>
-                                <td class="px-4 py-2 border border-gray-300">08:00 AM</td>
-                                <td class="px-4 py-2 border border-gray-300">04:00 PM</td>
+                                <td class="px-4 py-2 border border-gray-300">{{ $record->id }}</td>
+                                <td class="px-4 py-2 border border-gray-300">{{ $record->method }}</td>
+                                <td class="px-4 py-2 border border-gray-300">{{ $record->user_id }}</td>
+                                <td class="px-4 py-2 border border-gray-300">{{ $record->user->first_name }}</td>
+                                <td class="px-4 py-2 border border-gray-300">{{ $record->user->last_name }}</td>
+                                <td class="px-4 py-2 border border-gray-300">{{ $record->status }}</td>
+                                <td class="px-4 py-2 border border-gray-300">{{ $record->date }}</td>
+                                <td class="px-4 py-2 border border-gray-300">
+                                    {{ \Carbon\Carbon::parse($record->check_in_time)->format('h:i A') }}
+                                </td>
+                                <td class="px-4 py-2 border border-gray-300">
+                                    {{ \Carbon\Carbon::parse($record->check_out_time)->format('h:i A') }}
+                                </td>
                             </tr>
+                            @endforeach
                         </tbody>
                     </table>
                 </div>

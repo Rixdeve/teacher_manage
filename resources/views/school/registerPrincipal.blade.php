@@ -58,14 +58,21 @@
                 Back
             </button>
 
+            @php
+            $school = \App\Models\School::find(session('school_id'));
+            @endphp
+
+            @if($school)
             <div class="absolute top-6 right-6 flex items-center space-x-3">
                 <img src="{{asset('storage/photos/school2.png')}}"
                     class="h-10 w-10 rounded-full border border-gray-400" />
                 <div>
-                    <h3 class="font-semibold">Wesley College</h3>
+                    <h3 class="font-semibold">{{ $school->school_name }}</h3>
                     <h3 class="text-gray-600 text-sm">School</h3>
                 </div>
             </div>
+            @endif
+
 
             <div class="mt-12">
                 <h2 class="text-2xl font-semibold mb-6">Assign Principal</h2>

@@ -23,7 +23,7 @@ class TeacherController extends Controller
     public function store(Request $request)
     {
         // dd($request->all());
-        $schoolId = Auth::user()->school_id;
+        $schoolId = session('school_id');
 
         $request->validate([
             'first_name' => 'required|string|max:255',

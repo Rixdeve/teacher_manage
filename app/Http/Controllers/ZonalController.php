@@ -1,25 +1,56 @@
 <?php
 
-// namespace App\Http\Controllers;
+namespace App\Http\Controllers;
 
-// use Illuminate\Http\Request;
-// use App\Models\User;
-// use Illuminate\Support\Facades\Hash;
-// use Illuminate\Support\Facades\Storage;
-// use Illuminate\Database\QueryException;
-// use Illuminate\Support\Facades\Auth;
-// use SimpleSoftwareIO\QrCode\Facades\QrCode;
-// use App\Models\Attendance;
+use Illuminate\Http\Request;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Auth;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use App\Models\Attendance;
+use App\Models\ZoneOffice;
 
-// // use function Laravel\Prompts\alert;
 
-// class ClerkController extends Controller
-// {
+// use function Laravel\Prompts\alert;
 
-//     public function index()
-//     {
-//         return view('registerZonal');
-//     }
+class ZonalController extends Controller
+{
+
+    public function index()
+    {
+        return view('registerZonal');
+    }
+
+    public function store(Request $request)
+    {
+
+
+        $request->validate([
+            'zonal_name' => 'required|string|max:255',
+            'zone_address_no' => 'required|string',
+            'zone_address_street' => 'required|string',
+            'zone_address_city' => 'required|string',
+            'zone_email' => 'required|email|unique:zone_offices,zone_email',
+            'password' => 'required|string|min:6',
+        ]);
+
+        ZoneOffice::create([
+            'zone_name' => $request->zonal_name,
+            'zone_address_no' => $request->zone_address_no,
+            'zone_address_street' => $request->zone_address_street,
+            'zone_address_city' => $request->zone_address_city,
+            'zone_email' => $request->zone_email,
+            'password' => Hash::make('Zonal@123'),
+        ]);
+
+        return redirect()->back()->with('success', 'Zonal office registered successfully!');
+    }
+}
+
+
+
 //     public function store(Request $request)
 //     {
 //         // dd($request->all());

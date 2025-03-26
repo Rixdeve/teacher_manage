@@ -22,7 +22,7 @@ class PrincipalController extends Controller
     public function store(Request $request)
     {
         // dd($request->all());
-        $schoolId = Auth::user()->school_id;
+        $schoolId = session('school_id');
 
         $request->validate([
             'first_name' => 'required|string|max:255',
@@ -118,6 +118,7 @@ class PrincipalController extends Controller
         return response()->json(['message' => 'Already checked in and out today']);
     }
 
+
     public function dashboard()
     {
         $schoolId = Auth::user()->school_id;
@@ -131,5 +132,74 @@ class PrincipalController extends Controller
             ->get();
 
         return view('principal.principalDashboard', compact('attendanceRecords'));
+    }
+
+
+
+    public function dashboardview()
+    {
+        $schoolId = Auth::user()->school_id;
+        $today = now()->toDateString();
+
+        $query = Attendance::whereDate('date', $today)
+            ->whereHas('user', function ($q) use ($schoolId) {
+                $q->where('role', ['TEACHER', 'PRINCIPAL', 'SECTIONAL_HEAD'])
+                    ->where('school_id', $schoolId);
+            });
+
+        $presentCount = (clone $query)->where('status', 'PRESENT')->count();
+        $lateCount = (clone $query)->whereTime('check_in_time', '>', '07:45:00')->count();
+        $absentCount = (clone $query)->where('status', 'ABSENT')->count();
+
+        return view('principal.principalDashboard', compact('presentCount', 'lateCount', 'absentCount'));
+    }
+
+    public function showAttendanceTable()
+    {
+        $schoolId = Auth::user()->school_id;
+
+        $attendanceRecords = \App\Models\Attendance::with('user')
+            ->whereHas('user', function ($query) use ($schoolId) {
+                $query->where('school_id', $schoolId)
+                    ->whereIn('role', ['TEACHER', 'PRINCIPAL', 'SECTIONAL_HEAD']);
+            })
+            ->orderByDesc('date')
+            ->get();
+
+        return view('principal.attendanceReport', compact('attendanceRecords'));
+    }
+
+    public function liveAbsentees()
+    {
+        $schoolId = Auth::user()->school_id;
+        $today = now()->toDateString();
+
+        $absentees = \App\Models\User::whereIn('role', ['TEACHER', 'PRINCIPAL', 'SECTIONAL_HEAD'])
+            ->where('school_id', $schoolId)
+            ->whereDoesntHave('attendances', function ($query) use ($today) {
+                $query->where('date', $today)
+                    ->where('status', 'PRESENT');
+            })
+            ->get();
+
+        return view('principal.absenteesprin', compact('absentees')); // Or clerk.absentees
+    }
+
+    public function liveAttendanceView()
+    {
+        $principal = Auth::user();
+        $schoolId = $principal->school_id;
+        $today = now()->toDateString();
+
+        $attendances = Attendance::with('user')
+            ->whereDate('date', $today)
+            ->where('status', 'PRESENT')
+            ->whereHas('user', function ($query) use ($schoolId) {
+                $query->where('school_id', $schoolId)
+                    ->whereIn('role', ['TEACHER', 'PRINCIPAL', 'SECTIONAL_HEAD']);
+            })
+            ->get();
+
+        return view('principal.liveAttendanceprin', compact('attendances'));
     }
 }

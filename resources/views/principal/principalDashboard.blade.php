@@ -37,6 +37,12 @@
                 </li>
                 <li
                     class="w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
+                    <a href="{{ url('/my_attendance') }}" class="flex items-center w-full">
+                        <img src="{{asset('storage/photos/immigration.png')}}" class="w-8 h-8 mr-2" alt="Attendance" />
+                        My Attendance</a>
+                </li>
+                <li
+                    class="w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
                     <a href="{{ url('') }}" class="flex items-center w-full">
                         <img src="{{asset('storage/photos/chat-box.png')}}" class="w-8 h-8 mr-2" alt="Notifications" />
                         Write Notification</a>
@@ -71,44 +77,71 @@
             </button>
 
             <div class="absolute top-6 right-6 flex items-center space-x-3">
-                <img src="{{asset('storage/photos/profilePic.jpg')}}"
+                <img src="{{ asset('storage/' . Auth::user()->profile_picture) }}"
                     class="h-10 w-10 rounded-full border border-gray-400" />
                 <div>
-                    <h3 class="font-semibold">Princiapal name</h3>
-                    <h3 class="text-gray-600 text-sm">Principal</h3>
+                    <a href="{{ url('/show') }}">
+
+                        <h3 class="font-semibold">
+                            {{ Auth::user()->first_name }} {{ Auth::user()->last_name }}
+                        </h3>
+                        <h3 class="text-gray-600 text-sm">
+                            {{ ucfirst(strtolower(Auth::user()->role)) }}
+                        </h3>
+                    </a>
                 </div>
+
             </div>
 
             <div class="bg-gradient-to-b from-blue-100 to-gray-500 p-6 rounded-lg mt-12 mb-6 relative">
-                <div class="absolute top-2 right-2 flex items-center space-x-2">
-                    <div class="bg-green-500 rounded-full w-3 h-3"></div>
-                    <span class="text-sm text-green-500 font-semibold">On Duty</span>
-                </div>
+
                 <p class="text-gray-700">Welcome back!</p>
-                <h1 class="text-2xl font-bold">Risinu</h1>
+                <h1 class="text-2xl font-bold"> {{ Auth::user()->first_name }}
+                </h1>
             </div>
 
             <div class="grid grid-cols-3 gap-6">
                 <div class="bg-blue-100 p-6 rounded-lg text-center shadow-md hover:shadow-lg">
                     <div class="flex flex-col items-center justify-center">
                         <p class="text-gray-700 font-semibold">Attendance</p>
-                        <h3 class="text-3xl font-bold text-gray-700">0</h3>
+                        <h3 class="text-3xl font-bold text-gray-700"></h3>
+                    </div>
+                </div>
+                <div class="bg-blue-100 p-6 rounded-lg text-center shadow-md hover:shadow-lg">
+                    <div class="flex flex-col items-center justify-center">
+                        <a href="{{ url('/liveAttendanceprin') }}">
+                            <p class="text-gray-700 font-semibold">
+                                Live Attendance
+                            </p>
+                            <img src="{{asset('storage/photos/live.png')}}" class="w-12 h-12 mb-4" alt="Attendance" />
+                        </a>
+                    </div>
+                </div>
+                <div class="bg-blue-100 p-6 rounded-lg text-center shadow-md hover:shadow-lg">
+                    <div class="flex flex-col items-center justify-center">
+                        <a href="{{ url('/absenteesprin') }}">
+                            <p class="text-gray-700 font-semibold">
+                                Live Absentees
+                            </p>
+                            <img src="{{asset('storage/photos/absence.png')}}" class="w-12 h-12 mb-4" alt="Absentees" />
+                        </a>
                     </div>
                 </div>
 
-                <div class="bg-blue-100 p-6 rounded-lg text-center shadow-md hover:shadow-lg">
+                <!-- <div class="bg-blue-100 p-6 rounded-lg text-center shadow-md hover:shadow-lg">
                     <div class="flex flex-col items-center justify-center">
                         <p class="text-gray-700 font-semibold">Late</p>
-                        <h3 class="text-3xl font-bold text-gray-700">0</h3>
+                        <h3 class="text-3xl font-bold text-gray-700"></h3>
                     </div>
-                </div>
+                </div> -->
 
                 <div class="bg-blue-100 p-6 rounded-lg text-center shadow-md hover:shadow-lg">
                     <div class="flex flex-col items-center justify-center">
                         <p class="text-gray-700 font-semibold">Absentees</p>
-                        <h3 class="text-3xl font-bold text-gray-700">0</h3>
+                        <h3 class="text-3xl font-bold text-gray-700"></h3>
                     </div>
                 </div>
+
 
                 <div class="bg-blue-100 p-6 rounded-lg text-center shadow-md hover:shadow-lg">
                     <div class="flex flex-col items-center justify-center">
@@ -119,9 +152,11 @@
 
                 <div class="bg-blue-100 p-6 rounded-lg text-center shadow-md hover:shadow-lg">
                     <div class="flex flex-col items-center justify-center">
-                        <p class="text-gray-700 font-semibold">View All</p>
-                        <img src="{{asset('storage/photos/fingerprint-scan.png')}}" class="w-12 h-12 mb-4"
-                            alt="Short Leave" />
+                        <a href="{{ url('/attendanceReport') }}">
+                            <p class="text-gray-700 font-semibold">View All</p>
+                            <img src="{{asset('storage/photos/fingerprint-scan.png')}}" class="w-12 h-12 mb-4"
+                                alt="Short Leave" />
+                        </a>
                     </div>
                 </div>
             </div>

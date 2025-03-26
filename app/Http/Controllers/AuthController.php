@@ -51,7 +51,7 @@ class AuthController extends Controller
                 case 'ZONAL_ADMIN':
                     return redirect()->intended('/zonalDashboard');
                 case 'SECTIONAL_HEAD':
-                    return redirect()->intended('/sectionalDashboard');
+                    return redirect()->intended('/sectionheadDashboard');
             }
         }
 
@@ -61,10 +61,32 @@ class AuthController extends Controller
     }
 
 
-    public function logout(Request $request)
+    // public function logout(Request $request)
+    // {
+    //     // Step 1: Log out any authenticated user (if it's a User model)
+    //     Auth::logout();
+
+    //     // Step 2: Clear any custom session like `school_id`
+    //     $request->session()->forget('school_id');
+
+    //     // Step 3: Fully invalidate the session
+    //     $request->session()->invalidate();
+
+    //     // Step 4: Regenerate CSRF token
+    //     $request->session()->regenerateToken();
+
+    //     // Step 5: Redirect to login or homepage
+    //     return redirect('/');
+    // }
+
+    public function destroy(Request $request)
     {
-        Auth::logout();
+        Auth::guard('web')->logout();
+
+        $request->session()->forget('school_id');
+
         $request->session()->invalidate();
+
         $request->session()->regenerateToken();
 
         return redirect('/');

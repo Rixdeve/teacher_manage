@@ -23,7 +23,7 @@ class SectionalController extends Controller
     public function store(Request $request)
     {
         // dd($request->all());
-        $schoolId = Auth::user()->school_id;
+        $schoolId = session('school_id');
 
         $request->validate([
             'first_name' => 'required|string|max:255',
@@ -117,5 +117,40 @@ class SectionalController extends Controller
         // }
 
         return response()->json(['message' => 'Already checked in and out today']);
+    }
+
+    public function liveAttendanceView()
+    {
+        $sectionalHead = Auth::user();
+        $schoolId = $sectionalHead->school_id;
+        $today = now()->toDateString();
+
+        $attendances = Attendance::with('user')
+            ->whereDate('date', $today)
+            ->where('status', 'PRESENT')
+            ->whereHas('user', function ($query) use ($schoolId) {
+                $query->where('school_id', $schoolId)
+                    ->whereIn('role', ['TEACHER', 'PRINCIPAL', 'SECTIONAL_HEAD']);
+            })
+            ->get();
+
+        return view('sectional_head.liveAttendance', compact('attendances'));
+    }
+
+
+    public function liveAbsentees()
+    {
+        $schoolId = Auth::user()->school_id;
+        $today = now()->toDateString();
+
+        $absentees = \App\Models\User::whereIn('role', ['TEACHER', 'PRINCIPAL', 'SECTIONAL_HEAD'])
+            ->where('school_id', $schoolId)
+            ->whereDoesntHave('attendances', function ($query) use ($today) {
+                $query->where('date', $today)
+                    ->where('status', 'PRESENT');
+            })
+            ->get();
+
+        return view('sectional_head.absenteessect', compact('absentees'));
     }
 }

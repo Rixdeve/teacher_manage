@@ -59,27 +59,35 @@
             </button>
 
             <div class="absolute top-6 right-6 flex items-center space-x-3">
-                <img src="{{asset('storage/photos/profilePic.jpg')}}"
+                <img src="{{ asset('storage/' . Auth::user()->profile_picture) }}"
                     class="h-10 w-10 rounded-full border border-gray-400" />
                 <div>
-                    <h3 class="font-semibold">#</h3>
-                    <h3 class="text-gray-600 text-sm">Zonal Admin</h3>
+                    <a href="{{ url('/show') }}">
+
+                        <h3 class="font-semibold">
+                            {{ Auth::user()->first_name }} {{ Auth::user()->last_name }}
+                        </h3>
+                        <h3 class="text-gray-600 text-sm">
+                            {{ ucfirst(strtolower(Auth::user()->role)) }}
+                        </h3>
+                    </a>
                 </div>
             </div>
 
             <div class="bg-gradient-to-b from-blue-100 to-gray-500 p-6 rounded-lg mt-12 mb-6">
                 <p class="text-gray-700">#</p>
-                <h1 class="text-2xl font-bold">Welcome back, <span>##</span></h1>
+                <h1 class="text-2xl font-bold">Welcome back, <span>{{ Auth::user()->first_name }}</span></h1>
             </div>
 
             <div class="grid grid-cols-3 gap-6">
-                <div class="bg-blue-100 p-6 rounded-lg text-center shadow-md hover:shadow-lg"
-                    onclick="window.location.href='registerSchool.html'" style="cursor: pointer">
-                    <p class="text-gray-700 font-semibold">Register School:</p>
-                    <div class="flex justify-center mt-2">
-                        <img src="https://cdn.iconscout.com/icon/premium/png-256-thumb/add-a-device-5373030-4489968.png"
-                            alt="Icon" class="w-10 h-10" />
-                    </div>
+                <div class="bg-blue-100 p-6 rounded-lg text-center shadow-md hover:shadow-lg">
+                    <a href="{{ url('/registerschool') }} ">
+                        <p class="text-gray-700 font-semibold">Register School:</p>
+                        <div class="flex justify-center mt-2">
+                            <img src="https://cdn.iconscout.com/icon/premium/png-256-thumb/add-a-device-5373030-4489968.png"
+                                alt="Icon" class="w-10 h-10" />
+                        </div>
+                    </a>
                 </div>
                 <div class="bg-blue-100 p-6 rounded-lg text-center shadow-md hover:shadow-lg">
                     <p class="text-gray-700 font-semibold">Registered Schools:</p>

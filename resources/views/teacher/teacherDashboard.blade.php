@@ -30,7 +30,7 @@
                 </li>
                 <li
                     class="w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
-                    <a href="{{ url('/attendance') }}" class="flex items-center w-full">
+                    <a href="{{ url('/my_attendance') }}" class="flex items-center w-full">
                         <img src="{{asset('storage/photos/immigration.png')}}" class="w-8 h-8 mr-2" alt="Attendance" />
                         My Attendance</a>
                 </li>
@@ -65,23 +65,25 @@
             </button>
 
             <div class="absolute top-6 right-6 flex items-center space-x-3">
-                <img src="{{asset('storage/photos/profilePic.jpg')}}"
+                <img src="{{ asset('storage/' . Auth::user()->profile_picture) }}"
                     class="h-10 w-10 rounded-full border border-gray-400" />
-                <div>
-                    <h3 class="font-semibold">Teacher name</h3>
-                    <h3 class="text-gray-600 text-sm">Teacher</h3>
-                </div>
+                <a href="{{ url('/show') }}">
+
+                    <h3 class="font-semibold">
+                        {{ Auth::user()->first_name }} {{ Auth::user()->last_name }}
+                    </h3>
+                    <h3 class="text-gray-600 text-sm">
+                        {{ ucfirst(strtolower(Auth::user()->role)) }}
+                    </h3>
+                </a>
             </div>
 
             <div class="bg-gradient-to-b from-blue-100 to-gray-500 p-6 rounded-lg mt-12 mb-6 relative">
-                <div class="absolute top-2 right-2 flex items-center space-x-2">
-                    <div class="bg-green-500 rounded-full w-3 h-3"></div>
-                    <!-- change the color acc -->
-                    <span class="text-sm text-green-500 font-semibold">On Duty off duty</span>
-                </div>
 
                 <p class="text-gray-700">Welcome back!</p>
-                <h1 class="text-2xl font-bold">Risinu</h1>
+                <h1 class="text-2xl font-bold">{{ Auth::user()->first_name }}
+                </h1>
+
             </div>
             <div>
                 <h2 class="text-2xl mb-5">Apply Leaves</h2>

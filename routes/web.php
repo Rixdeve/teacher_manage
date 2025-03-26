@@ -11,6 +11,14 @@ use App\Http\Controllers\ClerkController;
 // use App\Http\Controllers\Auth\ForgotPasswordController;
 // use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\SectionalController;
+use App\Models\Attendance;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ZonalController;
+
+
+Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
 
 
 Route::get('/teacher/{id}/qrcode', [TeacherController::class, 'showQRCode'])->name('teacher.qrcode');
@@ -28,9 +36,20 @@ Route::get('/zonalDashboard', function () {
     return view('zonal.zonalDashboard');
 });
 
-Route::get('/principalDashboard', function () {
-    return view('principal.principalDashboard');
-})->name('principaldashboard');
+
+
+Route::get('/principalDashboard', [PrincipalController::class, 'dashboardview'])->name('principal.principalDashboard');
+
+
+
+Route::get('/clerkDashbord', function () {
+    return view('clerk.clerkDashboard');
+});
+
+// Route::get('/clerkDashboard', [AttendanceController::class, 'dashboardView'])->name('clerk.dashboard');
+// Route::get('/sectionheadDashboard', [TeacherController::class, 'dashboardview'])->name('sectional_head.sectionheadDashboard');
+
+Route::get('/liveAttendance', [SectionalController::class, 'liveAttendanceView'])->name('sectional_head.liveAttendance');
 
 
 Route::get('/schoolDashboard', function () {
@@ -41,11 +60,34 @@ Route::get('/schoolDashboard', function () {
     return view('school.schoolDashboard');
 });
 
-Route::get('/registerZonal', action: [ZonalController::class, "index"])->name(name: 'registerZonal');
+// // Route::get('/registerZonal', action: [ZonalController::class, "index"])->name(name: 'registerZonal');
 
-Route::post('/registerZonal', [ZonalController::class, "store"])->name('zonal.store');
+// // Route::post('/registerZonal', [ZonalController::class, "store"])->name('zonal.store');
+// // Route::get('/manualAttendance', [AttendanceController::class, 'lookup'])->name('attendance.lookup');
+
+// // GET: Show form to search and edit a user's attendance by date
 
 
+// // Show the form (GET)
+// Route::get('/manualAttendance', [AttendanceController::class, 'showManualEntry'])->name('clerk.manualAttendance');
+
+// // Handle the submitted form (POST)
+// Route::post('/manualAttendance', [AttendanceController::class, 'store'])->name('attendance.store');
+
+Route::get('/my_attendance', [AttendanceController::class, 'myAttendance'])->name('attendance.index');
+
+
+Route::get('/absenteesprin', [PrincipalController::class, 'liveAbsentees'])->name('principal.absentee');
+Route::get('/absenteesclerk', [ClerkController::class, 'liveAbsentees'])->name('clerk.absenteesclerk');
+Route::get('/absenteessection', [ClerkController::class, 'liveAbsentees'])->name('clerk.absenteessection');
+
+Route::get('/liveAttendanceclerk', [ClerkController::class, 'liveAttendanceView'])->name('clerk.liveAttendanceclerk');
+Route::get('/liveAttendanceprin', [PrincipalController::class, 'liveAttendanceView'])->name('principal.liveAttendanceprin');
+
+
+
+Route::get('/manualAttendance', [AttendanceController::class, 'showManualEntry'])->name('clerk.manualAttendance');
+Route::post('/manualAttendance', [AttendanceController::class, 'store'])->name('attendance.store');
 
 Route::get('/registerTeacher', action: [TeacherController::class, "index"])->name(name: 'school.registerTeacher');
 
@@ -65,22 +107,28 @@ Route::post('/registerClerk', [ClerkController::class, "store"])->name('clerk.st
 
 Route::get('/', [AuthController::class, 'index'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/logout', [AuthController::class, 'destroy'])->name('logout');
 
-Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    });
-});
 
-Route::middleware('auth')->group(function () {
-    Route::get('/principalDashboard', fn() => view('principal.principalDashboard'));
-    Route::get('/teacherDashboard', fn() => view('teacher.teacherDashboard'));
-    Route::get('/clerkDashboard', fn() => view('clerk.clerkDashboard'));
-    Route::get('/schoolDashboard', fn() => view('school.schoolDashboard'));
-    Route::get('/zonalDashboard', fn() => view('zonal.zonalDashboard'));
-    Route::get('/sectionalDashboard', fn() => view('sectional_head.sectionalDashboard'));
-});
+
+// Route::middleware(['auth'])->group(function () {
+//     Route::get('/dashboard', function () {
+//         return view('dashboard');
+//     });
+// });
+
+Route::get('/registerZonal', [ZonalController::class, 'index'])->name('registerZonal');
+Route::post('/registerZonal', [ZonalController::class, 'store'])->name('zone.store');
+
+
+
+
+Route::get('/principalDashboard', fn() => view('principal.principalDashboard'));
+Route::get('/teacherDashboard', fn() => view('teacher.teacherDashboard'));
+Route::get('/clerkDashboard', fn() => view('clerk.clerkDashboard'));
+Route::get('/schoolDashboard', fn() => view('school.schoolDashboard'));
+Route::get('/zonalDashboard', fn() => view('zonal.zonalDashboard'));
+Route::get('/sectionheadDashboard', fn() => view('sectional_head.sectionheadDashboard'));
 
 
 
@@ -103,6 +151,16 @@ Route::get('/attendanceReport', function () {
     return view('principal.attendanceReport');
 });
 
+Route::get('/attendanceReport', action: [PrincipalController::class, "showAttendanceTable"])->name(name: 'attendance.Report');
+
+Route::get('/show', [ProfileController::class, 'show'])->name('profile.show');
+// Route::get('/change-password', [App\Http\Controllers\ProfileController::class, 'changePassword'])->name('password.change');
+// Route::post('/change-password', [App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('password.update');
+Route::get('/change-password', function () {
+    return view('profile.change-password');
+})->name('password.change');
+
+Route::post('/change-password', [ProfileController::class, 'changePassword'])->name('password.update');
 
 // Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
 // Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');

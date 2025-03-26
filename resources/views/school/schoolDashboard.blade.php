@@ -63,18 +63,24 @@ if (!session()->has('school_id')) {
                 Back
             </button>
 
+            @php
+            $school = \App\Models\School::find(session('school_id'));
+            @endphp
+
+            @if($school)
             <div class="absolute top-6 right-6 flex items-center space-x-3">
                 <img src="{{asset('storage/photos/school2.png')}}"
                     class="h-10 w-10 rounded-full border border-gray-400" />
                 <div>
-                    <h3 class="font-semibold">Wesley College</h3>
+                    <h3 class="font-semibold">{{ $school->school_name }}</h3>
                     <h3 class="text-gray-600 text-sm">School</h3>
                 </div>
             </div>
+            @endif
 
             <div class="bg-gradient-to-b from-blue-100 to-gray-500 p-6 rounded-lg mt-12 mb-6 relative">
                 <p class="text-gray-700">Welcome back!</p>
-                <h1 class="text-2xl font-bold">Weslry College</h1>
+                <h1 class="text-2xl font-bold">{{ $school->school_name }}</h1>
             </div>
             <div class="grid grid-cols-3 gap-6">
                 <div class="bg-blue-100 p-6 rounded-lg text-center shadow-md hover:shadow-lg">
