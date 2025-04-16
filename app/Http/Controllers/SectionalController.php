@@ -1,21 +1,22 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\LeaveApplication;
+use App\Models\LeaveStatus;
+use App\Models\LeaveCounter;
+use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\Auth;
+
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Models\Attendance;
 
-// use function Laravel\Prompts\alert;
-
 class SectionalController extends Controller
 {
-
     public function index()
     {
         return view('school.registerSectionhead');
@@ -46,7 +47,7 @@ class SectionalController extends Controller
         }
         try {
             User::create([
-                'school_id' => $schoolId,
+                'school_id' => 100,
                 'role' => 'SECTIONAL_HEAD',
                 'user_password' => Hash::make('Section@123'),
                 'first_name' => $request->first_name,
@@ -153,4 +154,109 @@ class SectionalController extends Controller
 
         return view('sectional_head.absenteessect', compact('absentees'));
     }
+
+    // public function __construct()
+    // {
+    //     $this->middleware('auth');
+    //     $this->middleware(function ($request, $next) {
+    //         if (Auth::user()->role !== 'SECTIONAL_HEAD') {
+    //             abort(403, 'Unauthorized');
+    //         }
+    //         return $next($request);
+    //     });
+    // }
+
+    public function dashboard()
+    {
+        $sectionalHead = Auth::user();
+        $sectionId = $sectionalHead->section_id;
+
+        $applications = LeaveApplication::whereHas('latestStatus', function ($query) {
+            $query->where('status', 'PENDING');
+        })
+        ->whereHas('user', function ($query) use ($sectionId) {
+            $query->where('section_id', $sectionId)
+                  ->where('role', 'TEACHER');
+        })
+        ->with('user', 'latestStatus')
+        ->get();
+
+        return view('sectional_head.dashboard', compact('applications'));
+    }
+
+    public function updateLeaveStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:APPROVED,REJECTED',
+            'comment' => 'nullable|string|required_if:status,REJECTED',
+        ]);
+
+        $leaveApplication = LeaveApplication::findOrFail($id);
+        $sectionalHead = Auth::user();
+
+        if ($leaveApplication->user->section_id !== $sectionalHead->section_id) {
+            abort(403, 'Unauthorized to update this leave application.');
+        }
+
+        $latestStatus = $leaveApplication->latestStatus;
+
+        if (!$latestStatus) {
+            return redirect()->route('sectional_head.dashboard')->with('error', 'Leave status not found.');
+        }
+
+        $user = $leaveApplication->user;
+        $leaveDaysByYear = $leaveApplication->leave_days_by_year;
+
+        if ($request->status === 'APPROVED') {
+            if (in_array($leaveApplication->leave_type, ['CASUAL', 'MEDICAL'])) {
+                foreach ($leaveDaysByYear as $year => $days) {
+                    $leaveCounter = LeaveCounter::getOrCreateForUser($user->id, $year);
+                    $totalLeaveDaysTaken = $user->getTotalLeaveDaysTaken($year);
+                    $remainingLeaveDays = 20 - $totalLeaveDaysTaken;
+
+                    if (($totalLeaveDaysTaken + $days) > 20) {
+                        return redirect()->route('sectional_head.dashboard')->with('error', "This application would exceed the 20-day annual limit for CASUAL and MEDICAL leave in {$year}. User has already taken {$totalLeaveDaysTaken} days.");
+                    }
+
+                    if ($leaveApplication->leave_type === 'CASUAL' && $leaveCounter->total_casual < $days) {
+                        return redirect()->route('sectional_head.dashboard')->with('error', "User only has {$leaveCounter->total_casual} casual leave days remaining for {$year}.");
+                    }
+                    if ($leaveApplication->leave_type === 'MEDICAL' && $leaveCounter->total_medical < $days) {
+                        return redirect()->route('sectional_head.dashboard')->with('error', "User only has {$leaveCounter->total_medical} medical leave days remaining for {$year}.");
+                    }
+
+                    if ($leaveApplication->leave_type === 'CASUAL') {
+                        $leaveCounter->total_casual -= $days;
+                    } elseif ($leaveApplication->leave_type === 'MEDICAL') {
+                        $leaveCounter->total_medical -= $days;
+                    }
+
+                    $leaveCounter->save();
+                }
+            } else {
+                $year = Carbon::parse($leaveApplication->commence_date)->year;
+                $leaveCounter = LeaveCounter::getOrCreateForUser($user->id, $year);
+                if ($leaveApplication->leave_type === 'SHORT' && $leaveCounter->total_short < 1) {
+                    return redirect()->route('sectional_head.dashboard')->with('error', 'User has exhausted their short leave balance.');
+                }
+
+                $leaveCounter->total_short -= 1;
+                $leaveCounter->save();
+            }
+        }
+
+        $latestStatus->update([
+            'status' => $request->status,
+            'user_id' => $sectionalHead->id,
+            'comment' => $request->comment,
+        ]);
+
+        return redirect()->route('sectional_head.dashboard')->with('success', 'Leave application status updated successfully.');
+    }
 }
+
+
+
+
+
+

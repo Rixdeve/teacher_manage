@@ -58,17 +58,22 @@
                 Back
             </button>
 
+            
             <div class="absolute top-6 right-6 flex items-center space-x-3">
-                <img src="{{ asset('storage/' . Auth::user()->profile_picture) }}"
+                <img src="{{ asset('storage/app/public/photos/woman.png') }}"
                     class="h-10 w-10 rounded-full border border-gray-400" />
                 <div>
                     <a href="{{ url('/show') }}">
 
                         <h3 class="font-semibold">
-                            {{ Auth::user()->first_name }} {{ Auth::user()->last_name }}
-                        </h3>
-                        <h3 class="text-gray-600 text-sm">
-                            {{ ucfirst(strtolower(Auth::user()->role)) }}
+                            @php
+                            $zoneOffice = \App\Models\ZoneOffice::find(session('zone_office_id'));
+                            @endphp
+
+                            @if ($zoneOffice)
+                            <h3 class="font-semibold">{{ $zoneOffice->zone_name }}</h3>
+                            @endif
+
                         </h3>
                     </a>
                 </div>
@@ -76,7 +81,7 @@
 
             <div class="bg-gradient-to-b from-blue-100 to-gray-500 p-6 rounded-lg mt-12 mb-6">
                 <p class="text-gray-700">#</p>
-                <h1 class="text-2xl font-bold">Welcome back, <span>{{ Auth::user()->first_name }}</span></h1>
+
             </div>
 
             <div class="grid grid-cols-3 gap-6">

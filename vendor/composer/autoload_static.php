@@ -542,12 +542,18 @@ class ComposerStaticInit88970a0117c062eed55fa8728fc43833
     );
 
     public static $classMap = array (
+        'App\\Console\\Commands\\MarkAfternoonAbsentees' => __DIR__ . '/../..' . '/app/Console/Commands/MarkAfternoonAbsentees.php',
+        'App\\Http\\Controllers\\AttendanceController' => __DIR__ . '/../..' . '/app/Http/Controllers/AttendanceController.php',
         'App\\Http\\Controllers\\AuthController' => __DIR__ . '/../..' . '/app/Http/Controllers/AuthController.php',
         'App\\Http\\Controllers\\ClerkController' => __DIR__ . '/../..' . '/app/Http/Controllers/ClerkController.php',
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
         'App\\Http\\Controllers\\PrincipalController' => __DIR__ . '/../..' . '/app/Http/Controllers/PrincipalController.php',
+        'App\\Http\\Controllers\\ProfileController' => __DIR__ . '/../..' . '/app/Http/Controllers/ProfileController.php',
         'App\\Http\\Controllers\\SchoolController' => __DIR__ . '/../..' . '/app/Http/Controllers/SchoolController.php',
+        'App\\Http\\Controllers\\SectionalController' => __DIR__ . '/../..' . '/app/Http/Controllers/SectionalController.php',
         'App\\Http\\Controllers\\TeacherController' => __DIR__ . '/../..' . '/app/Http/Controllers/TeacherController.php',
+        'App\\Http\\Controllers\\ZonalController' => __DIR__ . '/../..' . '/app/Http/Controllers/ZonalController.php',
+        'App\\Http\\Middleware\\AuthCheck' => __DIR__ . '/../..' . '/app/Http/Middleware/AuthCheck.php',
         'App\\Models\\Attendance' => __DIR__ . '/../..' . '/app/Models/Attendance.php',
         'App\\Models\\LeaveApplication' => __DIR__ . '/../..' . '/app/Models/LeaveApplication.php',
         'App\\Models\\LeaveCounter' => __DIR__ . '/../..' . '/app/Models/LeaveCounter.php',

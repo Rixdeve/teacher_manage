@@ -97,6 +97,7 @@
             <table class="w-full table-auto border-collapse border border-gray-300">
                 <thead class="bg-gray-200">
                     <tr>
+                        <th class="p-2 border border-gray-300">Photo</th>
                         <th class="p-2 border border-gray-300">First Name</th>
                         <th class="p-2 border border-gray-300">Last Name</th>
                         <th class="p-2 border border-gray-300">School Index</th>
@@ -107,6 +108,10 @@
                 <tbody>
                     @forelse($attendances as $record)
                     <tr>
+                        <td class="p-2 border ">
+                            <img src="{{ asset('storage/' . $record->user->profile_picture) }}" alt="Profile"
+                                class="w-14 h-14 self-center rounded-full border border-gray-400" />
+                        </td>
                         <td class="p-2 border ">{{ $record->user->first_name }}</td>
                         <td class="p-2 border ">{{ $record->user->last_name }}</td>
                         <td class="p-2 border">{{ $record->user->school_index }}</td>

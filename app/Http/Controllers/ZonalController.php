@@ -17,6 +17,12 @@ use App\Models\ZoneOffice;
 
 class ZonalController extends Controller
 {
+    public function dashboard()
+    {
+        $zoneOffice = \App\Models\ZoneOffice::find(session('zone_office_id'));
+
+        return view('zonal.zonalDashboard', compact('zoneOffice'));
+    }
 
     public function index()
     {

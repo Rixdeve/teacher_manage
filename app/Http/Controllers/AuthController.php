@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\School;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use App\Models\ZoneOffice;
 
 class AuthController extends Controller
 {
@@ -32,6 +33,13 @@ class AuthController extends Controller
             // Manually log in school by setting session
             session(['school_id' => $school->id]);
             return redirect('/schoolDashboard');
+        }
+
+        $zonal = ZoneOffice::where('zone_email', $email)->first();
+        if ($zonal && Hash::check($password, $zonal->password)) {
+            // Manually log in zonal by setting session
+            session(['zone_office_id' => $zonal->id]);
+            return redirect('/zonalDashboard');
         }
 
         // Try logging in a User next

@@ -10,7 +10,7 @@
 </head>
 
 <body class="bg-gray-100 p-6">
-    <div class="bg-white shadow-lg rounded-lg w-full h-screen flex">
+<div class="bg-white shadow-lg rounded-lg w-full h-screen flex">
         <div
             class="w-1/4 bg-gradient-to-b from-blue-100 to-gray-500 p-6 m-4 rounded-xl shadow-lg flex flex-col items-center">
             <img src="{{asset('storage/photos/boss.png')}}"
@@ -24,11 +24,11 @@
                         <img src="{{asset('storage/photos/dashboard.png')}}" class="w-8 h-8 mr-2" alt="Dashboard" />
                         Dashboard</a>
                 </li>
-                <li
-                    class="w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
-                    <a href="{{ url('') }}" class="flex items-center w-full">
-                        <img src="{{asset('storage/photos/leave.png')}}" class="w-8 h-8 mr-2" alt="Apply Leave" />
-                        Leave Request</a>
+                <li class="w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
+                    <a href="{{ route('leave.index') }}" class="flex items-center w-full">
+                        <img src="{{ asset('storage/photos/leave.png') }}" class="w-8 h-8 mr-2" alt="Leave Requests" />
+                        Leave Requests
+                    </a>
                 </li>
                 <li
                     class="w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
@@ -42,24 +42,29 @@
                         <img src="{{asset('storage/photos/immigration.png')}}" class="w-8 h-8 mr-2" alt="Attendance" />
                         My Attendance</a>
                 </li>
-                <li
-                    class="w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
-                    <a href="{{ url('') }}" class="flex items-center w-full">
-                        <img src="{{asset('storage/photos/chat-box.png')}}" class="w-8 h-8 mr-2" alt="Notifications" />
-                        Write Notification</a>
+                <li class="w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
+                    <a href="{{ route('leave.create') }}" class="flex items-center w-full">
+                    <img src="{{ asset('storage/photos/folder.png') }}" class="w-8 h-8 mr-2" alt="Leave Application Status" />
+                    Apply leave
+                    </a>
                 </li>
-                <li
-                    class="w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
-                    <a href="{{ url('') }}" class="flex items-center w-full">
-                        <img src="{{asset('storage/photos/folder.png')}}" class="w-8 h-8 mr-2"
-                            alt="Leave Application Status" />
-                        Leave Record</a>
+                <li class="w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
+                    <a href="{{ route('leave.history') }}" class="flex items-center w-full">
+                        <img src="{{ asset('storage/photos/status.png') }}" class="w-8 h-8 mr-2" alt="Leave Application Status" />
+                        Leave Application Status
+                    </a>
                 </li>
                 <li
                     class="w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
                     <a href="{{ url('/viewUsers') }}" class="flex items-center w-full">
                         <img src="{{asset('storage/photos/classroom.png')}}" class="w-8 h-8 mr-2" alt="View Users" />
                         View Users</a>
+                </li>
+                <li
+                    class="w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
+                    <a href="{{ route('leave.record') }}" class="flex items-center w-full">
+                        <img src="{{asset('storage/photos/classroom.png')}}" class="w-8 h-8 mr-2" alt="View Users" />
+                        Leave Records</a>
                 </li>
                 <li
                     class="mt-12 w-48 py-2 flex items-center text-red-500 font-bold hover:text-red-700 cursor-pointer hover:bg-gray-300 rounded-lg p-2 mx-auto">

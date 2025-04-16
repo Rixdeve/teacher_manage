@@ -16,6 +16,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ZonalController;
 
 
+
 Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
 Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
 Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
@@ -167,3 +168,76 @@ Route::post('/change-password', [ProfileController::class, 'changePassword'])->n
 
 // Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
 // Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
+
+
+
+use App\Http\Controllers\LeaveApplicationController;
+
+Route::get('/leave/create', [LeaveApplicationController::class, 'create'])->name('leave.create');
+Route::post('/leave/store', [LeaveApplicationController::class, 'store'])->name('leave.store');
+Route::get('/leave/index', [LeaveApplicationController::class, 'index'])->name('leave.index');
+Route::patch('/leave/{leaveId}/status', [LeaveApplicationController::class, 'updateStatus'])->name('leave.updateStatus');
+
+
+
+
+
+// Route::get('/leave/create', [LeaveApplicationController::class, 'create'])->name('leave.create');
+// Route::post('/leave/store', [LeaveApplicationController::class, 'store'])->name('leave.store');
+
+// Principal routes
+Route::get('/principal/dashboard', [PrincipalController::class, 'dashboard'])->name('principal.dashboard');
+Route::patch('/leave/{id}/status', [PrincipalController::class, 'updateLeaveStatus'])->name('leave.updateStatus');
+
+// Other Principal routes
+Route::get('/registerPrincipal', [PrincipalController::class, 'index'])->name('principal.register');
+Route::post('/registerPrincipal', [PrincipalController::class, 'store'])->name('principal.store');
+Route::get('/principal/qrcode/{id}', [PrincipalController::class, 'showQRCode'])->name('principal.qrcode');
+Route::get('/principal/log-attendance/{id}', [PrincipalController::class, 'logAttendance'])->name('principal.logAttendance');
+Route::get('/principal/dashboardview', [PrincipalController::class, 'dashboardview'])->name('principal.dashboardview');
+Route::get('/principal/attendance-report', [PrincipalController::class, 'showAttendanceTable'])->name('principal.attendanceReport');
+Route::get('/principal/absentees', [PrincipalController::class, 'liveAbsentees'])->name('principal.absentees');
+Route::get('/principal/live-attendance', [PrincipalController::class, 'liveAttendanceView'])->name('principal.liveAttendance');
+
+
+Route::get('/teacher/leave-history', [LeaveApplicationController::class, 'history'])->name('leave.history');
+
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/leave/create', [LeaveApplicationController::class, 'create'])->name('leave.create');
+    Route::post('/leave', [LeaveApplicationController::class, 'store'])->name('leave.store');
+    Route::get('/leave', [LeaveApplicationController::class, 'index'])->name('leave.index');
+    Route::patch('/leave/{leaveId}/status', [LeaveApplicationController::class, 'updateStatus'])->name('leave.updateStatus');
+});
+
+Route::get('/leave/record', [LeaveApplicationController::class, 'schoolLeaveRecord'])->name('leave.record');
+
+
+Route::get('/leave/history', [LeaveApplicationController::class, 'history'])->name('leave.history')->middleware('auth');
+
+
+Route::get('/leave/record', [LeaveApplicationController::class, 'record'])->name('leave.record')->middleware('auth');
+
+
+
+//sec
+// Leave-related routes
+Route::get('/leave/create', [LeaveApplicationController::class, 'create'])->name('leave.create');
+Route::post('/leave', [LeaveApplicationController::class, 'store'])->name('leave.store');
+Route::get('/leave', [LeaveApplicationController::class, 'index'])->name('leave.index');
+Route::get('/leave/record', [LeaveApplicationController::class, 'record'])->name('leave.record');
+Route::get('/leave/history', [LeaveApplicationController::class, 'history'])->name('leave.history');
+Route::post('/leave/{leaveId}/status', [LeaveApplicationController::class, 'updateStatus'])->name('leave.updateStatus');
+
+
+
+
+Route::middleware('auth')->group(function () {
+    Route::get('/leave/create', [LeaveApplicationController::class, 'create'])->name('leave.create');
+    Route::post('/leave', [LeaveApplicationController::class, 'store'])->name('leave.store');
+    Route::get('/leave', [LeaveApplicationController::class, 'index'])->name('leave.index');
+    Route::post('/leave/{leaveId}/status', [LeaveApplicationController::class, 'updateStatus'])->name('leave.updateStatus');
+    Route::get('/leave/history', [LeaveApplicationController::class, 'history'])->name('leave.history');
+    Route::get('/leave/record', [LeaveApplicationController::class, 'record'])->name('leave.record');
+});

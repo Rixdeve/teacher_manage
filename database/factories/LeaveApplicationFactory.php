@@ -1,33 +1,26 @@
 <?php
 
+
+
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\LeaveApplication;
 use App\Models\User;
+use App\Models\LeaveStatus;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\LeaveApplication>
- */
 class LeaveApplicationFactory extends Factory
 {
     protected $model = LeaveApplication::class;
 
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
-        $startDate = $this->faker->dateTimeBetween('-1 month', 'now'); // Ensure start date is not in the future
-        $endDate = $this->faker->dateTimeBetween($startDate, strtotime('+5 days', $startDate->getTimestamp())); // Ensure valid range
-
-
+        $startDate = $this->faker->dateTimeBetween('-1 month', 'now');
+        $endDate = $this->faker->dateTimeBetween($startDate, strtotime('+5 days', $startDate->getTimestamp()));
         $leaveType = $this->faker->randomElement(['CASUAL', 'MEDICAL', 'HALF_DAY', 'SHORT', 'NO_PAY']);
 
         return [
-            'user_id' => User::factory(), // Associate leave request with a user
+            'user_id' => User::factory(),
             'commence_date' => $startDate->format('Y-m-d'),
             'end_date' => $leaveType === 'HALF_DAY' || $leaveType === 'SHORT' ? $startDate->format('Y-m-d') : $endDate->format('Y-m-d'),
             'leave_type' => $leaveType,
@@ -36,5 +29,16 @@ class LeaveApplicationFactory extends Factory
             'attachment_url_2' => $this->faker->optional()->imageUrl(),
             'attachment_url_3' => $this->faker->optional()->imageUrl(),
         ];
+    }
+
+    public function configure()
+    {
+        return $this->afterCreating(function (LeaveApplication $leaveApplication) {
+            LeaveStatus::create([
+                'leave_id' => $leaveApplication->id,
+                'user_id' => $leaveApplication->user_id,
+                'status' => 'PENDING',
+            ]);
+        });
     }
 }

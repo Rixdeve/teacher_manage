@@ -1,28 +1,16 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Carbon\Carbon;
 
 class LeaveApplication extends Model
 {
     use HasFactory;
 
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
     protected $table = 'leave_applications';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<string>
-     */
     protected $fillable = [
         'user_id',
         'commence_date',
@@ -34,19 +22,60 @@ class LeaveApplication extends Model
         'attachment_url_3',
     ];
 
-    /**
-     * A leave application belongs to a user.
-     */
-    public function user(): BelongsTo
+    protected $dates = [
+        'commence_date',
+        'end_date',
+    ];
+
+    public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * A leave application has many statuses (approved/rejected).
-     */
-    public function leaveStatuses(): HasMany
+    public function statuses()
     {
         return $this->hasMany(LeaveStatus::class, 'leave_id');
+    }
+
+    public function latestStatus()
+    {
+        return $this->hasOne(LeaveStatus::class, 'leave_id')->latestOfMany();
+    }
+
+    public function getLeaveDaysAttribute()
+    {
+        if ($this->leave_type === 'SHORT') {
+            return 0.5; // Short leave is half a day
+        }
+
+        $start = Carbon::parse($this->commence_date);
+        $end = Carbon::parse($this->end_date);
+        return $start->diffInDays($end) + 1; // Include both start and end dates
+    }
+
+    public function getLeaveDaysByYearAttribute()
+    {
+        $start = Carbon::parse($this->commence_date);
+        $end = Carbon::parse($this->end_date);
+        $daysByYear = [];
+
+        if ($this->leave_type === 'SHORT') {
+            $year = $start->year;
+            $daysByYear[$year] = 0.5;
+            return $daysByYear;
+        }
+
+        $currentDate = $start->copy();
+        while ($currentDate <= $end) {
+            $year = $currentDate->year;
+            if (!isset($daysByYear[$year])) {
+                $daysByYear[$year] = 0;
+            }
+
+            $daysByYear[$year]++;
+            $currentDate->addDay();
+        }
+
+        return $daysByYear;
     }
 }

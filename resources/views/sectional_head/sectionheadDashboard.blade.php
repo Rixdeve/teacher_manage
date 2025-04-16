@@ -18,7 +18,7 @@
             <ul class="space-y-4 w-full">
                 <li
                     class="w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
-                    <a href="{{ url('/teacherDashboard') }}" class="flex items-center w-full"> <img
+                    <a href="{{ url('/sectionheadDashboard') }}" class="flex items-center w-full"> <img
                             src="{{asset('storage/photos/dashboard.png')}}" class="w-8 h-8 mr-2" alt="Dashboard" />
                         Dashboard</a>
                 </li>
@@ -31,9 +31,15 @@
                 </li>
                 <li
                     class="w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
-                    <a href="{{ url('') }}" class="flex items-center w-full">
+                    <a href="{{ url('leave/create') }}" class="flex items-center w-full">
                         <img src="{{asset('storage/photos/leave.png')}}" class="w-8 h-8 mr-2" alt="Apply Leave" />
                         Apply Leave</a>
+                </li>
+                <li class="w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
+                    <a href="{{ route('leave.history') }}" class="flex items-center w-full">
+                        <img src="{{ asset('storage/photos/status.png') }}" class="w-8 h-8 mr-2" alt="Leave Application Status" />
+                        Leave Application Status
+                    </a>
                 </li>
                 <li
                     class="w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
@@ -48,13 +54,7 @@
                         <img src="{{asset('storage/photos/active.png')}}" class="w-8 h-8 mr-2" alt="Notifications" />
                         Notifications</a>
                 </li>
-                <li
-                    class="w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
-                    <a href="{{ url('') }}" class="flex items-center w-full">
-                        <img src="{{asset('storage/photos/status.png')}}" class="w-8 h-8 mr-2"
-                            alt="Leave Application" />
-                        Leave Application Status</a>
-                </li>
+                
                 <li
                     class="mt-12 w-48 py-2 flex items-center text-red-500 font-bold hover:text-red-700 cursor-pointer hover:bg-gray-300 rounded-lg p-2 mx-auto">
                     <a href="{{ url('/logout') }}" class="flex items-center w-full">
@@ -91,7 +91,7 @@
         <div class="bg-gradient-to-b from-blue-100 to-gray-500 p-6 rounded-lg mt-12 mb-6 relative">
             <div class="absolute top-2 right-2 flex items-center space-x-2">
                 <div class="bg-green-500 rounded-full w-3 h-3"></div>
-                <!-- change the color acc -->
+                
                 <span class="text-sm text-green-500 font-semibold">On Duty</span>
             </div>
 

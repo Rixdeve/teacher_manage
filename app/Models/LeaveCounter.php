@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -10,30 +9,41 @@ class LeaveCounter extends Model
 {
     use HasFactory;
 
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
     protected $table = 'leave_counters';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<string>
-     */
     protected $fillable = [
         'user_id',
+        'year',
         'total_casual',
         'total_medical',
         'total_short',
     ];
 
-    /**
-     * A leave counter belongs to a user.
-     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public static function getOrCreateForUser($userId, $year = null)
+    {
+        if (is_null($year)) {
+            $year = now()->year;
+        }
+
+        $leaveCounter = self::where('user_id', $userId)
+            ->where('year', $year)
+            ->first();
+
+        if (!$leaveCounter) {
+            $leaveCounter = self::create([
+                'user_id' => $userId,
+                'year' => $year,
+                'total_casual' => 20,
+                'total_medical' => 20,
+                'total_short' => 2,
+            ]);
+        }
+
+        return $leaveCounter;
     }
 }

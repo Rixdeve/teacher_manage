@@ -36,17 +36,17 @@ class TeacherController extends Controller
             'user_dob' => 'required|date',
             'user_email' => 'required|email|unique:users,user_email',
             'user_phone' => 'required|numeric|digits:10|unique:users,user_phone',
-            'profile_picture' => 'required|image|mimes:jpg,png,jpeg|max:2048', // Only images, max size 2MB
+            'profile_picture' => 'required|image|mimes:jpg,png,jpeg|max:2048', 
             'status' => 'required',
         ]);
         if ($request->hasFile('profile_picture')) {
             $imagePath = $request->file('profile_picture')->store('profile_pictures', 'public');
         } else {
-            $imagePath = null; // Default if no image is uploaded
+            $imagePath = null; 
         }
         try {
             User::create([
-                'school_id' => $schoolId,
+                'school_id' => 100,
                 'role' => 'TEACHER',
                 'user_password' => Hash::make('Teacher@123'),
                 'first_name' => $request->first_name,

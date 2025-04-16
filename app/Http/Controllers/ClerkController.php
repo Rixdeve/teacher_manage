@@ -47,7 +47,7 @@ class ClerkController extends Controller
         }
         try {
             User::create([
-                'school_id' => $schoolId,
+                'school_id' => 100,
                 'role' => 'CLERK',
                 'user_password' => Hash::make('Clerk@123'),
                 'first_name' => $request->first_name,
