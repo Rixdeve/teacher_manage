@@ -75,7 +75,7 @@
                     <p class="text-lg text-gray-700">Role: <span
                             class="text-gray-600">{{ ucfirst(strtolower(Auth::user()->role)) }}</span></p>
                     @if (!empty($user->subjects) && is_array($user->subjects))
-                    <p class="text-lg text-gray-700 mb-2 font-medium">Subjects::</p>
+                    <p class="text-lg text-gray-700 mb-2 font-medium">Subjects:</p>
                     <div class="flex flex-wrap gap-2 mb-4">
                         @foreach ($user->subjects as $subject)
                         <span class="text-lg text-gray-700">
