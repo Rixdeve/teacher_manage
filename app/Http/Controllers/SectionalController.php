@@ -56,7 +56,7 @@ class SectionalController extends Controller
                 'first_name' => $request->first_name,
                 'last_name' => $request->last_name,
                 'section' => $request->section,
-                'subjects' => json_encode($selectedSubjects),
+                'subjects' => $selectedSubjects,
                 'school_index' => $request->school_index,
                 'user_address_no' => $request->user_address_no,
                 'user_address_street' => $request->user_address_street,
