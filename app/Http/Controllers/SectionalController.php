@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -25,10 +26,12 @@ class SectionalController extends Controller
     {
         // dd($request->all());
         $schoolId = session('school_id');
+        $selectedSubjects = $request->input('subjects');
 
         $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
+            'section' => 'required|string|max:255',
             'school_index' => 'required|numeric',
             'user_address_no' => 'required|string',
             'user_address_street' => 'required|string',
@@ -47,11 +50,13 @@ class SectionalController extends Controller
         }
         try {
             User::create([
-                'school_id' => 100,
+                'school_id' => $schoolId,
                 'role' => 'SECTIONAL_HEAD',
                 'user_password' => Hash::make('Section@123'),
                 'first_name' => $request->first_name,
                 'last_name' => $request->last_name,
+                'section' => $request->section,
+                'subjects' => json_encode($selectedSubjects),
                 'school_index' => $request->school_index,
                 'user_address_no' => $request->user_address_no,
                 'user_address_street' => $request->user_address_street,
@@ -124,13 +129,15 @@ class SectionalController extends Controller
     {
         $sectionalHead = Auth::user();
         $schoolId = $sectionalHead->school_id;
+        $section = $sectionalHead->section;
         $today = now()->toDateString();
 
         $attendances = Attendance::with('user')
             ->whereDate('date', $today)
             ->where('status', 'PRESENT')
-            ->whereHas('user', function ($query) use ($schoolId) {
+            ->whereHas('user', function ($query) use ($schoolId, $section) {
                 $query->where('school_id', $schoolId)
+                    ->where('section', $section)
                     ->whereIn('role', ['TEACHER', 'PRINCIPAL', 'SECTIONAL_HEAD']);
             })
             ->get();
@@ -143,9 +150,11 @@ class SectionalController extends Controller
     {
         $schoolId = Auth::user()->school_id;
         $today = now()->toDateString();
-
+        $sectionalHead = Auth::user();
+        $section = $sectionalHead->section;
         $absentees = \App\Models\User::whereIn('role', ['TEACHER', 'PRINCIPAL', 'SECTIONAL_HEAD'])
             ->where('school_id', $schoolId)
+            ->where('section', $section)
             ->whereDoesntHave('attendances', function ($query) use ($today) {
                 $query->where('date', $today)
                     ->where('status', 'PRESENT');
@@ -174,12 +183,12 @@ class SectionalController extends Controller
         $applications = LeaveApplication::whereHas('latestStatus', function ($query) {
             $query->where('status', 'PENDING');
         })
-        ->whereHas('user', function ($query) use ($sectionId) {
-            $query->where('section_id', $sectionId)
-                  ->where('role', 'TEACHER');
-        })
-        ->with('user', 'latestStatus')
-        ->get();
+            ->whereHas('user', function ($query) use ($sectionId) {
+                $query->where('section_id', $sectionId)
+                    ->where('role', 'TEACHER');
+            })
+            ->with('user', 'latestStatus')
+            ->get();
 
         return view('sectional_head.dashboard', compact('applications'));
     }
@@ -254,9 +263,3 @@ class SectionalController extends Controller
         return redirect()->route('sectional_head.dashboard')->with('success', 'Leave application status updated successfully.');
     }
 }
-
-
-
-
-
-

@@ -127,8 +127,10 @@ Route::post('/registerZonal', [ZonalController::class, 'store'])->name('zone.sto
 Route::get('/principalDashboard', fn() => view('principal.principalDashboard'));
 Route::get('/teacherDashboard', fn() => view('teacher.teacherDashboard'));
 Route::get('/clerkDashboard', fn() => view('clerk.clerkDashboard'));
-Route::get('/schoolDashboard', fn() => view('school.schoolDashboard'));
+// Route::get('/schoolDashboard', fn() => view('school.schoolDashboard'));
 Route::get('/zonalDashboard', fn() => view('zonal.zonalDashboard'));
+Route::get('/schoolDashboard', [SchoolController::class, 'schoolDashboard'])->name('school.dashboard');
+
 Route::get('/sectionheadDashboard', fn() => view('sectional_head.sectionheadDashboard'));
 
 

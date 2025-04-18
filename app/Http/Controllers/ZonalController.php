@@ -39,7 +39,6 @@ class ZonalController extends Controller
             'zone_address_street' => 'required|string',
             'zone_address_city' => 'required|string',
             'zone_email' => 'required|email|unique:zone_offices,zone_email',
-            'password' => 'required|string|min:6',
         ]);
 
         ZoneOffice::create([

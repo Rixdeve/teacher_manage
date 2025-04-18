@@ -5,19 +5,31 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\School;
 use Illuminate\Database\QueryException;
-
+use App\Models\User;
 // use function Laravel\Prompts\alert;
 
 class SchoolController extends Controller
 {
+    public function schoolDashboard()
+    {
+        // Get the current school ID from session
+        $schoolId = session('school_id');
+
+        // Count users with the same school_id
+        $userCount = User::where('school_id', $schoolId)->count();
+
+        return view('school.schoolDashboard', compact('userCount'));
+    }
 
     public function index()
     {
         return view('zonal.registerschool');
     }
+
     public function store(Request $request)
     {
         // dd($request->all());
+        $zonalId = session('zone_office_id');
 
         $request->validate([
             'school_number' => 'required|unique:schools,school_number',
@@ -32,7 +44,7 @@ class SchoolController extends Controller
         try {
             School::create([
                 'school_number' => $request->school_number,
-                'zonal_id' => 1, // Default value
+                'zonal_id' => $zonalId,
                 'school_name' => $request->school_name,
                 'school_address_no' => $request->school_address_no,
                 'school_address_street' => $request->school_address_street,

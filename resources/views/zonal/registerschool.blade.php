@@ -18,7 +18,15 @@
         <div class="bg-gradient-to-b from-blue-100 to-gray-500 p-6 rounded-lg mb-6 text-center">
             <h1 class="text-2xl font-bold text-black-700">Register School</h1>
         </div>
-
+        @if($errors->any())
+        <div class="bg-red-100 text-red-800 p-2 rounded mb-4">
+            <ul>
+                @foreach($errors->all() as $error)
+                <li>- {{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+        @endif
         <form method="post" action="{{ route('school.store') }}" class="grid grid-cols-2 gap-6">
             @csrf
             @if(session('success'))
@@ -63,7 +71,7 @@
             </div>
             <div>
                 <label class="block text-black-700 font-medium">Email</label>
-                <input type="email" id="user_email" name="user_email" placeholder="vishaka@email.com"
+                <input type="email" id="school_email" name="school_email" placeholder="vishaka@email.com"
                     class="p-2 border rounded-lg w-full" required />
             </div>
             <!-- <div>

@@ -458,16 +458,16 @@ use App\Models\Attendance;
 
 class PrincipalController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-        $this->middleware(function ($request, $next) {
-            if (Auth::user()->role !== 'PRINCIPAL') {
-                abort(403, 'Unauthorized');
-            }
-            return $next($request);
-        });
-    }
+    // public function __construct()
+    // {
+    //     $this->middleware('auth');
+    //     $this->middleware(function ($request, $next) {
+    //         if (Auth::user()->role !== 'PRINCIPAL') {
+    //             abort(403, 'Unauthorized');
+    //         }
+    //         return $next($request);
+    //     });
+    // }
 
     public function index()
     {
@@ -501,7 +501,7 @@ class PrincipalController extends Controller
 
         try {
             User::create([
-                'school_id' => 100,
+                'school_id' => $schoolId,
                 'role' => 'PRINCIPAL',
                 'user_password' => Hash::make('Principal@123'),
                 'first_name' => $request->first_name,
@@ -584,11 +584,11 @@ class PrincipalController extends Controller
         $applications = LeaveApplication::whereHas('latestStatus', function ($query) {
             $query->where('status', 'PENDING');
         })
-        ->whereHas('user', function ($query) use ($schoolId) {
-            $query->where('school_id', $schoolId);
-        })
-        ->with('user', 'latestStatus')
-        ->get();
+            ->whereHas('user', function ($query) use ($schoolId) {
+                $query->where('school_id', $schoolId);
+            })
+            ->with('user', 'latestStatus')
+            ->get();
 
         return view('principal.principalDashboard', compact('attendanceRecords', 'applications'));
     }
@@ -597,17 +597,17 @@ class PrincipalController extends Controller
     {
         $schoolId = Auth::user()->school_id;
         $today = now()->toDateString();
-    
+
         $query = Attendance::whereDate('date', $today)
             ->whereHas('user', function ($q) use ($schoolId) {
                 $q->whereIn('role', ['TEACHER', 'PRINCIPAL', 'SECTIONAL_HEAD'])
                     ->where('school_id', $schoolId);
             });
-    
+
         $presentCount = (clone $query)->where('status', 'PRESENT')->count();
         $lateCount = (clone $query)->whereTime('check_in_time', '>', '07:45:00')->count();
         $absentCount = (clone $query)->where('status', 'ABSENT')->count();
-    
+
         // Add attendance records
         $attendanceRecords = Attendance::with('user')
             ->whereHas('user', function ($query) use ($schoolId) {
@@ -616,20 +616,20 @@ class PrincipalController extends Controller
             })
             ->orderByDesc('date')
             ->get();
-    
+
         // Add pending leave applications
         $applications = LeaveApplication::whereHas('latestStatus', function ($query) {
             $query->where('status', 'PENDING');
         })
-        ->whereHas('user', function ($query) use ($schoolId) {
-            $query->where('school_id', $schoolId);
-        })
-        ->with('user', 'latestStatus')
-        ->get();
-    
+            ->whereHas('user', function ($query) use ($schoolId) {
+                $query->where('school_id', $schoolId);
+            })
+            ->with('user', 'latestStatus')
+            ->get();
+
         return view('principal.principalDashboard', compact('presentCount', 'lateCount', 'absentCount', 'attendanceRecords', 'applications'));
     }
-    
+
 
     public function showAttendanceTable()
     {
@@ -680,49 +680,49 @@ class PrincipalController extends Controller
         return view('principal.liveAttendanceprin', compact('attendances'));
     }
 
-//     public function updateLeaveStatus(Request $request, $id)
-//     {
-//         $request->validate([
-//             'status' => 'required|in:APPROVED,REJECTED',
-//             'comment' => 'nullable|string|required_if:status,REJECTED',
-//         ]);
+    //     public function updateLeaveStatus(Request $request, $id)
+    //     {
+    //         $request->validate([
+    //             'status' => 'required|in:APPROVED,REJECTED',
+    //             'comment' => 'nullable|string|required_if:status,REJECTED',
+    //         ]);
 
-//         $leaveApplication = LeaveApplication::findOrFail($id);
-//         $latestStatus = $leaveApplication->latestStatus;
+    //         $leaveApplication = LeaveApplication::findOrFail($id);
+    //         $latestStatus = $leaveApplication->latestStatus;
 
-//         if (!$latestStatus) {
-//             return redirect()->route('principal.dashboard')->with('error', 'Leave status not found.');
-//         }
+    //         if (!$latestStatus) {
+    //             return redirect()->route('principal.dashboard')->with('error', 'Leave status not found.');
+    //         }
 
-//         $latestStatus->update([
-//             'status' => $request->status,
-//             'user_id' => Auth::id(),
-//             'comment' => $request->comment,
-//         ]);
+    //         $latestStatus->update([
+    //             'status' => $request->status,
+    //             'user_id' => Auth::id(),
+    //             'comment' => $request->comment,
+    //         ]);
 
-//         return redirect()->route('principal.dashboard')->with('success', 'Leave application status updated successfully.');
-//     }
-// }
-public function updateLeaveStatus(Request $request, $id)
-{
-    $request->validate([
-        'status' => 'required|in:APPROVED,REJECTED',
-        'comment' => 'nullable|string|required_if:status,REJECTED',
-    ]);
+    //         return redirect()->route('principal.dashboard')->with('success', 'Leave application status updated successfully.');
+    //     }
+    // }
+    public function updateLeaveStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:APPROVED,REJECTED',
+            'comment' => 'nullable|string|required_if:status,REJECTED',
+        ]);
 
-    $leaveApplication = LeaveApplication::findOrFail($id);
-    $latestStatus = $leaveApplication->latestStatus;
+        $leaveApplication = LeaveApplication::findOrFail($id);
+        $latestStatus = $leaveApplication->latestStatus;
 
-    if (!$latestStatus) {
-        return redirect()->route('principal.dashboard')->with('error', 'Leave status not found.');
+        if (!$latestStatus) {
+            return redirect()->route('principal.dashboard')->with('error', 'Leave status not found.');
+        }
+
+        // Update the status and comment without modifying the user_id
+        $latestStatus->update([
+            'status' => $request->status,
+            'comment' => $request->comment,
+        ]);
+
+        return redirect()->route('principal.dashboard')->with('success', 'Leave application status updated successfully.');
     }
-
-    // Update the status and comment without modifying the user_id
-    $latestStatus->update([
-        'status' => $request->status,
-        'comment' => $request->comment,
-    ]);
-
-    return redirect()->route('principal.dashboard')->with('success', 'Leave application status updated successfully.');
-}
 }

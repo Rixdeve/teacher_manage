@@ -87,6 +87,11 @@
                         class="text-gray-600">{{ $attendance->check_in_time ?? '—' }}</span></p>
                 <p class="text-lg text-gray-700">Check-Out: <span
                         class="text-gray-600">{{ $attendance->check_out_time ?? '—' }}</span></p>
+                <p class="text-lg text-gray-700">Subjects:
+                    @foreach ($user->subjects as $subject)
+                    <span class="bg-gray-200 text-sm px-2 py-1 rounded mr-2">{{ $subject }}</span>
+                    @endforeach
+                </p>
                 @else
                 <p class="text-red-600 font-medium">Attendance not marked yet today.</p>
                 @endif
