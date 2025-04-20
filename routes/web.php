@@ -249,3 +249,31 @@ Route::middleware('auth')->group(function () {
     Route::get('/leave/history', [LeaveApplicationController::class, 'history'])->name('leave.history');
     Route::get('/leave/record', [LeaveApplicationController::class, 'record'])->name('leave.record');
 });
+
+
+Route::get('/leave/create', [LeaveApplicationController::class, 'create'])->name('leave.create');
+Route::post('/leave/store', [LeaveApplicationController::class, 'store'])->name('leave.store');
+
+
+//deks
+
+
+Route::middleware(['auth'])->group(function () {
+    // Sectional Head Routes
+    Route::get('/sectional_head/dashboard', [SectionalController::class, 'dashboard'])->name('sectional_head.dashboard');
+    Route::post('/sectional_head/leave/{id}/status', [SectionalController::class, 'updateLeaveStatus'])->name('sectional_head.update_leave_status');
+    Route::get('/sectional_head/assign-relief/{leaveApplicationId}', [SectionalController::class, 'showAssignReliefForm'])->name('sectional_head.assign_relief_form');
+    Route::get('/sectional_head/teachers/{leaveApplicationId}', [SectionalController::class, 'getTeachers'])->name('sectional_head.get_teachers');
+    Route::post('/sectional_head/assign-relief/{leaveApplicationId}', [SectionalController::class, 'storeReliefAssignment'])->name('sectional_head.store_relief');
+    Route::get('/sectional_head/notifications', [SectionalController::class, 'showNotifications'])->name('sectional_head.notifications');
+    Route::post('/sectional_head/notifications/{notificationId}/mark-as-read', [SectionalController::class, 'markNotificationAsRead'])->name('sectional_head.mark_notification_as_read');
+
+    // Teacher Routes
+    Route::get('/teacher/notifications', [TeacherController::class, 'showNotifications'])->name('teacher.notifications');
+    Route::post('/teacher/notifications/{notificationId}/mark-as-read', [TeacherController::class, 'markNotificationAsRead'])->name('teacher.mark_notification_as_read');
+
+    // Leave Application Routes
+    Route::get('/leave/create', [LeaveApplicationController::class, 'create'])->name('leave.create');
+    Route::post('/leave', [LeaveApplicationController::class, 'store'])->name('leave.store');
+    Route::get('/leave/history', [LeaveApplicationController::class, 'history'])->name('leave.history');
+});

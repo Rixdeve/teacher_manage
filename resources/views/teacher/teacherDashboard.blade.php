@@ -37,7 +37,7 @@
 
                 <li
                     class="w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
-                    <a href="{{ url('') }}" class="flex items-center w-full">
+                    <a href="{{ url('/notifications') }}" class="flex items-center w-full">
                         <img src="{{asset('storage/photos/active.png')}}" class="w-8 h-8 mr-2" alt="Notifications" />
                         Notifications</a>
                 </li>

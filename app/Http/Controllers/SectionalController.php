@@ -6,13 +6,14 @@ use Illuminate\Http\Request;
 use App\Models\LeaveApplication;
 use App\Models\LeaveStatus;
 use App\Models\LeaveCounter;
+use App\Models\ReliefAssignment;
+use App\Models\Notification;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\QueryException;
-
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Models\Attendance;
 
@@ -22,9 +23,9 @@ class SectionalController extends Controller
     {
         return view('school.registerSectionhead');
     }
+
     public function store(Request $request)
     {
-        // dd($request->all());
         $schoolId = session('school_id');
         $selectedSubjects = $request->input('subjects');
 
@@ -40,14 +41,16 @@ class SectionalController extends Controller
             'user_dob' => 'required|date',
             'user_email' => 'required|email|unique:users,user_email',
             'user_phone' => 'required|numeric|digits:10|unique:users,user_phone',
-            'profile_picture' => 'required|image|mimes:jpg,png,jpeg|max:2048', // Only images, max size 2MB
+            'profile_picture' => 'required|image|mimes:jpg,png,jpeg|max:2048',
             'status' => 'required',
         ]);
+
         if ($request->hasFile('profile_picture')) {
             $imagePath = $request->file('profile_picture')->store('profile_pictures', 'public');
         } else {
-            $imagePath = null; // Default if no image is uploaded
+            $imagePath = null;
         }
+
         try {
             User::create([
                 'school_id' => $schoolId,
@@ -68,12 +71,11 @@ class SectionalController extends Controller
                 'profile_picture' => $imagePath,
                 'status' => $request->status,
                 'registered_date' => now(),
-
             ]);
             return redirect('/schoolDashboard')->with('success', 'Sectional Head registered successfully!');
         } catch (QueryException $e) {
             if ($e->errorInfo[1] == 1062) {
-                return redirect('/registerTeacher')->with('error', 'Seactional Head already exists!');
+                return redirect('/registerTeacher')->with('error', 'Sectional Head already exists!');
             }
         } catch (\Exception $e) {
             return redirect('/registerTeacher')->with('error', 'An error occurred!');
@@ -90,8 +92,6 @@ class SectionalController extends Controller
             'qrCode' => QrCode::size(180)->generate($qrContent),
         ]);
     }
-
-
 
     public function logAttendance($id)
     {
@@ -118,9 +118,6 @@ class SectionalController extends Controller
 
             return response()->json(['message' => 'Check-out successful']);
         }
-        // if($attendance->check_in_time < now()->subHours(8)->format('H:i:s')){
-        //     return response()->json(['message' => 'Check-in time expired']);
-        // }
 
         return response()->json(['message' => 'Already checked in and out today']);
     }
@@ -129,7 +126,7 @@ class SectionalController extends Controller
     {
         $sectionalHead = Auth::user();
         $schoolId = $sectionalHead->school_id;
-        $section = trim(strtolower($sectionalHead->section));
+        $section = $sectionalHead->section;
         $today = now()->toDateString();
 
         $attendances = Attendance::with('user')
@@ -137,7 +134,7 @@ class SectionalController extends Controller
             ->where('status', 'PRESENT')
             ->whereHas('user', function ($query) use ($schoolId, $section) {
                 $query->where('school_id', $schoolId)
-                    ->whereRaw("TRIM(LOWER(section)) = ?", [$section])
+                    ->where('section', '=', (string) $section)
                     ->whereIn('role', ['TEACHER']);
             })
             ->get();
@@ -145,20 +142,16 @@ class SectionalController extends Controller
         return view('sectional_head.liveAttendance', compact('attendances'));
     }
 
-
     public function liveAbsentees()
     {
         $sectionalHead = Auth::user();
         $schoolId = $sectionalHead->school_id;
-        $section = trim(strtolower($sectionalHead->section));
+        $section = $sectionalHead->section;
         $today = now()->toDateString();
-        $this->markApprovedLeaveAsAbsent();
 
-        $absentees = \App\Models\User::where('school_id', $schoolId)
-
-            ->whereRaw("TRIM(LOWER(section)) = ?", [$section])
+        $absentees = User::where('school_id', $schoolId)
+            ->where('section', $section)
             ->whereIn('role', ['TEACHER'])
-
             ->whereDoesntHave('attendances', function ($query) use ($today) {
                 $query->where('date', $today)
                     ->where('status', 'PRESENT');
@@ -167,54 +160,17 @@ class SectionalController extends Controller
 
         return view('sectional_head.absenteessection', compact('absentees'));
     }
-    public function markApprovedLeaveAsAbsent()
-    {
-        $today = Carbon::today()->toDateString();
-
-        $leaveApplications = LeaveApplication::whereHas('latestStatus', function ($query) {
-            $query->where('status', 'APPROVED');
-        })
-            ->whereDate('commence_date', '<=', $today)
-            ->whereDate('end_date', '>=', $today)
-            ->get();
-
-        foreach ($leaveApplications as $application) {
-            Attendance::updateOrCreate(
-                [
-                    'user_id' => $application->user_id,
-                    'date' => $today,
-                ],
-                [
-                    'status' => 'ABSENT',
-                    'method' => 'MANUAL',
-                    'check_in_time' => null,
-                    'check_out_time' => null,
-                ]
-            );
-        }
-    }
-
-    // public function __construct()
-    // {
-    //     $this->middleware('auth');
-    //     $this->middleware(function ($request, $next) {
-    //         if (Auth::user()->role !== 'SECTIONAL_HEAD') {
-    //             abort(403, 'Unauthorized');
-    //         }
-    //         return $next($request);
-    //     });
-    // }
 
     public function dashboard()
     {
         $sectionalHead = Auth::user();
-        $sectionId = $sectionalHead->section_id;
+        $section = $sectionalHead->section;
 
         $applications = LeaveApplication::whereHas('latestStatus', function ($query) {
             $query->where('status', 'PENDING');
         })
-            ->whereHas('user', function ($query) use ($sectionId) {
-                $query->where('section_id', $sectionId)
+            ->whereHas('user', function ($query) use ($section) {
+                $query->where('section', $section)
                     ->where('role', 'TEACHER');
             })
             ->with('user', 'latestStatus')
@@ -233,7 +189,7 @@ class SectionalController extends Controller
         $leaveApplication = LeaveApplication::findOrFail($id);
         $sectionalHead = Auth::user();
 
-        if ($leaveApplication->user->section_id !== $sectionalHead->section_id) {
+        if ($leaveApplication->user->section !== $sectionalHead->section) {
             abort(403, 'Unauthorized to update this leave application.');
         }
 
@@ -257,16 +213,17 @@ class SectionalController extends Controller
                         return redirect()->route('sectional_head.dashboard')->with('error', "This application would exceed the 20-day annual limit for CASUAL and MEDICAL leave in {$year}. User has already taken {$totalLeaveDaysTaken} days.");
                     }
 
-                    if ($leaveApplication->leave_type === 'CASUAL' && $leaveCounter->total_casual < $days) {
-                        return redirect()->route('sectional_head.dashboard')->with('error', "User only has {$leaveCounter->total_casual} casual leave days remaining for {$year}.");
-                    }
-                    if ($leaveApplication->leave_type === 'MEDICAL' && $leaveCounter->total_medical < $days) {
-                        return redirect()->route('sectional_head.dashboard')->with('error', "User only has {$leaveCounter->total_medical} medical leave days remaining for {$year}.");
-                    }
-
                     if ($leaveApplication->leave_type === 'CASUAL') {
+                        $remainingCasual = $leaveCounter->total_casual;
+                        if ($remainingCasual < $days) {
+                            return redirect()->route('sectional_head.dashboard')->with('error', "User only has {$remainingCasual} casual leave days remaining for {$year}.");
+                        }
                         $leaveCounter->total_casual -= $days;
                     } elseif ($leaveApplication->leave_type === 'MEDICAL') {
+                        $remainingMedical = $leaveCounter->total_medical;
+                        if ($remainingMedical < $days) {
+                            return redirect()->route('sectional_head.dashboard')->with('error', "User only has {$remainingMedical} medical leave days remaining for {$year}.");
+                        }
                         $leaveCounter->total_medical -= $days;
                     }
 
@@ -292,4 +249,164 @@ class SectionalController extends Controller
 
         return redirect()->route('sectional_head.dashboard')->with('success', 'Leave application status updated successfully.');
     }
+
+    public function showAssignReliefForm($leaveApplicationId)
+    {
+        $leaveApplication = LeaveApplication::findOrFail($leaveApplicationId);
+        $sectionalHead = Auth::user();
+
+        if ($leaveApplication->user->section !== $sectionalHead->section) {
+            abort(403, 'Unauthorized to assign relief for this leave application.');
+        }
+
+        $startDate = Carbon::parse($leaveApplication->commence_date);
+        $endDate = Carbon::parse($leaveApplication->end_date);
+        $dates = [];
+        for ($date = $startDate; $date->lte($endDate); $date->addDay()) {
+            $dates[] = $date->toDateString();
+        }
+
+        return view('sectional_head.assign_relief', compact('leaveApplication', 'dates'));
+    }
+
+    public function getTeachers(Request $request, $leaveApplicationId)
+    {
+        $leaveApplication = LeaveApplication::findOrFail($leaveApplicationId);
+        $sectionalHead = Auth::user();
+        $selectedDate = $request->query('date');
+
+        if (!$selectedDate) {
+            return response()->json(['error' => 'Date is required'], 400);
+        }
+
+        if ($leaveApplication->user->section !== $sectionalHead->section) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $absentTeachers = User::where('role', 'TEACHER')
+            ->where('section', $sectionalHead->section)
+            ->where('school_id', $sectionalHead->school_id)
+            ->whereHas('leaveApplications', function ($query) use ($selectedDate) {
+                $query->whereHas('latestStatus', function ($q) {
+                    $q->where('status', 'APPROVED');
+                })
+                    ->whereDate('commence_date', '<=', $selectedDate)
+                    ->whereDate('end_date', '>=', $selectedDate);
+            })
+            ->get(['id', 'first_name', 'last_name'])
+            ->map(function ($teacher) {
+                return [
+                    'id' => $teacher->id,
+                    'name' => $teacher->first_name . ' ' . $teacher->last_name,
+                ];
+            });
+
+        $availableTeachers = User::where('role', 'TEACHER')
+            ->where('section', $sectionalHead->section)
+            ->where('school_id', $sectionalHead->school_id)
+            ->whereDoesntHave('leaveApplications', function ($query) use ($selectedDate) {
+                $query->whereHas('latestStatus', function ($q) {
+                    $q->where('status', 'APPROVED');
+                })
+                    ->whereDate('commence_date', '<=', $selectedDate)
+                    ->whereDate('end_date', '>=', $selectedDate);
+            })
+            ->get(['id', 'first_name', 'last_name'])
+            ->map(function ($teacher) {
+                return [
+                    'id' => $teacher->id,
+                    'name' => $teacher->first_name . ' ' . $teacher->last_name,
+                ];
+            });
+
+        return response()->json([
+            'absentTeachers' => $absentTeachers,
+            'availableTeachers' => $availableTeachers,
+        ]);
+    }
+
+    public function storeReliefAssignment(Request $request, $leaveApplicationId)
+    {
+        $leaveApplication = LeaveApplication::findOrFail($leaveApplicationId);
+        $sectionalHead = Auth::user();
+
+        if ($leaveApplication->user->section !== $sectionalHead->section) {
+            abort(403, 'Unauthorized to assign relief for this leave application.');
+        }
+
+        $request->validate([
+            'date' => 'required|date',
+            'absent_teacher_id' => 'required|exists:users,id',
+            'relief_teacher_id' => 'required|exists:users,id',
+            'time_slot' => 'required|string',
+            'class' => 'required|string',
+        ]);
+
+        $absentTeacher = User::findOrFail($request->absent_teacher_id);
+        if ($absentTeacher->section !== $sectionalHead->section || $absentTeacher->role !== 'TEACHER') {
+            return redirect()->back()->with('error', 'Invalid absent teacher selected.');
+        }
+
+        $reliefTeacher = User::findOrFail($request->relief_teacher_id);
+        if ($reliefTeacher->section !== $sectionalHead->section || $reliefTeacher->role !== 'TEACHER') {
+            return redirect()->back()->with('error', 'Invalid relief teacher selected.');
+        }
+
+        $selectedDate = Carbon::parse($request->date);
+        $isAbsent = $absentTeacher->leaveApplications()
+            ->whereHas('latestStatus', function ($q) {
+                $q->where('status', 'APPROVED');
+            })
+            ->whereDate('commence_date', '<=', $selectedDate)
+            ->whereDate('end_date', '>=', $selectedDate)
+            ->exists();
+
+        if (!$isAbsent) {
+            return redirect()->back()->with('error', 'The selected teacher is not on leave on this date.');
+        }
+
+        $isAvailable = !$reliefTeacher->leaveApplications()
+            ->whereHas('latestStatus', function ($q) {
+                $q->where('status', 'APPROVED');
+            })
+            ->whereDate('commence_date', '<=', $selectedDate)
+            ->whereDate('end_date', '>=', $selectedDate)
+            ->exists();
+
+        if (!$isAvailable) {
+            return redirect()->back()->with('error', 'The selected relief teacher is not available on this date.');
+        }
+
+        $reliefAssignment = ReliefAssignment::create([
+            'leave_application_id' => $leaveApplication->id,
+            'absent_teacher_id' => $request->absent_teacher_id,
+            'relief_teacher_id' => $request->relief_teacher_id,
+            'date' => $request->date,
+            'time_slot' => $request->time_slot,
+            'class' => $request->class,
+        ]);
+
+        Notification::create([
+            'user_id' => $reliefTeacher->id,
+            'title' => 'Relief Assignment',
+            'message' => "You have been assigned as a relief teacher for {$absentTeacher->first_name} {$absentTeacher->last_name} on {$request->date} during {$request->time_slot} for class {$request->class}.",
+            'read' => false,
+        ]);
+
+        return redirect()->route('sectional_head.dashboard')->with('success', 'Relief teacher assigned successfully, and notification sent.');
+    }
+
+    public function showNotifications()
+    {
+        $user = Auth::user();
+        $notifications = Notification::where('user_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('sectional_head.notifications', compact('notifications'));
+    }
 }
+
+
+
+
