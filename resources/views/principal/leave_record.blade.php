@@ -10,18 +10,15 @@
 
 <body class="bg-gray-300 flex items-center justify-center min-h-screen">
 <div class="bg-white shadow-lg rounded-lg w-full h-screen flex">
-        <div
-            class="w-1/4 bg-gradient-to-b from-blue-100 to-gray-500 p-6 m-4 rounded-xl shadow-lg flex flex-col items-center">
-            <img src="{{asset('storage/photos/boss.png')}}"
-                class="w-24 h-24 rounded-full border-4 border-white shadow-md mb-4" alt="Profile" />
+        <div class="w-1/4 bg-gradient-to-b from-blue-100 to-gray-500 p-6 m-4 rounded-xl shadow-lg flex flex-col items-center">
+            <img src="{{ asset('storage/photos/boss.png') }}" class="w-24 h-24 rounded-full border-4 border-white shadow-md mb-4" alt="Profile" />
 
             <ul class="space-y-4 w-full">
-                <li
-                    class="w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
+                <li class="w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
                     <a href="{{ url('/principalDashboard') }}" class="flex items-center w-full">
-
-                        <img src="{{asset('storage/photos/dashboard.png')}}" class="w-8 h-8 mr-2" alt="Dashboard" />
-                        Dashboard</a>
+                        <img src="{{ asset('storage/photos/dashboard.png') }}" class="w-8 h-8 mr-2" alt="Dashboard" />
+                        Dashboard
+                    </a>
                 </li>
                 <li class="w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
                     <a href="{{ route('leave.index') }}" class="flex items-center w-full">
@@ -29,22 +26,22 @@
                         Leave Requests
                     </a>
                 </li>
-                <li
-                    class="w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
+                <li class="w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
                     <a href="{{ url('/attendanceReport') }}" class="flex items-center w-full">
-                        <img src="{{asset('storage/photos/immigration.png')}}" class="w-8 h-8 mr-2" alt="Attendance" />
-                        Attendance Report</a>
+                        <img src="{{ asset('storage/photos/immigration.png') }}" class="w-8 h-8 mr-2" alt="Attendance" />
+                        Attendance Report
+                    </a>
                 </li>
-                <li
-                    class="w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
+                <li class="w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
                     <a href="{{ url('/my_attendance') }}" class="flex items-center w-full">
-                        <img src="{{asset('storage/photos/immigration.png')}}" class="w-8 h-8 mr-2" alt="Attendance" />
-                        My Attendance</a>
+                        <img src="{{ asset('storage/photos/immigration.png') }}" class="w-8 h-8 mr-2" alt="Attendance" />
+                        My Attendance
+                    </a>
                 </li>
                 <li class="w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
                     <a href="{{ route('leave.create') }}" class="flex items-center w-full">
-                    <img src="{{ asset('storage/photos/folder.png') }}" class="w-8 h-8 mr-2" alt="Leave Application Status" />
-                    Apply leave
+                        <img src="{{ asset('storage/photos/folder.png') }}" class="w-8 h-8 mr-2" alt="Leave Application Status" />
+                        Apply Leave
                     </a>
                 </li>
                 <li class="w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
@@ -53,23 +50,23 @@
                         Leave Application Status
                     </a>
                 </li>
-                <li
-                    class="w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
+                <li class="w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
                     <a href="{{ url('/viewUsers') }}" class="flex items-center w-full">
-                        <img src="{{asset('storage/photos/classroom.png')}}" class="w-8 h-8 mr-2" alt="View Users" />
-                        View Users</a>
+                        <img src="{{ asset('storage/photos/classroom.png') }}" class="w-8 h-8 mr-2" alt="View Users" />
+                        View Users
+                    </a>
                 </li>
-                <li
-                    class="w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
+                <li class="w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
                     <a href="{{ route('leave.record') }}" class="flex items-center w-full">
-                        <img src="{{asset('storage/photos/classroom.png')}}" class="w-8 h-8 mr-2" alt="View Users" />
-                        Leave Records</a>
+                        <img src="{{ asset('storage/photos/classroom.png') }}" class="w-8 h-8 mr-2" alt="View Users" />
+                        Leave Records
+                    </a>
                 </li>
-                <li
-                    class="mt-12 w-48 py-2 flex items-center text-red-500 font-bold hover:text-red-700 cursor-pointer hover:bg-gray-300 rounded-lg p-2 mx-auto">
+                <li class="mt-12 w-48 py-2 flex items-center text-red-500 font-bold hover:text-red-700 cursor-pointer hover:bg-gray-300 rounded-lg p-2 mx-auto">
                     <a href="{{ url('/logout') }}" class="flex items-center w-full">
-                        <img src="{{asset('storage/photos/logout.png')}}" class="w-8 h-8 mr-2" alt="Logout" />
-                        Logout</a>
+                        <img src="{{ asset('storage/photos/logout.png') }}" class="w-8 h-8 mr-2" alt="Logout" />
+                        Logout
+                    </a>
                 </li>
             </ul>
         </div>
@@ -77,7 +74,7 @@
         <!-- Main Content -->
         <div class="w-3/4 p-8 relative">
             <div class="absolute top-6 right-6 flex items-center space-x-3">
-                <img src="{{ asset('storage/' . Auth::user()->profile_picture) }}" class="h-10 w-10 rounded-full border border-gray-400" />
+                <img src="{{ asset('storage/' . Auth::user()->profile_picture) }}" class="h-10 w-10 rounded-full border border-gray-400" alt="Profile" />
                 <div>
                     <a href="{{ url('/show') }}">
                         <h3 class="font-semibold">{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</h3>
@@ -144,17 +141,44 @@
                                     <td class="p-3">{{ $leave->leave_type }}</td>
                                     <td class="p-3">{{ $leave->reason ?? 'N/A' }}</td>
                                     <td class="p-3">
-                                        @if ($leave->attachment_url_1)
-                                            <a href="{{ asset('storage/' . $leave->attachment_url_1) }}" class="text-blue-500 hover:underline" target="_blank">File 1</a>
-                                        @endif
-                                        @if ($leave->attachment_url_2)
-                                            <a href="{{ asset('storage/' . $leave->attachment_url_2) }}" class="text-blue-500 hover:underline" target="_blank">File 2</a>
-                                        @endif
-                                        @if ($leave->attachment_url_3)
-                                            <a href="{{ asset('storage/' . $leave->attachment_url_3) }}" class="text-blue-500 hover:underline" target="_blank">File 3</a>
-                                        @endif
-                                        @if (!$leave->attachment_url_1 && !$leave->attachment_url_2 && !$leave->attachment_url_3)
-                                            None
+                                        @php
+                                            $hasAttachments = $leave->has_attachment_1 || $leave->has_attachment_2 || $leave->has_attachment_3;
+                                        @endphp
+                                        @if ($hasAttachments)
+                                            <div class="space-y-2">
+                                                @if ($leave->has_attachment_1)
+                                                    @php
+                                                        $extension = pathinfo($leave->attachment_url_1, PATHINFO_EXTENSION);
+                                                        $icon = $extension === 'pdf' ? 'https://cdn-icons-png.flaticon.com/512/337/337946.png' : 'https://cdn-icons-png.flaticon.com/512/337/337949.png';
+                                                    @endphp
+                                                    <a href="{{ route('leave.attachment', [$leave->id, 1]) }}" target="_blank" class="flex items-center text-blue-600 hover:text-blue-800 hover:underline">
+                                                        <img src="{{ $icon }}" class="w-4 h-4 mr-1" alt="{{ $extension }} icon">
+                                                        Attachment 1 ({{ strtoupper($extension) }})
+                                                    </a>
+                                                @endif
+                                                @if ($leave->has_attachment_2)
+                                                    @php
+                                                        $extension = pathinfo($leave->attachment_url_2, PATHINFO_EXTENSION);
+                                                        $icon = $extension === 'pdf' ? 'https://cdn-icons-png.flaticon.com/512/337/337946.png' : 'https://cdn-icons-png.flaticon.com/512/337/337949.png';
+                                                    @endphp
+                                                    <a href="{{ route('leave.attachment', [$leave->id, 2]) }}" target="_blank" class="flex items-center text-blue-600 hover:text-blue-800 hover:underline">
+                                                        <img src="{{ $icon }}" class="w-4 h-4 mr-1" alt="{{ $extension }} icon">
+                                                        Attachment 2 ({{ strtoupper($extension) }})
+                                                    </a>
+                                                @endif
+                                                @if ($leave->has_attachment_3)
+                                                    @php
+                                                        $extension = pathinfo($leave->attachment_url_3, PATHINFO_EXTENSION);
+                                                        $icon = $extension === 'pdf' ? 'https://cdn-icons-png.flaticon.com/512/337/337946.png' : 'https://cdn-icons-png.flaticon.com/512/337/337949.png';
+                                                    @endphp
+                                                    <a href="{{ route('leave.attachment', [$leave->id, 3]) }}" target="_blank" class="flex items-center text-blue-600 hover:text-blue-800 hover:underline">
+                                                        <img src="{{ $icon }}" class="w-4 h-4 mr-1" alt="{{ $extension }} icon">
+                                                        Attachment 3 ({{ strtoupper($extension) }})
+                                                    </a>
+                                                @endif
+                                            </div>
+                                        @else
+                                            <span class="text-gray-500">No attachments</span>
                                         @endif
                                     </td>
                                     <td class="p-3">{{ $leave->latestStatus->updated_at->format('Y-m-d H:i:s') }}</td>

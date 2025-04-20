@@ -46,6 +46,11 @@ return [
             'throw' => false,
             'report' => false,
         ],
+        'private_leave_attachments' => [
+        'driver' => 'local',
+        'root' => app_path('private/leave_attachments'),
+        'visibility' => 'private',
+    ],
 
         's3' => [
             'driver' => 's3',

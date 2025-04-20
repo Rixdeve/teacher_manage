@@ -27,7 +27,7 @@
                     <th class="p-2 border">First Name</th>
                     <th class="p-2 border">Last Name</th>
                     <th class="p-2 border">Role</th>
-                    <th class="p-2 border">School Index</th>
+                    <th class="p-2 border">Subjects</th>
                 </tr>
             </thead>
             <tbody>
@@ -36,7 +36,16 @@
                     <td class="p-2 border">{{ $user->first_name }}</td>
                     <td class="p-2 border">{{ $user->last_name }}</td>
                     <td class="p-2 border">{{ ucfirst(strtolower($user->role)) }}</td>
-                    <td class="p-2 border">{{ $user->school_index }}</td>
+                    <td class="p-2 border">
+                        @if(is_array($user->subjects))
+                        @foreach($user->subjects as $subject)
+                        <span class="block">{{ $subject }}</span>
+                        @endforeach
+                        @else
+                        <span class="text-gray-500 italic">No subjects</span>
+                        @endif
+                    </td>
+
                 </tr>
                 @empty
                 <tr>

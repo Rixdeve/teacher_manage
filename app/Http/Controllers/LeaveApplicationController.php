@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Http\Controllers;
 
 use App\Models\LeaveApplication;
@@ -9,8 +8,8 @@ use App\Models\LeaveCounter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage; 
 use Carbon\Carbon;
-
 
 class LeaveApplicationController extends Controller
 {
@@ -19,57 +18,20 @@ class LeaveApplicationController extends Controller
         $this->middleware('auth');
     }
 
-<<<<<<< HEAD
-   
-//     public function create()
-// {
-//     $year = now()->year;
-//     $leaveCounter = LeaveCounter::getOrCreateForUser(Auth::id(), $year);
-//     $user = Auth::user();
-
-//     return view('Teacher.leave_Application', compact('leaveCounter'));
-// }
-public function create()
-{
-    $year = now()->year;
-    $leaveCounter = LeaveCounter::getOrCreateForUser(Auth::id(), $year);
-    $user = Auth::user();
-
-    if ($user->role === 'PRINCIPAL') {
-        return view('Principal.leaveform', compact('leaveCounter'));
-    } elseif ($user->role === 'SECTION_HEAD') {
-        return view('Sectional_head.leave_applications', compact('leaveCounter'));
-    } else {
-        return view('Teacher.leave_application', compact('leaveCounter'));
-    }
-}
-=======
-
     public function create()
     {
         $year = now()->year;
         $leaveCounter = LeaveCounter::getOrCreateForUser(Auth::id(), $year);
         $user = Auth::user();
 
-        return view('Teacher.leave_Application', compact('leaveCounter'));
+        if ($user->role === 'PRINCIPAL') {
+            return view('Principal.leaveform', compact('leaveCounter'));
+        } elseif ($user->role === 'SECTION_HEAD') {
+            return view('Sectional_head.leave_applications', compact('leaveCounter'));
+        } else {
+            return view('Teacher.leave_application', compact('leaveCounter'));
+        }
     }
-    // public function create()
-    // {
-    //     $year = now()->year;
-    //     $leaveCounter = LeaveCounter::getOrCreateForUser(Auth::id(), $year);
-    //     $user = Auth::user();
-
-
-    //     if ($user->role === 'PRINCIPAL') {
-    //         return view('Principal.leave_applications', compact('leaveCounter'));
-    //     } elseif ($user->role === 'SECTION_HEAD') {
-    //         return view('Sectional_head.leave_applications', compact('leaveCounter'));
-    //     } else {
-    //         return view('Teacher.leave_application', compact('leaveCounter'));
-    //     }
-    // }
->>>>>>> ba4747db7f49855389567d35ee2770f0fb2c75bc
-
 
     public function store(Request $request)
     {
@@ -126,14 +88,15 @@ public function create()
 
         $leaveApplication->reason = $request->reason;
 
+        // Store files in the private_leave_attachments disk
         if ($request->hasFile('attachment_url_1')) {
-            $leaveApplication->attachment_url_1 = $request->file('attachment_url_1')->store('leave_attachments');
+            $leaveApplication->attachment_url_1 = $request->file('attachment_url_1')->store('', 'private_leave_attachments');
         }
         if ($request->hasFile('attachment_url_2')) {
-            $leaveApplication->attachment_url_2 = $request->file('attachment_url_2')->store('leave_attachments');
+            $leaveApplication->attachment_url_2 = $request->file('attachment_url_2')->store('', 'private_leave_attachments');
         }
         if ($request->hasFile('attachment_url_3')) {
-            $leaveApplication->attachment_url_3 = $request->file('attachment_url_3')->store('leave_attachments');
+            $leaveApplication->attachment_url_3 = $request->file('attachment_url_3')->store('', 'private_leave_attachments');
         }
 
         $leaveApplication->save();
@@ -147,28 +110,27 @@ public function create()
         return redirect()->route('leave.create')->with('success', 'Leave application submitted successfully.');
     }
 
-    // public function index()
-    // {
-    //     $applications = LeaveApplication::with(['user', 'latestStatus'])
-    //         ->whereHas('latestStatus', function ($query) {
-    //             $query->where('status', 'PENDING');
-    //         })
-    //         ->get();
-
-    //     return view('Principal.leave_applications', compact('applications'));
-    // }
     public function index()
     {
+        if (Auth::user()->role !== 'PRINCIPAL') {
+            abort(403, 'Unauthorized access.');
+        }
+
         $applications = LeaveApplication::with(['user', 'latestStatus'])
             ->whereHas('latestStatus', function ($query) {
                 $query->where('status', 'PENDING');
             })
-            ->get();
+            ->get()
+            ->map(function ($application) {
+                // Check if each attachment exists
+                $application->has_attachment_1 = $application->attachment_url_1 && Storage::disk('private_leave_attachments')->exists($application->attachment_url_1);
+                $application->has_attachment_2 = $application->attachment_url_2 && Storage::disk('private_leave_attachments')->exists($application->attachment_url_2);
+                $application->has_attachment_3 = $application->attachment_url_3 && Storage::disk('private_leave_attachments')->exists($application->attachment_url_3);
+                return $application;
+            });
 
         return view('Principal.leave_applications', compact('applications'));
     }
-
-
 
     public function updateStatus(Request $request, $leaveId)
     {
@@ -231,7 +193,6 @@ public function create()
         return redirect()->route('leave.index')->with('success', 'Leave application status updated successfully.');
     }
 
-
     public function history()
     {
         $pastApplications = LeaveApplication::where('user_id', Auth::id())
@@ -242,26 +203,73 @@ public function create()
         return view('Teacher.LeaveStatus', compact('pastApplications'));
     }
 
+    // public function record()
+    // {
+    //     if (Auth::user()->role !== 'PRINCIPAL') {
+    //         return redirect()->back()->with('error', 'Unauthorized access.');
+    //     }
 
+    //     $schoolId = Auth::user()->school_id;
 
+    //     $approvedLeaves = LeaveApplication::whereHas('latestStatus', function ($query) {
+    //         $query->where('status', 'APPROVED');
+    //     })
+    //         ->whereHas('user', function ($query) use ($schoolId) {
+    //             $query->where('school_id', $schoolId);
+    //         })
+    //         ->with(['user', 'latestStatus'])
+    //         ->orderBy('updated_at', 'desc')
+    //         ->paginate(5);
+
+    //     return view('Principal.leave_record', compact('approvedLeaves'));
+    // }
     public function record()
+{
+    if (Auth::user()->role !== 'PRINCIPAL') {
+        return redirect()->back()->with('error', 'Unauthorized access.');
+    }
+
+    $schoolId = Auth::user()->school_id;
+
+    $approvedLeaves = LeaveApplication::whereHas('latestStatus', function ($query) {
+        $query->where('status', 'APPROVED');
+    })
+        ->whereHas('user', function ($query) use ($schoolId) {
+            $query->where('school_id', $schoolId);
+        })
+        ->with(['user', 'latestStatus'])
+        ->orderBy('updated_at', 'desc')
+        ->paginate(5)
+        ->through(function ($leave) {
+          
+            $leave->has_attachment_1 = $leave->attachment_url_1 && Storage::disk('private_leave_attachments')->exists($leave->attachment_url_1);
+            $leave->has_attachment_2 = $leave->attachment_url_2 && Storage::disk('private_leave_attachments')->exists($leave->attachment_url_2);
+            $leave->has_attachment_3 = $leave->attachment_url_3 && Storage::disk('private_leave_attachments')->exists($leave->attachment_url_3);
+            return $leave;
+        });
+
+    return view('Principal.leave_record', compact('approvedLeaves'));
+}
+
+    public function serveAttachment($id, $index)
     {
         if (Auth::user()->role !== 'PRINCIPAL') {
-            return redirect()->back()->with('error', 'Unauthorized access.');
+            abort(403, 'Unauthorized access.');
         }
 
-        $schoolId = Auth::user()->school_id;
+        $application = LeaveApplication::findOrFail($id);
+        $attachmentField = 'attachment_url_' . $index;
 
-        $approvedLeaves = LeaveApplication::whereHas('latestStatus', function ($query) {
-            $query->where('status', 'APPROVED');
-        })
-            ->whereHas('user', function ($query) use ($schoolId) {
-                $query->where('school_id', $schoolId);
-            })
-            ->with(['user', 'latestStatus'])
-            ->orderBy('updated_at', 'desc')
-            ->paginate(5);
+        if (!$application->$attachmentField || !Storage::disk('private_leave_attachments')->exists($application->$attachmentField)) {
+            abort(404, 'Attachment not found.');
+        }
 
-        return view('Principal.leave_record', compact('approvedLeaves'));
+        $filePath = Storage::disk('private_leave_attachments')->path($application->$attachmentField);
+        $mimeType = Storage::disk('private_leave_attachments')->mimeType($application->$attachmentField);
+
+        return response()->file($filePath, [
+            'Content-Type' => $mimeType,
+        ]);
     }
+
 }

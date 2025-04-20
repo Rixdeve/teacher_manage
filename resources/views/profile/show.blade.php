@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>User Profile</title>
+    <title>My Profile</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
@@ -40,7 +40,7 @@
                         </p>
                         <a href="{{ route('password.change') }}"
                             class="bg-gray-500 text-white py-1 px-4 rounded-md text-sm hover:bg-gray-600">
-                            Edit password
+                            Update password
                         </a>
                     </div>
                 </div>
@@ -49,10 +49,10 @@
             <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-xl font-semibold text-gray-800">User Details</h2>
-                    <a href="{{ route('profile.edit') }}"
+                    <!-- <a href="{{ route('profile.edit') }}"
                         class="bg-gray-500 text-white py-1 px-4 rounded-md text-sm hover:bg-gray-600">
                         Edit Details
-                    </a>
+                    </a> -->
                 </div>
                 <div class="space-y-3">
                     <p class="text-lg text-gray-700">Name: <span class="text-gray-600">{{ Auth::user()->first_name }}
@@ -74,6 +74,8 @@
                             class="text-gray-600">{{ Auth::user()->school_index }}</span></p>
                     <p class="text-lg text-gray-700">Role: <span
                             class="text-gray-600">{{ ucfirst(strtolower(Auth::user()->role)) }}</span></p>
+                    <p class="text-lg text-gray-700">Section: <span
+                            class="text-gray-600">{{ Auth::user()->section }}</span></p>
                     @if (!empty($user->subjects) && is_array($user->subjects))
                     <p class="text-lg text-gray-700 mb-2 font-medium">Subjects:</p>
                     <div class="flex flex-wrap gap-2 mb-4">

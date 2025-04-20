@@ -200,7 +200,7 @@
                                             <option value="6-7">6-7</option>
                                             <option value="8-9">8-9</option>
                                             <option value="10-11">10-11</option>
-                                            <option value="12-12">12-13</option>
+                                            <option value="12-13">12-13</option>
                                         </optgroup>
                                     </select>
                                 </div>
