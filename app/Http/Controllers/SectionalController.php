@@ -150,13 +150,13 @@ class SectionalController extends Controller
     {
         $sectionalHead = Auth::user();
         $schoolId = $sectionalHead->school_id;
-        $section = $sectionalHead->section;
+        $section = trim(strtolower($sectionalHead->section));
         $today = now()->toDateString();
         $this->markApprovedLeaveAsAbsent();
 
         $absentees = \App\Models\User::where('school_id', $schoolId)
 
-            ->where('section', $section)
+            ->whereRaw("TRIM(LOWER(section)) = ?", [$section])
             ->whereIn('role', ['TEACHER'])
 
             ->whereDoesntHave('attendances', function ($query) use ($today) {

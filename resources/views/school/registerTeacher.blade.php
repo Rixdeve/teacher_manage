@@ -245,7 +245,7 @@
                                     Sinhala (First Language)</label><br>
                                 <label><input type="checkbox" name="subjects[]" value="Sinhala (First Language)"
                                         class="mr-2">
-                                    Sinhala (First Language)</label><br>
+                                    Tamil (First Language)</label><br>
                                 <label><input type="checkbox" name="subjects[]" value="English Language" class="mr-2">
                                     English Language</label><br>
                                 <label><input type="checkbox" name="subjects[]" value="Mathematics" class="mr-2">
