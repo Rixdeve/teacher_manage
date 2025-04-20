@@ -153,4 +153,58 @@ class AttendanceController
 
         return view('attendance.my_attendance', compact('attendances'));
     }
+
+    public function markAbsentAfter131()
+    {
+        $now = now();
+
+        // Only trigger after 1:31 PM
+        if ($now->format('H:i') < '13:31') {
+            return;
+        }
+
+        $today = $now->toDateString();
+
+
+        $pendingUsers = Attendance::where('date', $today)
+            ->where('status', 'PENDING')
+            ->whereNull('check_in_time')
+            ->get();
+
+        foreach ($pendingUsers as $attendance) {
+            $attendance->status = 'ABSENT';
+            $attendance->method = 'MANUAL';
+            $attendance->save();
+        }
+    }
+
+    public function markEveryonePendingAt729()
+    {
+        $now = now();
+
+        // Only trigger at or before 7:29 AM
+        if ($now->format('H:i') > '07:29') {
+            return;
+        }
+
+        $today = $now->toDateString();
+
+        // Get all TEACHER/PRINCIPAL/SECTIONAL_HEAD users
+        $users = User::whereIn('role', ['TEACHER', 'PRINCIPAL', 'SECTIONAL_HEAD'])->get();
+
+        foreach ($users as $user) {
+            Attendance::updateOrCreate(
+                [
+                    'user_id' => $user->id,
+                    'date' => $today,
+                ],
+                [
+                    'status' => 'PENDING',
+                    'method' => 'MANUAL',
+                    'check_in_time' => null,
+                    'check_out_time' => null,
+                ]
+            );
+        }
+    }
 }

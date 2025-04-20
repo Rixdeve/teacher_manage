@@ -14,6 +14,7 @@ use App\Http\Controllers\SectionalController;
 use App\Models\Attendance;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ZonalController;
+use Illuminate\Support\Facades\Artisan;
 
 
 
@@ -222,6 +223,10 @@ Route::get('/leave/history', [LeaveApplicationController::class, 'history'])->na
 
 Route::get('/leave/record', [LeaveApplicationController::class, 'record'])->name('leave.record')->middleware('auth');
 
+Route::get('/run-schedule', function () {
+    Artisan::call('schedule:run');
+    return 'Schedule executed';
+});
 
 
 //sec

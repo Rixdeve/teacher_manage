@@ -653,7 +653,7 @@ class PrincipalController extends Controller
         $today = now()->toDateString();
         $this->markApprovedLeaveAsAbsent();
 
-        $absentees = User::whereIn('role', ['TEACHER', 'PRINCIPAL', 'SECTIONAL_HEAD'])
+        $absentees = User::whereIn('role', ['TEACHER', 'SECTIONAL_HEAD'])
             ->where('school_id', $schoolId)
             ->whereDoesntHave('attendances', function ($query) use ($today) {
                 $query->where('date', $today)
@@ -701,7 +701,7 @@ class PrincipalController extends Controller
             ->where('status', 'PRESENT')
             ->whereHas('user', function ($query) use ($schoolId) {
                 $query->where('school_id', $schoolId)
-                    ->whereIn('role', ['TEACHER', 'PRINCIPAL', 'SECTIONAL_HEAD']);
+                    ->whereIn('role', ['TEACHER', 'SECTIONAL_HEAD']);
             })
             ->get();
 
