@@ -66,10 +66,16 @@
                             {{ Auth::user()->user_address_city }}
                         </span>
                     </p>
-
+                    <p class="text-lg text-gray-700">Contact Number: <span
+                            class="text-gray-600">{{ Auth::user()->user_phone }}</span></p>
+                    <p class="text-lg text-gray-700">Email: <span
+                            class="text-gray-600">{{ Auth::user()->user_email }}</span></p>
+                    <!-- <p class="text-lg text-gray-700">School Name: <span
+                            class="text-gray-600">{{ Auth::user()->school_id }}</span></p> -->
 
                     <p class="text-lg text-gray-700">NIC: <span
                             class="text-gray-600">{{ Auth::user()->user_nic }}</span></p>
+
                     <p class="text-lg text-gray-700">School Index: <span
                             class="text-gray-600">{{ Auth::user()->school_index }}</span></p>
                     <p class="text-lg text-gray-700">Role: <span

@@ -96,9 +96,10 @@
                 <table class="w-full table-auto border-collapse border border-gray-300">
                     <thead class="bg-gray-200">
                         <tr>
+                            <th class="p-2 border border-gray-300">Photo</th>
                             <th class="p-2 border border-gray-300">First Name</th>
                             <th class="p-2 border border-gray-300">Last Name</th>
-                            <th class="p-2 border border-gray-300">School Index</th>
+                            <th class="p-2 border border-gray-300">Section</th>
                             <th class="p-2 border border-gray-300">Subjects</th>
 
                         </tr>
@@ -106,10 +107,22 @@
                     <tbody>
                         @forelse($attendances as $record)
                         <tr>
+                            <td class="p-2 border ">
+                                <img src="{{ asset('storage/' . $record->user->profile_picture) }}" alt="Profile"
+                                    class="w-14 h-14 self-center rounded-full border border-gray-400" />
+                            </td>
                             <td class="p-2 border ">{{ $record->user->first_name }}</td>
                             <td class="p-2 border ">{{ $record->user->last_name }}</td>
+                            <td class="p-2 border ">{{ $record->user->section }}</td>
                             <td class="p-2 border">{{ $record->user->school_index }}</td>
-                            <td class="p-2 border"></td>
+                            <td class="p-2 border">
+                                @if(is_array($record->user->subjects))
+                                @foreach($record->user->subjects as $subject)
+                                <span class="block">{{ $subject }}</span>
+                                @endforeach
+                                @else
+                                <span class="text-gray-500 italic">No subjects</span>
+                                @endif
 
                         </tr>
                         @empty
