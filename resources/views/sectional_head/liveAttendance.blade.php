@@ -100,7 +100,6 @@
                         <th class="p-2 border border-gray-300">Photo</th>
                         <th class="p-2 border border-gray-300">First Name</th>
                         <th class="p-2 border border-gray-300">Last Name</th>
-                        <th class="p-2 border border-gray-300">School Index</th>
                         <th class="p-2 border border-gray-300">Subjects</th>
 
                     </tr>
@@ -114,14 +113,15 @@
                         </td>
                         <td class="p-2 border ">{{ $record->user->first_name }}</td>
                         <td class="p-2 border ">{{ $record->user->last_name }}</td>
-                        <td class="p-2 border">{{ $record->user->school_index }}</td>
-                        <td class="p-2 border">{{ $record->user->section }}</td>
+
                         <td class="p-2 border">
+                            @if(is_array($record->user->subjects))
                             @foreach($record->user->subjects as $subject)
-                            <span class="bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full">
-                                {{ $subject->subject_name }}
-                            </span>
+                            <span class="block">{{ $subject }}</span>
                             @endforeach
+                            @else
+                            <span class="text-gray-500 italic">No subjects</span>
+                            @endif
                         </td>
                         <td class="p-2 border"></td>
 

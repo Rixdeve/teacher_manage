@@ -24,18 +24,21 @@
         <table class="w-full table-auto border border-gray-300">
             <thead class="bg-red-100 text-red-700">
                 <tr>
+                    <th class="p-2 border">Photo</th>
                     <th class="p-2 border">First Name</th>
                     <th class="p-2 border">Last Name</th>
-                    <th class="p-2 border">Role</th>
                     <th class="p-2 border">Subjects</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($absentees as $user)
                 <tr class="">
+                    <td class="p-2 border ">
+                        <img src="{{ asset('storage/' . $user->profile_picture) }}" alt="Profile"
+                            class="w-14 h-14 self-center rounded-full border border-gray-400" />
+                    </td>
                     <td class="p-2 border">{{ $user->first_name }}</td>
                     <td class="p-2 border">{{ $user->last_name }}</td>
-                    <td class="p-2 border">{{ ucfirst(strtolower($user->role)) }}</td>
                     <td class="p-2 border">
                         @if(is_array($user->subjects))
                         @foreach($user->subjects as $subject)

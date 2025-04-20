@@ -9,8 +9,10 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Carbon\Carbon;
 use App\Models\Attendance;
 use App\Models\School;
+use App\Models\LeaveApplication;
 
 // use function Laravel\Prompts\alert;
 
@@ -115,6 +117,7 @@ class ClerkController extends Controller
     {
         $schoolId = Auth::user()->school_id;
         $today = now()->toDateString();
+        $this->markApprovedLeaveAsAbsent();
 
         $absentees = \App\Models\User::whereIn('role', ['TEACHER', 'PRINCIPAL', 'SECTIONAL_HEAD'])
             ->where('school_id', $schoolId)
@@ -126,7 +129,32 @@ class ClerkController extends Controller
 
         return view('clerk.absenteesclerk', compact('absentees')); // Or clerk.absentees
     }
+    public function markApprovedLeaveAsAbsent()
+    {
+        $today = Carbon::today()->toDateString();
 
+        $leaveApplications = LeaveApplication::whereHas('latestStatus', function ($query) {
+            $query->where('status', 'APPROVED');
+        })
+            ->whereDate('commence_date', '<=', $today)
+            ->whereDate('end_date', '>=', $today)
+            ->get();
+
+        foreach ($leaveApplications as $application) {
+            Attendance::updateOrCreate(
+                [
+                    'user_id' => $application->user_id,
+                    'date' => $today,
+                ],
+                [
+                    'status' => 'ABSENT',
+                    'method' => 'MANUAL',
+                    'check_in_time' => null,
+                    'check_out_time' => null,
+                ]
+            );
+        }
+    }
     public function liveAttendanceView()
     {
         $clerk = Auth::user();

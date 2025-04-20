@@ -8,6 +8,8 @@ use Illuminate\Database\QueryException;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\LeaveApplication;
+
 
 
 
@@ -110,6 +112,36 @@ class AttendanceController
 
         return redirect()->back()->with('success', 'Attendance updated successfully.');
     }
+
+
+    public function markApprovedLeaveAsAbsent()
+    {
+        $today = Carbon::today()->toDateString();
+
+        // Get users who are on approved leave today
+        $leaveApplications = LeaveApplication::whereHas('latestStatus', function ($query) {
+            $query->where('status', 'APPROVED');
+        })
+            ->whereDate('commence_date', '<=', $today)
+            ->whereDate('end_date', '>=', $today)
+            ->get();
+
+        foreach ($leaveApplications as $application) {
+            Attendance::updateOrCreate(
+                [
+                    'user_id' => $application->user_id,
+                    'date' => $today,
+                ],
+                [
+                    'status' => 'ABSENT',
+                    'method' => 'MANUAL', // or 'LEAVE' if you extend the enum
+                    'check_in_time' => null,
+                    'check_out_time' => null,
+                ]
+            );
+        }
+    }
+
 
     public function myAttendance()
     {

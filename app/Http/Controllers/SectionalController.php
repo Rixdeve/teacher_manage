@@ -406,3 +406,7 @@ class SectionalController extends Controller
         return view('sectional_head.notifications', compact('notifications'));
     }
 }
+
+
+
+
