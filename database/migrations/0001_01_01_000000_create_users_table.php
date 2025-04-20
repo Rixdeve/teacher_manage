@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('qr_code')->nullable()->unique();
             $table->string('first_name');
             $table->string('last_name');
+            $table->string('section')->nullable();
+            $table->text('subjects')->nullable();
             $table->string('user_email')->unique();
             $table->enum('role', ['CLERK', 'PRINCIPAL', 'ZONAL', 'TEACHER', 'SECTIONAL_HEAD', 'ZONAL_ADMIN'])->default('TEACHER');
             $table->timestamp('email_verified_at')->nullable();

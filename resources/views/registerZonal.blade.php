@@ -9,6 +9,16 @@
 </head>
 
 <body class="flex items-center justify-center min-h-screen m-0">
+    @if($errors->any())
+    <div class="bg-red-100 text-red-800 p-2 rounded mb-4">
+        <ul>
+            @foreach($errors->all() as $error)
+            <li>- {{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
+
     <form action="{{ route('zone.store') }}" method="POST" class="bg-white w-full max-w-4xl p-8">
         @csrf
 

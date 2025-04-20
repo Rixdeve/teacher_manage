@@ -16,7 +16,7 @@ class ProfileController extends Controller
     public function show()
     {
         $user = Auth::user();
-        return view('profile.show');
+        return view('profile.show', compact('user'));
     }
     public function changePassword()
     {

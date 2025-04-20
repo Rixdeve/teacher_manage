@@ -24,10 +24,13 @@ class TeacherController extends Controller
     {
         // dd($request->all());
         $schoolId = session('school_id');
+        $selectedSubjects = $request->input('subjects');
+
 
         $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
+            'section' => 'required|string|max:255',
             'school_index' => 'required|numeric',
             'user_address_no' => 'required|string',
             'user_address_street' => 'required|string',
@@ -36,21 +39,23 @@ class TeacherController extends Controller
             'user_dob' => 'required|date',
             'user_email' => 'required|email|unique:users,user_email',
             'user_phone' => 'required|numeric|digits:10|unique:users,user_phone',
-            'profile_picture' => 'required|image|mimes:jpg,png,jpeg|max:2048', 
+            'profile_picture' => 'required|image|mimes:jpg,png,jpeg|max:2048',
             'status' => 'required',
         ]);
         if ($request->hasFile('profile_picture')) {
             $imagePath = $request->file('profile_picture')->store('profile_pictures', 'public');
         } else {
-            $imagePath = null; 
+            $imagePath = null;
         }
         try {
             User::create([
-                'school_id' => 100,
+                'school_id' => $schoolId,
                 'role' => 'TEACHER',
                 'user_password' => Hash::make('Teacher@123'),
                 'first_name' => $request->first_name,
                 'last_name' => $request->last_name,
+                'section' => $request->section,
+                'subjects' => json_encode($selectedSubjects),
                 'school_index' => $request->school_index,
                 'user_address_no' => $request->user_address_no,
                 'user_address_street' => $request->user_address_street,

@@ -115,6 +115,14 @@
                         <td class="p-2 border ">{{ $record->user->first_name }}</td>
                         <td class="p-2 border ">{{ $record->user->last_name }}</td>
                         <td class="p-2 border">{{ $record->user->school_index }}</td>
+                        <td class="p-2 border">{{ $record->user->section }}</td>
+                        <td class="p-2 border">
+                            @foreach($record->user->subjects as $subject)
+                            <span class="bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full">
+                                {{ $subject->subject_name }}
+                            </span>
+                            @endforeach
+                        </td>
                         <td class="p-2 border"></td>
 
                     </tr>

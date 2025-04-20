@@ -127,8 +127,10 @@ Route::post('/registerZonal', [ZonalController::class, 'store'])->name('zone.sto
 Route::get('/principalDashboard', fn() => view('principal.principalDashboard'));
 Route::get('/teacherDashboard', fn() => view('teacher.teacherDashboard'));
 Route::get('/clerkDashboard', fn() => view('clerk.clerkDashboard'));
-Route::get('/schoolDashboard', fn() => view('school.schoolDashboard'));
+// Route::get('/schoolDashboard', fn() => view('school.schoolDashboard'));
 Route::get('/zonalDashboard', fn() => view('zonal.zonalDashboard'));
+Route::get('/schoolDashboard', [SchoolController::class, 'schoolDashboard'])->name('school.dashboard');
+
 Route::get('/sectionheadDashboard', fn() => view('sectional_head.sectionheadDashboard'));
 
 
@@ -241,7 +243,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/leave/history', [LeaveApplicationController::class, 'history'])->name('leave.history');
     Route::get('/leave/record', [LeaveApplicationController::class, 'record'])->name('leave.record');
 });
+<<<<<<< HEAD
 
 
 Route::get('/leave/create', [LeaveApplicationController::class, 'create'])->name('leave.create');
 Route::post('/leave/store', [LeaveApplicationController::class, 'store'])->name('leave.store');
+=======
+>>>>>>> ba4747db7f49855389567d35ee2770f0fb2c75bc

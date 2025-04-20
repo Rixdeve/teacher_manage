@@ -46,6 +46,13 @@ if (!session()->has('school_id')) {
                             src="{{asset('storage/photos/classroom.png')}}" class="w-8 h-8 mr-2" alt="Assign Teacher" />
                         Assign Teacher</a>
                 </li>
+                <li
+                    class="w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
+                    <a href="{{ url('/registerSectionhead') }}" class="flex items-center w-full"> <img
+                            src="{{asset('storage/photos/teachernew.png')}}" class="w-8 h-8 mr-2"
+                            alt="Assign Section" />
+                        Assign Sectional Head</a>
+                </li>
 
                 <li
                     class="mt-12 w-48 py-2 flex items-center text-red-500 font-bold hover:text-red-700 cursor-pointer hover:bg-gray-300 rounded-lg p-2 mx-auto">
@@ -93,10 +100,11 @@ if (!session()->has('school_id')) {
                     class="bg-blue-100 p-6 rounded-lg text-center shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105">
                     <div class="flex flex-col items-center justify-center">
                         <p class="text-gray-700 font-semibold text-lg mb-2">View Users</p>
-                        <h3 class="text-4xl font-bold text-gray-900 mb-4">0</h3>
+                        <h3 class="text-4xl font-bold text-gray-900 mb-4">{{ $userCount }}</h3>
                         <p class="text-gray-500 text-sm">Total users currently in the system</p>
                     </div>
                 </div>
+
             </div>
 
         </div>
