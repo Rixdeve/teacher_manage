@@ -129,7 +129,7 @@ class SectionalController extends Controller
     {
         $sectionalHead = Auth::user();
         $schoolId = $sectionalHead->school_id;
-        $section = $sectionalHead->section;
+        $section = trim(strtolower($sectionalHead->section));
         $today = now()->toDateString();
 
         $attendances = Attendance::with('user')
@@ -137,7 +137,7 @@ class SectionalController extends Controller
             ->where('status', 'PRESENT')
             ->whereHas('user', function ($query) use ($schoolId, $section) {
                 $query->where('school_id', $schoolId)
-                    ->where('section', '=', (string) $section)
+                    ->whereRaw("TRIM(LOWER(section)) = ?", [$section])
                     ->whereIn('role', ['TEACHER']);
             })
             ->get();
