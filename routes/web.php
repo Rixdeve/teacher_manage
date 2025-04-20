@@ -241,3 +241,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/leave/history', [LeaveApplicationController::class, 'history'])->name('leave.history');
     Route::get('/leave/record', [LeaveApplicationController::class, 'record'])->name('leave.record');
 });
+
+
+Route::get('/leave/create', [LeaveApplicationController::class, 'create'])->name('leave.create');
+Route::post('/leave/store', [LeaveApplicationController::class, 'store'])->name('leave.store');

@@ -18,29 +18,28 @@ class LeaveApplicationController extends Controller
     }
 
    
-    public function create()
-{
-    $year = now()->year;
-    $leaveCounter = LeaveCounter::getOrCreateForUser(Auth::id(), $year);
-    $user = Auth::user();
-
-    return view('Teacher.leave_Application', compact('leaveCounter'));
-}
-// public function create()
+//     public function create()
 // {
 //     $year = now()->year;
 //     $leaveCounter = LeaveCounter::getOrCreateForUser(Auth::id(), $year);
 //     $user = Auth::user();
 
-    
-//     if ($user->role === 'PRINCIPAL') {
-//         return view('Principal.leave_applications', compact('leaveCounter'));
-//     } elseif ($user->role === 'SECTION_HEAD') {
-//         return view('Sectional_head.leave_applications', compact('leaveCounter'));
-//     } else {
-//         return view('Teacher.leave_application', compact('leaveCounter'));
-//     }
+//     return view('Teacher.leave_Application', compact('leaveCounter'));
 // }
+public function create()
+{
+    $year = now()->year;
+    $leaveCounter = LeaveCounter::getOrCreateForUser(Auth::id(), $year);
+    $user = Auth::user();
+
+    if ($user->role === 'PRINCIPAL') {
+        return view('Principal.leaveform', compact('leaveCounter'));
+    } elseif ($user->role === 'SECTION_HEAD') {
+        return view('Sectional_head.leave_applications', compact('leaveCounter'));
+    } else {
+        return view('Teacher.leave_application', compact('leaveCounter'));
+    }
+}
 
 
     public function store(Request $request)
