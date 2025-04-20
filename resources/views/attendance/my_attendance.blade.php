@@ -19,7 +19,7 @@
         <table class="w-full table-auto border border-gray-300">
             <thead class="bg-blue-100">
                 <tr>
-                    <th class="p-2 border">Date/</th>
+                    <th class="p-2 border">Date</th>
                     <th class="p-2 border">Status</th>
                     <th class="p-2 border">Check-In</th>
                     <th class="p-2 border">Check-Out</th>
