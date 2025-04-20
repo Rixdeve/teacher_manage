@@ -152,10 +152,13 @@ class SectionalController extends Controller
         $schoolId = $sectionalHead->school_id;
         $section = $sectionalHead->section;
         $today = now()->toDateString();
+        $this->markApprovedLeaveAsAbsent();
 
         $absentees = \App\Models\User::where('school_id', $schoolId)
+
             ->where('section', $section)
             ->whereIn('role', ['TEACHER'])
+
             ->whereDoesntHave('attendances', function ($query) use ($today) {
                 $query->where('date', $today)
                     ->where('status', 'PRESENT');
@@ -164,7 +167,32 @@ class SectionalController extends Controller
 
         return view('sectional_head.absenteessection', compact('absentees'));
     }
+    public function markApprovedLeaveAsAbsent()
+    {
+        $today = Carbon::today()->toDateString();
 
+        $leaveApplications = LeaveApplication::whereHas('latestStatus', function ($query) {
+            $query->where('status', 'APPROVED');
+        })
+            ->whereDate('commence_date', '<=', $today)
+            ->whereDate('end_date', '>=', $today)
+            ->get();
+
+        foreach ($leaveApplications as $application) {
+            Attendance::updateOrCreate(
+                [
+                    'user_id' => $application->user_id,
+                    'date' => $today,
+                ],
+                [
+                    'status' => 'ABSENT',
+                    'method' => 'MANUAL',
+                    'check_in_time' => null,
+                    'check_out_time' => null,
+                ]
+            );
+        }
+    }
 
     // public function __construct()
     // {
