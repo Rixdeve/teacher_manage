@@ -55,7 +55,7 @@ class SectionalController extends Controller
                 'user_password' => Hash::make('Section@123'),
                 'first_name' => $request->first_name,
                 'last_name' => $request->last_name,
-                'section' => $request->section,
+                'section' => (string) trim($request->section),
                 'subjects' => $selectedSubjects,
                 'school_index' => $request->school_index,
                 'user_address_no' => $request->user_address_no,
@@ -137,8 +137,8 @@ class SectionalController extends Controller
             ->where('status', 'PRESENT')
             ->whereHas('user', function ($query) use ($schoolId, $section) {
                 $query->where('school_id', $schoolId)
-                    ->where('section', $section)
-                    ->whereIn('role', ['TEACHER', 'PRINCIPAL', 'SECTIONAL_HEAD']);
+                    ->where('section', '=', (string) $section)
+                    ->whereIn('role', ['TEACHER']);
             })
             ->get();
 
@@ -148,21 +148,23 @@ class SectionalController extends Controller
 
     public function liveAbsentees()
     {
-        $schoolId = Auth::user()->school_id;
-        $today = now()->toDateString();
         $sectionalHead = Auth::user();
+        $schoolId = $sectionalHead->school_id;
         $section = $sectionalHead->section;
-        $absentees = \App\Models\User::whereIn('role', ['TEACHER', 'PRINCIPAL', 'SECTIONAL_HEAD'])
-            ->where('school_id', $schoolId)
+        $today = now()->toDateString();
+
+        $absentees = \App\Models\User::where('school_id', $schoolId)
             ->where('section', $section)
+            ->whereIn('role', ['TEACHER'])
             ->whereDoesntHave('attendances', function ($query) use ($today) {
                 $query->where('date', $today)
                     ->where('status', 'PRESENT');
             })
             ->get();
 
-        return view('sectional_head.absenteessect', compact('absentees'));
+        return view('sectional_head.absenteessection', compact('absentees'));
     }
+
 
     // public function __construct()
     // {

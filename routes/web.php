@@ -80,11 +80,12 @@ Route::get('/my_attendance', [AttendanceController::class, 'myAttendance'])->nam
 
 Route::get('/absenteesprin', [PrincipalController::class, 'liveAbsentees'])->name('principal.absentee');
 Route::get('/absenteesclerk', [ClerkController::class, 'liveAbsentees'])->name('clerk.absenteesclerk');
-Route::get('/absenteessection', [ClerkController::class, 'liveAbsentees'])->name('clerk.absenteessection');
+Route::get('/absenteessection', [SectionalController::class, 'liveAbsentees'])->name('sectional_head.absenteessection');
 
 Route::get('/liveAttendanceclerk', [ClerkController::class, 'liveAttendanceView'])->name('clerk.liveAttendanceclerk');
 Route::get('/liveAttendanceprin', [PrincipalController::class, 'liveAttendanceView'])->name('principal.liveAttendanceprin');
 
+// Route::get('/absenteessection', [SectionalController::class, 'liveAbsentees'])->name('sectional_head.absenteessection');
 
 
 Route::get('/manualAttendance', [AttendanceController::class, 'showManualEntry'])->name('clerk.manualAttendance');
