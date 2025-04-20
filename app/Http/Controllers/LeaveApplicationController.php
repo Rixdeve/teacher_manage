@@ -8,8 +8,9 @@ use App\Models\LeaveCounter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage; 
+use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\File;
 
 class LeaveApplicationController extends Controller
 {
@@ -224,32 +225,32 @@ class LeaveApplicationController extends Controller
     //     return view('Principal.leave_record', compact('approvedLeaves'));
     // }
     public function record()
-{
-    if (Auth::user()->role !== 'PRINCIPAL') {
-        return redirect()->back()->with('error', 'Unauthorized access.');
-    }
+    {
+        if (Auth::user()->role !== 'PRINCIPAL') {
+            return redirect()->back()->with('error', 'Unauthorized access.');
+        }
 
-    $schoolId = Auth::user()->school_id;
+        $schoolId = Auth::user()->school_id;
 
-    $approvedLeaves = LeaveApplication::whereHas('latestStatus', function ($query) {
-        $query->where('status', 'APPROVED');
-    })
-        ->whereHas('user', function ($query) use ($schoolId) {
-            $query->where('school_id', $schoolId);
+        $approvedLeaves = LeaveApplication::whereHas('latestStatus', function ($query) {
+            $query->where('status', 'APPROVED');
         })
-        ->with(['user', 'latestStatus'])
-        ->orderBy('updated_at', 'desc')
-        ->paginate(5)
-        ->through(function ($leave) {
-          
-            $leave->has_attachment_1 = $leave->attachment_url_1 && Storage::disk('private_leave_attachments')->exists($leave->attachment_url_1);
-            $leave->has_attachment_2 = $leave->attachment_url_2 && Storage::disk('private_leave_attachments')->exists($leave->attachment_url_2);
-            $leave->has_attachment_3 = $leave->attachment_url_3 && Storage::disk('private_leave_attachments')->exists($leave->attachment_url_3);
-            return $leave;
-        });
+            ->whereHas('user', function ($query) use ($schoolId) {
+                $query->where('school_id', $schoolId);
+            })
+            ->with(['user', 'latestStatus'])
+            ->orderBy('updated_at', 'desc')
+            ->paginate(5)
+            ->through(function ($leave) {
 
-    return view('Principal.leave_record', compact('approvedLeaves'));
-}
+                $leave->has_attachment_1 = $leave->attachment_url_1 && Storage::disk('private_leave_attachments')->exists($leave->attachment_url_1);
+                $leave->has_attachment_2 = $leave->attachment_url_2 && Storage::disk('private_leave_attachments')->exists($leave->attachment_url_2);
+                $leave->has_attachment_3 = $leave->attachment_url_3 && Storage::disk('private_leave_attachments')->exists($leave->attachment_url_3);
+                return $leave;
+            });
+
+        return view('Principal.leave_record', compact('approvedLeaves'));
+    }
 
     public function serveAttachment($id, $index)
     {
@@ -265,11 +266,10 @@ class LeaveApplicationController extends Controller
         }
 
         $filePath = Storage::disk('private_leave_attachments')->path($application->$attachmentField);
-        $mimeType = Storage::disk('private_leave_attachments')->mimeType($application->$attachmentField);
+        $mimeType = \Illuminate\Support\Facades\File::mimeType($filePath);
 
         return response()->file($filePath, [
             'Content-Type' => $mimeType,
         ]);
     }
-
 }

@@ -183,6 +183,9 @@ Route::get('/leave/index', [LeaveApplicationController::class, 'index'])->name('
 Route::patch('/leave/{leaveId}/status', [LeaveApplicationController::class, 'updateStatus'])->name('leave.updateStatus');
 
 
+Route::get('/leave/attachment/{id}/{index}', [LeaveApplicationController::class, 'serveAttachment'])
+    ->name('leave.attachment')
+    ->middleware('auth');
 
 
 
