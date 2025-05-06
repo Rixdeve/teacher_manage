@@ -194,7 +194,7 @@ Route::get('/leave/attachment/{id}/{index}', [LeaveApplicationController::class,
 
 // Principal routes
 Route::get('/principal/dashboard', [PrincipalController::class, 'dashboard'])->name('principal.dashboard');
-// Route::patch('/leave/{id}/status', [PrincipalController::class, 'updateLeaveStatus'])->name('leave.updateStatus');
+Route::patch('/leave/{id}/status', [PrincipalController::class, 'updateLeaveStatus'])->name('leave.updateStatus');
 
 // Other Principal routes
 Route::get('/registerPrincipal', [PrincipalController::class, 'index'])->name('principal.register');
