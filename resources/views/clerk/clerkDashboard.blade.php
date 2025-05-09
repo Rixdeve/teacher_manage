@@ -35,6 +35,12 @@
                         <img src="{{asset('storage/photos/leave.png')}}" class="w-8 h-8 mr-2" alt="Apply Leave" />
                         Manual Attendance</a>
                 </li>
+                <li class="w-full py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2">
+    <a href="{{ route('clerk.leave.create') }}" class="flex items-center w-full">
+        <img src="{{ asset('storage/photos/leave_application.png') }}" class="w-8 h-8 mr-2" alt="Leave Application" />
+        Apply Leave for Teacher
+    </a>
+</li>
                 <li
                     class="w-full py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2">
                     <a href="{{ url('') }}" class="flex items-center w-full">

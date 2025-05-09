@@ -251,6 +251,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/leave/{leaveId}/status', [LeaveApplicationController::class, 'updateStatus'])->name('leave.updateStatus');
     Route::get('/leave/history', [LeaveApplicationController::class, 'history'])->name('leave.history');
     Route::get('/leave/record', [LeaveApplicationController::class, 'record'])->name('leave.record');
+
+    Route::get('/clerk/leave/create', [LeaveApplicationController::class, 'clerkCreate'])->name('clerk.leave.create');
+    Route::post('/clerk/leave/store', [LeaveApplicationController::class, 'clerkStore'])->name('clerk.leave.store');
 });
 
 
@@ -280,3 +283,6 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/leave', [LeaveApplicationController::class, 'store'])->name('leave.store');
     Route::get('/leave/history', [LeaveApplicationController::class, 'history'])->name('leave.history');
 });
+
+
+
