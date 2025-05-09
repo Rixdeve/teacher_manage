@@ -40,10 +40,8 @@ class LeaveApplicationController extends Controller
             'commence_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:commence_date',
             'leave_type' => 'required|string',
-            'reason' => 'nullable|string',
-            'attachment_url_1' => 'nullable|file|mimes:pdf,jpg,jpeg,png',
-            'attachment_url_2' => 'nullable|file|mimes:pdf,jpg,jpeg,png',
-            'attachment_url_3' => 'nullable|file|mimes:pdf,jpg,jpeg,png',
+            'reason' => 'required|string',
+            'attachments.*' => 'nullable|file|mimes:pdf,jpg,jpeg,png',
         ]);
 
         $user = Auth::user();
@@ -89,15 +87,14 @@ class LeaveApplicationController extends Controller
 
         $leaveApplication->reason = $request->reason;
 
-        // Store files in the private_leave_attachments disk
-        if ($request->hasFile('attachment_url_1')) {
-            $leaveApplication->attachment_url_1 = $request->file('attachment_url_1')->store('', 'private_leave_attachments');
-        }
-        if ($request->hasFile('attachment_url_2')) {
-            $leaveApplication->attachment_url_2 = $request->file('attachment_url_2')->store('', 'private_leave_attachments');
-        }
-        if ($request->hasFile('attachment_url_3')) {
-            $leaveApplication->attachment_url_3 = $request->file('attachment_url_3')->store('', 'private_leave_attachments');
+        if ($request->hasFile('attachments')) {
+            $attachments = $request->file('attachments');
+            $attachmentFields = ['attachment_url_1', 'attachment_url_2', 'attachment_url_3'];
+            foreach ($attachments as $index => $file) {
+                if ($index < 3) {
+                    $leaveApplication->{$attachmentFields[$index]} = $file->store('', 'private_leave_attachments');
+                }
+            }
         }
 
         $leaveApplication->save();
@@ -123,7 +120,6 @@ class LeaveApplicationController extends Controller
             })
             ->get()
             ->map(function ($application) {
-                // Check if each attachment exists
                 $application->has_attachment_1 = $application->attachment_url_1 && Storage::disk('private_leave_attachments')->exists($application->attachment_url_1);
                 $application->has_attachment_2 = $application->attachment_url_2 && Storage::disk('private_leave_attachments')->exists($application->attachment_url_2);
                 $application->has_attachment_3 = $application->attachment_url_3 && Storage::disk('private_leave_attachments')->exists($application->attachment_url_3);
@@ -137,7 +133,7 @@ class LeaveApplicationController extends Controller
     {
         $request->validate([
             'status' => 'required|in:APPROVED,REJECTED',
-            'comment' => 'nullable|string',
+            'comment' => 'required_if:status,REJECTED|string|nullable',
         ]);
 
         $leaveApplication = LeaveApplication::findOrFail($leaveId);
@@ -204,26 +200,6 @@ class LeaveApplicationController extends Controller
         return view('Teacher.LeaveStatus', compact('pastApplications'));
     }
 
-    // public function record()
-    // {
-    //     if (Auth::user()->role !== 'PRINCIPAL') {
-    //         return redirect()->back()->with('error', 'Unauthorized access.');
-    //     }
-
-    //     $schoolId = Auth::user()->school_id;
-
-    //     $approvedLeaves = LeaveApplication::whereHas('latestStatus', function ($query) {
-    //         $query->where('status', 'APPROVED');
-    //     })
-    //         ->whereHas('user', function ($query) use ($schoolId) {
-    //             $query->where('school_id', $schoolId);
-    //         })
-    //         ->with(['user', 'latestStatus'])
-    //         ->orderBy('updated_at', 'desc')
-    //         ->paginate(5);
-
-    //     return view('Principal.leave_record', compact('approvedLeaves'));
-    // }
     public function record()
     {
         if (Auth::user()->role !== 'PRINCIPAL') {
@@ -242,7 +218,6 @@ class LeaveApplicationController extends Controller
             ->orderBy('updated_at', 'desc')
             ->paginate(5)
             ->through(function ($leave) {
-
                 $leave->has_attachment_1 = $leave->attachment_url_1 && Storage::disk('private_leave_attachments')->exists($leave->attachment_url_1);
                 $leave->has_attachment_2 = $leave->attachment_url_2 && Storage::disk('private_leave_attachments')->exists($leave->attachment_url_2);
                 $leave->has_attachment_3 = $leave->attachment_url_3 && Storage::disk('private_leave_attachments')->exists($leave->attachment_url_3);

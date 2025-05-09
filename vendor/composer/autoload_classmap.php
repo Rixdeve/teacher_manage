@@ -6,11 +6,14 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'App\\Console\\Commands\\DailyAttendanceProcessor' => $baseDir . '/app/Console/Commands/DailyAttendanceProcessor.php',
     'App\\Console\\Commands\\MarkAfternoonAbsentees' => $baseDir . '/app/Console/Commands/MarkAfternoonAbsentees.php',
+    'App\\Console\\Kernel' => $baseDir . '/app/Console/Kernel.php',
     'App\\Http\\Controllers\\AttendanceController' => $baseDir . '/app/Http/Controllers/AttendanceController.php',
     'App\\Http\\Controllers\\AuthController' => $baseDir . '/app/Http/Controllers/AuthController.php',
     'App\\Http\\Controllers\\ClerkController' => $baseDir . '/app/Http/Controllers/ClerkController.php',
     'App\\Http\\Controllers\\Controller' => $baseDir . '/app/Http/Controllers/Controller.php',
+    'App\\Http\\Controllers\\LeaveApplicationController' => $baseDir . '/app/Http/Controllers/LeaveApplicationController.php',
     'App\\Http\\Controllers\\PrincipalController' => $baseDir . '/app/Http/Controllers/PrincipalController.php',
     'App\\Http\\Controllers\\ProfileController' => $baseDir . '/app/Http/Controllers/ProfileController.php',
     'App\\Http\\Controllers\\SchoolController' => $baseDir . '/app/Http/Controllers/SchoolController.php',
