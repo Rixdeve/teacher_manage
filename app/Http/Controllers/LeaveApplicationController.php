@@ -17,6 +17,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\File;
 use App\Mail\LeaveRequestMail;
 use Illuminate\Support\Facades\Mail;
+use Exeption;
 
 class LeaveApplicationController extends Controller
 {
@@ -226,14 +227,12 @@ class LeaveApplicationController extends Controller
                 if (in_array($leaveApplication->leave_type, ['CASUAL', 'MEDICAL'])) {
                     foreach ($leaveDaysByYear as $year => $days) {
                         $leaveCounter = LeaveCounter::getOrCreateForUser($user->id, $year);
-
                         Log::info('Processing leave counter', [
                             'user_id' => $user->id,
                             'year' => $year,
                             'leave_counter' => $leaveCounter->toArray(),
                             'days' => $days,
                         ]);
-
                         if ($leaveApplication->leave_type === 'CASUAL') {
                             $remainingCasual = $leaveCounter->total_casual;
                             if ($remainingCasual < $days) {
@@ -248,19 +247,28 @@ class LeaveApplicationController extends Controller
                             $leaveCounter->total_medical -= $days;
                         }
 
+                        $leaveCounter->save();
+                    }
+                } elseif ($leaveApplication->leave_type === 'SHORT') {
+                    $year = Carbon::parse($leaveApplication->commence_date)->year;
+                    $leaveCounter = LeaveCounter::getOrCreateForUser($user->id, $year);
+
+                    if ($leaveCounter->total_short < 1) {
+                        return redirect()->route('leave.index')->with('error', 'User has exhausted their short leave balance.');
+                    }
+
+                    $leaveCounter->total_short -= 1;
                     $leaveCounter->save();
                 }
-            } elseif ($leaveApplication->leave_type === 'SHORT') {
-                $year = Carbon::parse($leaveApplication->commence_date)->year;
-                $leaveCounter = LeaveCounter::getOrCreateForUser($user->id, $year);
-                if ($leaveCounter->total_short < 1) {
-                    return redirect()->route('leave.index')->with('error', 'User has exhausted their short leave balance.');
-                }
-                $leaveCounter->total_short -= 1;
-
-                $leaveCounter->save();
+            } catch (\Exception $e) {
+                Log::error('Error updating leave balance', [
+                    'leave_id' => $leaveId,
+                    'error' => $e->getMessage(),
+                ]);
+                return redirect()->route('leave.index')->with('error', 'An error occurred while updating the leave balance.');
             }
         }
+
 
         $latestStatus->update([
             'status' => $request->status,
@@ -270,6 +278,7 @@ class LeaveApplicationController extends Controller
 
         return redirect()->route('leave.index')->with('success', 'Leave application status updated successfully.');
     }
+
 
     public function history()
     {
