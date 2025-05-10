@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -115,10 +113,10 @@
             @if ($applications->isEmpty())
                 <p class="text-gray-600">No pending leave applications.</p>
             @else
-                <div class="overflow-x-auto">
+                <div class="overflow-auto max-h-[500px] border border-gray-200 rounded-lg">
                     <table class="w-full border-collapse">
-                        <thead>
-                            <tr class="bg-gray-200">
+                        <thead class="bg-gray-200 sticky top-0 z-10">
+                            <tr>
                                 <th class="p-3 text-left">Teacher</th>
                                 <th class="p-3 text-left">From</th>
                                 <th class="p-3 text-left">To</th>
@@ -143,46 +141,46 @@
                                     <td class="p-3">{{ $application->leave_type }}</td>
                                     <td class="p-3">{{ $application->reason ?? 'N/A' }}</td>
                                     <td class="p-3">
-    @php
-        $hasAttachments = $application->has_attachment_1 || $application->has_attachment_2 || $application->has_attachment_3;
-    @endphp
-    @if ($hasAttachments)
-        <div class="space-y-2">
-            @if ($application->has_attachment_1)
-                @php
-                    $extension = pathinfo($application->attachment_url_1, PATHINFO_EXTENSION);
-                    $icon = $extension === 'pdf' ? 'https://cdn-icons-png.flaticon.com/512/337/337946.png' : 'https://cdn-icons-png.flaticon.com/512/337/337949.png';
-                @endphp
-                <a href="{{ route('leave.attachment', [$application->id, 1]) }}" target="_blank" class="flex items-center text-blue-600 hover:text-blue-800 hover:underline">
-                    <img src="{{ $icon }}" class="w-4 h-4 mr-1" alt="{{ $extension }} icon">
-                    Attachment 1 ({{ strtoupper($extension) }})
-                </a>
-            @endif
-            @if ($application->has_attachment_2)
-                @php
-                    $extension = pathinfo($application->attachment_url_2, PATHINFO_EXTENSION);
-                    $icon = $extension === 'pdf' ? 'https://cdn-icons-png.flaticon.com/512/337/337946.png' : 'https://cdn-icons-png.flaticon.com/512/337/337949.png';
-                @endphp
-                <a href="{{ route('leave.attachment', [$application->id, 2]) }}" target="_blank" class="flex items-center text-blue-600 hover:text-blue-800 hover:underline">
-                    <img src="{{ $icon }}" class="w-4 h-4 mr-1" alt="{{ $extension }} icon">
-                    Attachment 2 ({{ strtoupper($extension) }})
-                </a>
-            @endif
-            @if ($application->has_attachment_3)
-                @php
-                    $extension = pathinfo($application->attachment_url_3, PATHINFO_EXTENSION);
-                    $icon = $extension === 'pdf' ? 'https://cdn-icons-png.flaticon.com/512/337/337946.png' : 'https://cdn-icons-png.flaticon.com/512/337/337949.png';
-                @endphp
-                <a href="{{ route('leave.attachment', [$application->id, 3]) }}" target="_blank" class="flex items-center text-blue-600 hover:text-blue-800 hover:underline">
-                    <img src="{{ $icon }}" class="w-4 h-4 mr-1" alt="{{ $extension }} icon">
-                    Attachment 3 ({{ strtoupper($extension) }})
-                </a>
-            @endif
-        </div>
-    @else
-        <span class="text-gray-500">No attachments</span>
-    @endif
-</td>
+                                        @php
+                                            $hasAttachments = $application->has_attachment_1 || $application->has_attachment_2 || $application->has_attachment_3;
+                                        @endphp
+                                        @if ($hasAttachments)
+                                            <div class="space-y-2">
+                                                @if ($application->has_attachment_1)
+                                                    @php
+                                                        $extension = pathinfo($application->attachment_url_1, PATHINFO_EXTENSION);
+                                                        $icon = $extension === 'pdf' ? 'https://cdn-icons-png.flaticon.com/512/337/337946.png' : 'https://cdn-icons-png.flaticon.com/512/337/337949.png';
+                                                    @endphp
+                                                    <a href="{{ route('leave.attachment', [$application->id, 1]) }}" target="_blank" class="flex items-center text-blue-600 hover:text-blue-800 hover:underline">
+                                                        <img src="{{ $icon }}" class="w-4 h-4 mr-1" alt="{{ $extension }} icon">
+                                                        Attachment 1 ({{ strtoupper($extension) }})
+                                                    </a>
+                                                @endif
+                                                @if ($application->has_attachment_2)
+                                                    @php
+                                                        $extension = pathinfo($application->attachment_url_2, PATHINFO_EXTENSION);
+                                                        $icon = $extension === 'pdf' ? 'https://cdn-icons-png.flaticon.com/512/337/337946.png' : 'https://cdn-icons-png.flaticon.com/512/337/337949.png';
+                                                    @endphp
+                                                    <a href="{{ route('leave.attachment', [$application->id, 2]) }}" target="_blank" class="flex items-center text-blue-600 hover:text-blue-800 hover:underline">
+                                                        <img src="{{ $icon }}" class="w-4 h-4 mr-1" alt="{{ $extension }} icon">
+                                                        Attachment 2 ({{ strtoupper($extension) }})
+                                                    </a>
+                                                @endif
+                                                @if ($application->has_attachment_3)
+                                                    @php
+                                                        $extension = pathinfo($application->attachment_url_3, PATHINFO_EXTENSION);
+                                                        $icon = $extension === 'pdf' ? 'https://cdn-icons-png.flaticon.com/512/337/337946.png' : 'https://cdn-icons-png.flaticon.com/512/337/337949.png';
+                                                    @endphp
+                                                    <a href="{{ route('leave.attachment', [$application->id, 3]) }}" target="_blank" class="flex items-center text-blue-600 hover:text-blue-800 hover:underline">
+                                                        <img src="{{ $icon }}" class="w-4 h-4 mr-1" alt="{{ $extension }} icon">
+                                                        Attachment 3 ({{ strtoupper($extension) }})
+                                                    </a>
+                                                @endif
+                                            </div>
+                                        @else
+                                            <span class="text-gray-500">No attachments</span>
+                                        @endif
+                                    </td>
                                     <td class="p-3">
                                         <form action="{{ route('leave.updateStatus', $application->id) }}" method="POST" class="inline">
                                             @csrf

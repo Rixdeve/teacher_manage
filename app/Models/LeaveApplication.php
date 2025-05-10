@@ -13,6 +13,7 @@ class LeaveApplication extends Model
 
     protected $fillable = [
         'user_id',
+        'submitted_by',
         'commence_date',
         'end_date',
         'leave_type',
@@ -30,6 +31,11 @@ class LeaveApplication extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function submittedBy()
+    {
+        return $this->belongsTo(User::class, 'submitted_by');
     }
 
     public function statuses()

@@ -286,3 +286,7 @@ Route::middleware(['auth'])->group(function () {
 
 
 
+
+Route::get('/clerk/leave/create', [LeaveApplicationController::class, 'clerkCreate'])->name('clerk.leave.create');
+Route::post('/leave/store', [LeaveApplicationController::class, 'store'])->name('leave.store');
+

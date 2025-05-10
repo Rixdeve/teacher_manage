@@ -15,7 +15,7 @@
             }
         }
     </script>
-    <title>Clerk Dashboard</title>
+    <title>Clerk Dashboard - Apply for Leave</title>
 </head>
 <body class="bg-gray-300 flex items-center justify-center min-h-screen">
     <!-- Hamburger Menu for Mobile/Tablet (<1000px) -->
@@ -53,7 +53,12 @@
                         Apply Leave for teacher
                     </a>
                 </li>
-                
+                <li class="w-full py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2">
+                    <a href="{{ route('clerk.leave.apply') }}" class="flex items-center w-full">
+                        <img src="{{ asset('storage/photos/leave.png') }}" class="w-6 lg:w-8 h-6 lg:h-8 mr-2" alt="Apply Own Leave" />
+                        Apply Own Leave
+                    </a>
+                </li>
                 <li class="w-full py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2">
                     <a href="{{ url('') }}" class="flex items-center w-full">
                         <img src="{{ asset('storage/photos/immigration.png') }}" class="w-6 lg:w-8 h-6 lg:h-8 mr-2" alt="View Leave Application" />
@@ -81,65 +86,89 @@
             </ul>
         </div>
 
-        <div class="w-full lg:w-3/4 p-4 lg:p-8 relative">
+        <!-- Main Content -->
+        <div class="w-full lg:w-3/4 p-4 sm:p-6 lg:p-8 relative">
             <!-- Back Button -->
             <button onclick="history.back()" class="absolute top-6 left-16 lg:left-6 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg shadow-md flex items-center z-40">
                 <img src="https://cdn-icons-png.flaticon.com/512/271/271220.png" class="w-5 h-5 mr-2" alt="Back" />
                 Back
             </button>
 
-            <div class="absolute top-16 lg:top-6 right-4 lg:right-6 flex items-center space-x-3">
-                <img src="{{ asset('storage/' . Auth::user()->profile_picture) }}" class="h-8 lg:h-10 w-8 lg:w-10 rounded-full border border-gray-400" />
-                <div>
-                    <a href="{{ url('/show') }}">
-                        <h3 class="font-semibold text-sm lg:text-base">{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</h3>
-                        <h3 class="text-gray-600 text-xs lg:text-sm">{{ ucfirst(strtolower(Auth::user()->role)) }}</h3>
-                    </a>
-                </div>
+            <!-- Profile Section -->
+            <div class="absolute top-6 right-4 flex items-center space-x-3">
+                <img src="{{ asset('storage/' . Auth::user()->profile_picture) }}" class="h-8 w-8 sm:h-10 sm:w-10 rounded-full border border-gray-400" alt="Profile" />
+                <a href="{{ url('/show') }}">
+                    <h3 class="font-semibold text-sm sm:text-base">{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</h3>
+                    <h3 class="text-gray-600 text-xs sm:text-sm">{{ ucfirst(strtolower(Auth::user()->role)) }}</h3>
+                </a>
             </div>
 
-            <div class="mt-32 lg:mt-12">
-                <div class="bg-gradient-to-b from-blue-100 to-gray-500 p-4 lg:p-6 rounded-lg mb-4 lg:mb-6 relative">
-                    <div class="absolute top-2 right-2 flex items-center space-x-2">
-                        <!-- <div class="bg-green-500 rounded-full w-3 h-3"></div> -->
-                        <!-- <span class="text-sm text-green-500 font-semibold">On Duty off duty</span> -->
-                    </div>
-                    <p class="text-gray-700 text-sm lg:text-base">Welcome back!</p>
-                    <h1 class="text-xl lg:text-2xl font-bold">{{ Auth::user()->first_name }}</h1>
-                </div>
+            <!-- Welcome Section -->
+            <div class="bg-gradient-to-b from-blue-100 to-gray-500 p-4 sm:p-6 rounded-lg mt-16 sm:mt-12 mb-6">
+                <p class="text-gray-700 text-sm sm:text-base">Welcome back!</p>
+                <h1 class="text-xl sm:text-2xl font-bold">{{ Auth::user()->first_name }}</h1>
+            </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
-                    <div class="bg-blue-100 p-4 lg:p-6 rounded-lg text-center shadow-md hover:shadow-lg">
-                        <div class="flex flex-col items-center justify-center">
-                            <a href="{{ url('/manualAttendance') }}">
-                                <p class="text-gray-700 font-semibold text-sm lg:text-base">Manual Attendance Marking</p>
-                                <img src="{{ asset('storage/photos/fingerprint-scan.png') }}" class="w-8 lg:w-12 h-8 lg:h-12 mb-2 lg:mb-4" alt="Casual Leave" />
-                            </a>
-                        </div>
-                    </div>
-                    <div class="bg-blue-100 p-4 lg:p-6 rounded-lg text-center shadow-md hover:shadow-lg">
-                        <div class="flex flex-col items-center justify-center">
-                            <a href="{{ url('/liveAttendanceclerk') }}">
-                                <p class="text-gray-700 font-semibold text-sm lg:text-base">Live Attendance</p>
-                                <img src="{{ asset('storage/photos/live.png') }}" class="w-8 lg:w-12 h-8 lg:h-12 mb-2 lg:mb-4" alt="Attendance" />
-                            </a>
-                        </div>
-                    </div>
-                    <div class="bg-blue-100 p-4 lg:p-6 rounded-lg text-center shadow-md hover:shadow-lg">
-                        <div class="flex flex-col items-center justify-center">
-                            <a href="{{ url('/absenteesclerk') }}">
-                                <p class="text-gray-700 font-semibold text-sm lg:text-base">Live Absentees</p>
-                                <img src="{{ asset('storage/photos/absence.png') }}" class="w-8 lg:w-12 h-8 lg:h-12 mb-2 lg:mb-4" alt="Absentees" />
-                            </a>
-                        </div>
-                    </div>
-                    <div class="bg-blue-100 p-4 lg:p-6 rounded-lg text-center shadow-md hover:shadow-lg">
-                        <div class="flex flex-col items-center justify-center">
-                            <p class="text-gray-700 font-semibold text-sm lg:text-base">View Leave Applications</p>
-                            <img src="{{ asset('storage/photos/leave.png') }}" class="w-8 lg:w-12 h-8 lg:h-12 mb-2 lg:mb-4" alt="Medical Leave" />
-                        </div>
-                    </div>
+            <!-- Error/Success Messages -->
+            @if (session('error'))
+                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded" role="alert">
+                    {{ session('error') }}
                 </div>
+            @endif
+            @if (session('success'))
+                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded" role="alert">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            <!-- Leave Balance Display -->
+            <div class="bg-gray-100 p-4 rounded-lg mb-6">
+                <h2 class="text-base sm:text-lg font-semibold mb-2">Your Leave Balance</h2>
+                <p class="text-gray-700 text-sm sm:text-base">Casual Leave Remaining: <span class="font-bold">{{ $leaveCounter->total_casual }}</span></p>
+                <p class="text-gray-700 text-sm sm:text-base">Medical Leave Remaining: <span class="font-bold">{{ $leaveCounter->total_medical }}</span></p>
+                <p class="text-gray-700 text-sm sm:text-base">Short Leave Remaining: <span class="font-bold">{{ $leaveCounter->total_short }}</span></p>
+            </div>
+
+            <!-- Leave Application Form -->
+            <div class="overflow-y-auto max-h-[400px] sm:max-h-[360px]">
+                <form action="{{ route('leave.store') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+
+                    <div class="mb-4">
+                        <label for="commence_date" class="block text-gray-700 text-sm sm:text-base">From Date</label>
+                        <input type="date" name="commence_date" id="commence_date" class="w-full p-3 mt-2 border rounded text-sm sm:text-base" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="end_date" class="block text-gray-700 text-sm sm:text-base">To Date</label>
+                        <input type="date" name="end_date" id="end_date" class="w-full p-3 mt-2 border rounded text-sm sm:text-base" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="leave_type" class="block text-gray-700 text-sm sm:text-base">Leave Type</label>
+                        <select name="leave_type" id="leave_type" class="w-full p-3 mt-2 border rounded text-sm sm:text-base" required>
+                            <option value="CASUAL">Casual Leave</option>
+                            <option value="MEDICAL">Medical Leave</option>
+                            <option value="SHORT">Short Leave</option>
+                            <option value="HALF_DAY">Half-Day Leave</option>
+                            <option value="NO_PAY">No-Pay Leave</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="reason" class="block text-gray-700 text-sm sm:text-base">Reason</label>
+                        <textarea name="reason" id="reason" rows="4" class="w-full p-3 mt-2 border rounded text-sm sm:text-base" required></textarea>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="attachments" class="block text-gray-700 text-sm sm:text-base">Attachments (up to 3, optional)</label>
+                        <input type="file" name="attachments[]" id="attachments" class="w-full p-3 mt-2 border rounded text-sm sm:text-base" accept=".pdf,.jpg,.jpeg,.png" multiple>
+                    </div>
+
+                    <div class="mb-4">
+                        <button type="submit" class="bg-gray-500 hover:bg-gray-600 text-white p-3 rounded w-full sm:w-auto text-sm sm:text-base">Submit Application</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
