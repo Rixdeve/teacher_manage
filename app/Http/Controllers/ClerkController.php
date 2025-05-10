@@ -14,18 +14,15 @@ use App\Models\Attendance;
 use App\Models\School;
 use App\Models\LeaveApplication;
 
-// use function Laravel\Prompts\alert;
-
 class ClerkController extends Controller
 {
-
     public function index()
     {
         return view('school.registerClerk');
     }
+
     public function store(Request $request)
     {
-        // dd($request->all());
         $schoolId = session('school_id');
 
         $request->validate([
@@ -39,14 +36,16 @@ class ClerkController extends Controller
             'user_dob' => 'required|date',
             'user_email' => 'required|email|unique:users,user_email',
             'user_phone' => 'required|numeric|digits:10|unique:users,user_phone',
-            'profile_picture' => 'required|image|mimes:jpg,png,jpeg|max:2048', // Only images, max size 2MB
+            'profile_picture' => 'required|image|mimes:jpg,png,jpeg|max:2048',
             'status' => 'required',
         ]);
+
         if ($request->hasFile('profile_picture')) {
             $imagePath = $request->file('profile_picture')->store('profile_pictures', 'public');
         } else {
-            $imagePath = null; // Default if no image is uploaded
+            $imagePath = null;
         }
+
         try {
             User::create([
                 'school_id' => $schoolId,
@@ -65,7 +64,6 @@ class ClerkController extends Controller
                 'profile_picture' => $imagePath,
                 'status' => $request->status,
                 'registered_date' => now(),
-
             ]);
             return redirect('/schoolDashboard')->with('success', 'Clerk registered successfully!');
         } catch (QueryException $e) {
@@ -76,6 +74,7 @@ class ClerkController extends Controller
             return redirect('/registerClerk')->with('error', 'An error occurred!');
         }
     }
+
     public function fetchUserAttendance(Request $request)
     {
         $request->validate([
@@ -127,8 +126,9 @@ class ClerkController extends Controller
             })
             ->get();
 
-        return view('clerk.absenteesclerk', compact('absentees')); // Or clerk.absentees
+        return view('clerk.absenteesclerk', compact('absentees'));
     }
+
     public function markApprovedLeaveAsAbsent()
     {
         $today = Carbon::today()->toDateString();
@@ -155,6 +155,7 @@ class ClerkController extends Controller
             );
         }
     }
+
     public function liveAttendanceView()
     {
         $clerk = Auth::user();
@@ -187,49 +188,4 @@ class ClerkController extends Controller
 
         return view('clerk.clerkDashboard', compact('attendanceRecords'));
     }
-
-    // public function showQRCode($id)
-    // {
-    //     $teacher = User::findOrFail($id);
-    //     $qrContent = $teacher->id;
-
-    //     return view('teacher.qrcode', [
-    //         'teacher' => $teacher,
-    //         'qrCode' => QrCode::size(180)->generate($qrContent),
-    //     ]);
-    // }
-
-
-
-    // public function logAttendance($id)
-    // {
-    //     $user = User::findOrFail($id);
-    //     $today = now()->toDateString();
-
-    //     $attendance = Attendance::firstOrNew([
-    //         'user_id' => $user->id,
-    //         'date' => $today
-    //     ]);
-
-    //     if (!$attendance->exists || is_null($attendance->check_in_time)) {
-    //         $attendance->status = 'PRESENT';
-    //         $attendance->check_in_time = now()->format('H:i:s');
-    //         $attendance->method = 'QR';
-    //         $attendance->save();
-
-    //         return response()->json(['message' => 'Check-in successful']);
-    //     }
-
-    //     if (is_null($attendance->check_out_time)) {
-    //         $attendance->check_out_time = now()->format('H:i:s');
-    //         $attendance->save();
-
-    //         return response()->json(['message' => 'Check-out successful']);
-    //     }
-    //     // if($attendance->check_in_time < now()->subHours(8)->format('H:i:s')){
-    //     //     return response()->json(['message' => 'Check-in time expired']);
-    //     // }
-
-    //     return response()->json(['message' => 'Already checked in and out today']);
-    // }
 }

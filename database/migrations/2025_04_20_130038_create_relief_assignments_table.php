@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('absent_teacher_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('relief_teacher_id')->constrained('users')->onDelete('cascade');
             $table->date('date');
+            $table->text('subjects');
             $table->string('time_slot'); 
             $table->string('class'); 
             $table->timestamps();

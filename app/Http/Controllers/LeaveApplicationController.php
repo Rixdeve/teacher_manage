@@ -8,6 +8,7 @@ use App\Mail\PHPMailerService;
 use App\Models\LeaveApplication;
 use App\Models\LeaveStatus;
 use App\Models\LeaveCounter;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -39,9 +40,23 @@ class LeaveApplicationController extends Controller
         }
     }
 
+    public function clerkCreate()
+    {
+        if (Auth::user()->role !== 'CLERK') {
+            abort(403, 'Unauthorized access.');
+        }
+
+        $schoolId = Auth::user()->school_id;
+        $users = User::where('school_id', $schoolId)
+            ->whereIn('role', ['TEACHER', 'PRINCIPAL', 'SECTION_HEAD', 'CLERK'])
+            ->get();
+        return view('clerk.manual_leave_application', compact('users'));
+    }
+
     public function store(Request $request)
     {
         $request->validate([
+            'user_id' => 'sometimes|exists:users,id',
             'commence_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:commence_date',
             'leave_type' => 'required|string',
@@ -64,9 +79,18 @@ class LeaveApplicationController extends Controller
         $principal_name = $principal->name ?? null;
         $principal_subject = 'Leave Request Recived From ' . $user->name;
         $mailService = new PHPMailerService();
+        $targetUserId = $request->input('user_id', Auth::id());
+
+        if ($user->role === 'CLERK' && $request->has('user_id')) {
+            $targetUser = User::findOrFail($targetUserId);
+            if ($targetUser->school_id !== $user->school_id) {
+                return redirect()->route('clerk.leave.create')->with('error', 'You can only submit leave applications for users in your school.');
+            }
+        }
 
         $leaveApplication = new LeaveApplication();
-        $leaveApplication->user_id = Auth::id();
+        $leaveApplication->user_id = $targetUserId;
+        $leaveApplication->submitted_by = Auth::id();
         $leaveApplication->commence_date = $request->commence_date;
         $leaveApplication->end_date = $request->end_date;
         $leaveApplication->leave_type = $leaveType;
@@ -81,53 +105,56 @@ class LeaveApplicationController extends Controller
 
         if (in_array($leaveType, ['CASUAL', 'MEDICAL'])) {
             foreach ($leaveDaysByYear as $year => $days) {
-                $leaveCounter = LeaveCounter::getOrCreateForUser($user->id, $year);
+                $leaveCounter = LeaveCounter::getOrCreateForUser($targetUserId, $year);
 
                 if ($leaveType === 'CASUAL') {
                     $remainingCasual = $leaveCounter->total_casual;
                     if ($remainingCasual < $days) {
-                        return redirect()->route('leave.create')->with('error', "You only have {$remainingCasual} casual leave days remaining for {$year}.");
+                        return redirect()->route($user->role === 'CLERK' ? 'clerk.leave.create' : 'leave.create')
+                            ->with('error', "User only has {$remainingCasual} casual leave days remaining for {$year}.");
                     }
                 } elseif ($leaveType === 'MEDICAL') {
                     $remainingMedical = $leaveCounter->total_medical;
                     if ($remainingMedical < $days) {
-                        return redirect()->route('leave.create')->with('error', "You only have {$remainingMedical} medical leave days remaining for {$year}.");
+                        return redirect()->route($user->role === 'CLERK' ? 'clerk.leave.create' : 'leave.create')
+                            ->with('error', "User only has {$remainingMedical} medical leave days remaining for {$year}.");
                     }
                 }
             }
         } elseif ($leaveType === 'SHORT') {
             $year = Carbon::parse($request->commence_date)->year;
-            $leaveCounter = LeaveCounter::getOrCreateForUser($user->id, $year);
+            $leaveCounter = LeaveCounter::getOrCreateForUser($targetUserId, $year);
             if ($leaveCounter->total_short < 1) {
-                return redirect()->route('leave.create')->with('error', 'You have exhausted your short leave balance.');
+                return redirect()->route($user->role === 'CLERK' ? 'clerk.leave.create' : 'leave.create')
+                    ->with('error', 'User has exhausted their short leave balance.');
             }
         }
 
         $leaveApplication->reason = $request->reason;
 
-        // Store files in the private_leave_attachments disk
-        if ($request->hasFile('attachment_url_1')) {
-            $leaveApplication->attachment_url_1 = $request->file('attachment_url_1')->store('', 'private_leave_attachments');
-        }
-        if ($request->hasFile('attachment_url_2')) {
-            $leaveApplication->attachment_url_2 = $request->file('attachment_url_2')->store('', 'private_leave_attachments');
-        }
-        if ($request->hasFile('attachment_url_3')) {
-            $leaveApplication->attachment_url_3 = $request->file('attachment_url_3')->store('', 'private_leave_attachments');
+        if ($request->hasFile('attachments')) {
+            $attachments = $request->file('attachments');
+            $attachmentFields = ['attachment_url_1', 'attachment_url_2', 'attachment_url_3'];
+            foreach ($attachments as $index => $file) {
+                if ($index < 3) {
+                    $leaveApplication->{$attachmentFields[$index]} = $file->store('', 'private_leave_attachments');
+                }
+            }
         }
 
         $leaveApplication->save();
 
         LeaveStatus::create([
             'leave_id' => $leaveApplication->id,
-            'user_id' => Auth::id(),
+            'user_id' => $targetUserId,
             'status' => 'PENDING',
         ]);
         Mail::to($user_email)->send(new LeaveRequestMail($name, $subject, $leaveType, $start_date, $end_date, $reason));
 
         // $mailService->sendMail($user->user_email, 'Leave Request Submitted', 'Your leave request has been successfully submitted.');
         Mail::to($principal_email)->send(new LeaveReqestRecivedMail($principal_name, $principal_email, $name, $principal_subject, $leave_type, $start_date, $end_date, $reason));
-        return redirect()->route('leave.create')->with('success', 'Leave application submitted successfully.');
+        return redirect()->route($user->role === 'CLERK' ? 'clerk.leave.create' : 'leave.create')
+            ->with('success', 'Leave application submitted successfully.');
     }
 
     public function index()
@@ -136,13 +163,17 @@ class LeaveApplicationController extends Controller
             abort(403, 'Unauthorized access.');
         }
 
+        $schoolId = Auth::user()->school_id;
+
         $applications = LeaveApplication::with(['user', 'latestStatus'])
             ->whereHas('latestStatus', function ($query) {
                 $query->where('status', 'PENDING');
             })
+            ->whereHas('user', function ($query) use ($schoolId) {
+                $query->where('school_id', $schoolId);
+            })
             ->get()
             ->map(function ($application) {
-                // Check if each attachment exists
                 $application->has_attachment_1 = $application->attachment_url_1 && Storage::disk('private_leave_attachments')->exists($application->attachment_url_1);
                 $application->has_attachment_2 = $application->attachment_url_2 && Storage::disk('private_leave_attachments')->exists($application->attachment_url_2);
                 $application->has_attachment_3 = $application->attachment_url_3 && Storage::disk('private_leave_attachments')->exists($application->attachment_url_3);
@@ -157,7 +188,7 @@ class LeaveApplicationController extends Controller
 
         $request->validate([
             'status' => 'required|in:APPROVED,REJECTED',
-            'comment' => 'nullable|string',
+            'comment' => 'required_if:status,REJECTED|string|nullable',
         ]);
         $leaveApplication = LeaveApplication::findOrFail($leaveId);
         $teacher_name = $leaveApplication->user->name;
@@ -183,24 +214,39 @@ class LeaveApplicationController extends Controller
         $user = $leaveApplication->user;
         $leaveDaysByYear = $leaveApplication->leave_days_by_year;
 
-        if ($request->status === 'APPROVED') {
-            if (in_array($leaveApplication->leave_type, ['CASUAL', 'MEDICAL'])) {
-                foreach ($leaveDaysByYear as $year => $days) {
-                    $leaveCounter = LeaveCounter::getOrCreateForUser($user->id, $year);
+        Log::info('Updating leave status', [
+            'leave_id' => $leaveId,
+            'status' => $request->status,
+            'leave_type' => $leaveApplication->leave_type,
+            'leave_days_by_year' => $leaveDaysByYear,
+        ]);
 
-                    if ($leaveApplication->leave_type === 'CASUAL') {
-                        $remainingCasual = $leaveCounter->total_casual;
-                        if ($remainingCasual < $days) {
-                            return redirect()->route('leave.index')->with('error', "User only has {$remainingCasual} casual leave days remaining for {$year}.");
+        if ($request->status === 'APPROVED') {
+            try {
+                if (in_array($leaveApplication->leave_type, ['CASUAL', 'MEDICAL'])) {
+                    foreach ($leaveDaysByYear as $year => $days) {
+                        $leaveCounter = LeaveCounter::getOrCreateForUser($user->id, $year);
+
+                        Log::info('Processing leave counter', [
+                            'user_id' => $user->id,
+                            'year' => $year,
+                            'leave_counter' => $leaveCounter->toArray(),
+                            'days' => $days,
+                        ]);
+
+                        if ($leaveApplication->leave_type === 'CASUAL') {
+                            $remainingCasual = $leaveCounter->total_casual;
+                            if ($remainingCasual < $days) {
+                                return redirect()->route('leave.index')->with('error', "User only has {$remainingCasual} casual leave days remaining for {$year}.");
+                            }
+                            $leaveCounter->total_casual -= $days;
+                        } elseif ($leaveApplication->leave_type === 'MEDICAL') {
+                            $remainingMedical = $leaveCounter->total_medical;
+                            if ($remainingMedical < $days) {
+                                return redirect()->route('leave.index')->with('error', "User only has {$remainingMedical} medical leave days remaining for {$year}.");
+                            }
+                            $leaveCounter->total_medical -= $days;
                         }
-                        $leaveCounter->total_casual -= $days;
-                    } elseif ($leaveApplication->leave_type === 'MEDICAL') {
-                        $remainingMedical = $leaveCounter->total_medical;
-                        if ($remainingMedical < $days) {
-                            return redirect()->route('leave.index')->with('error', "User only has {$remainingMedical} medical leave days remaining for {$year}.");
-                        }
-                        $leaveCounter->total_medical -= $days;
-                    }
 
                     $leaveCounter->save();
                 }
@@ -235,26 +281,6 @@ class LeaveApplicationController extends Controller
         return view('Teacher.LeaveStatus', compact('pastApplications'));
     }
 
-    // public function record()
-    // {
-    //     if (Auth::user()->role !== 'PRINCIPAL') {
-    //         return redirect()->back()->with('error', 'Unauthorized access.');
-    //     }
-
-    //     $schoolId = Auth::user()->school_id;
-
-    //     $approvedLeaves = LeaveApplication::whereHas('latestStatus', function ($query) {
-    //         $query->where('status', 'APPROVED');
-    //     })
-    //         ->whereHas('user', function ($query) use ($schoolId) {
-    //             $query->where('school_id', $schoolId);
-    //         })
-    //         ->with(['user', 'latestStatus'])
-    //         ->orderBy('updated_at', 'desc')
-    //         ->paginate(5);
-
-    //     return view('Principal.leave_record', compact('approvedLeaves'));
-    // }
     public function record()
     {
         if (Auth::user()->role !== 'PRINCIPAL') {
@@ -273,7 +299,6 @@ class LeaveApplicationController extends Controller
             ->orderBy('updated_at', 'desc')
             ->paginate(5)
             ->through(function ($leave) {
-
                 $leave->has_attachment_1 = $leave->attachment_url_1 && Storage::disk('private_leave_attachments')->exists($leave->attachment_url_1);
                 $leave->has_attachment_2 = $leave->attachment_url_2 && Storage::disk('private_leave_attachments')->exists($leave->attachment_url_2);
                 $leave->has_attachment_3 = $leave->attachment_url_3 && Storage::disk('private_leave_attachments')->exists($leave->attachment_url_3);
