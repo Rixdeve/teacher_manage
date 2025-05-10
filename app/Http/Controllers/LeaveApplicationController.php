@@ -109,25 +109,30 @@ class LeaveApplicationController extends Controller
     }
 
     public function index()
-    {
-        if (Auth::user()->role !== 'PRINCIPAL') {
-            abort(403, 'Unauthorized access.');
-        }
-
-        $applications = LeaveApplication::with(['user', 'latestStatus'])
-            ->whereHas('latestStatus', function ($query) {
-                $query->where('status', 'PENDING');
-            })
-            ->get()
-            ->map(function ($application) {
-                $application->has_attachment_1 = $application->attachment_url_1 && Storage::disk('private_leave_attachments')->exists($application->attachment_url_1);
-                $application->has_attachment_2 = $application->attachment_url_2 && Storage::disk('private_leave_attachments')->exists($application->attachment_url_2);
-                $application->has_attachment_3 = $application->attachment_url_3 && Storage::disk('private_leave_attachments')->exists($application->attachment_url_3);
-                return $application;
-            });
-
-        return view('Principal.leave_applications', compact('applications'));
+{
+    if (Auth::user()->role !== 'PRINCIPAL') {
+        abort(403, 'Unauthorized access.');
     }
+
+    $schoolId = Auth::user()->school_id;
+
+    $applications = LeaveApplication::with(['user', 'latestStatus'])
+        ->whereHas('latestStatus', function ($query) {
+            $query->where('status', 'PENDING');
+        })
+        ->whereHas('user', function ($query) use ($schoolId) {
+            $query->where('school_id', $schoolId);
+        })
+        ->get()
+        ->map(function ($application) {
+            $application->has_attachment_1 = $application->attachment_url_1 && Storage::disk('private_leave_attachments')->exists($application->attachment_url_1);
+            $application->has_attachment_2 = $application->attachment_url_2 && Storage::disk('private_leave_attachments')->exists($application->attachment_url_2);
+            $application->has_attachment_3 = $application->attachment_url_3 && Storage::disk('private_leave_attachments')->exists($application->attachment_url_3);
+            return $application;
+        });
+
+    return view('Principal.leave_applications', compact('applications'));
+}
 
     public function updateStatus(Request $request, $leaveId)
     {

@@ -10,11 +10,7 @@
 </head>
 
 <body class="bg-gray-100 p-6">
-    <button onclick="history.back()"
-        class="absolute top-6 left-6 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg shadow-md flex items-center">
-        <img src="https://cdn-icons-png.flaticon.com/512/271/271220.png" class="w-5 h-5 mr-2" alt="Back" />
-        Back
-    </button>
+    
     <div class="max-w-6xl mx-auto bg-white shadow-lg rounded-lg p-6">
 
         <h2 class="text-2xl font-bold mb-4">
