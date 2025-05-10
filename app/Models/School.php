@@ -52,4 +52,8 @@ class School extends Model
     {
         return $this->hasMany(User::class);
     }
+    public function principal(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(User::class)->where('role', 'PRINCIPAL');
+    }
 }
