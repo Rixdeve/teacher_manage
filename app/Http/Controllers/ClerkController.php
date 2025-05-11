@@ -25,6 +25,58 @@ class ClerkController extends Controller
     {
         $schoolId = session('school_id');
 
+        $existingClerk = User::where('user_nic', $request->user_nic)
+            ->where('role', 'CLERK')
+            ->first();
+
+        if ($existingClerk && strtoupper($existingClerk->status) === 'TRANSFERRED') {
+            // Skip the initial validation to prevent duplicate email/phone errors
+
+            $request->validate([
+                'first_name' => 'required|string|max:255',
+                'last_name' => 'required|string|max:255',
+                'school_index' => 'required|numeric',
+                'user_address_no' => 'required|string',
+                'user_address_street' => 'required|string',
+                'user_address_city' => 'required|string',
+                'user_dob' => 'required|date',
+                'user_email' => 'required|email|unique:users,user_email,' . $existingClerk->id,
+                'user_phone' => 'required|digits:10|unique:users,user_phone,' . $existingClerk->id,
+                'profile_picture' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
+                'status' => 'required',
+            ]);
+
+            if ($request->hasFile('profile_picture')) {
+                if ($existingClerk->profile_picture && Storage::disk('public')->exists($existingClerk->profile_picture)) {
+                    Storage::disk('public')->delete($existingClerk->profile_picture);
+                }
+                $imagePath = $request->file('profile_picture')->store('profile_pictures', 'public');
+            } else {
+                $imagePath = $existingClerk->profile_picture;
+            }
+
+            $existingClerk->update([
+                'school_id'           => $schoolId,
+                'role'                => 'CLERK',
+                'user_password'       => Hash::make('Clerk@123'),
+                'first_name'          => $request->first_name,
+                'last_name'           => $request->last_name,
+                'school_index'        => $request->school_index,
+                'user_address_no'     => $request->user_address_no,
+                'user_address_street' => $request->user_address_street,
+                'user_address_city'   => $request->user_address_city,
+                'user_dob'            => $request->user_dob,
+                'user_email'          => $request->user_email,
+                'user_phone'          => $request->user_phone,
+                'profile_picture'     => $imagePath,
+                'status'              => 'ACTIVE',
+                'registered_date'     => now(),
+            ]);
+
+            return redirect('/schoolDashboard')->with('success', 'Transferred clerk registered successfully!');
+        }
+
+        // ✅ Only for new clerks — safe to validate now
         $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
@@ -35,16 +87,12 @@ class ClerkController extends Controller
             'user_nic' => 'required|string|unique:users,user_nic',
             'user_dob' => 'required|date',
             'user_email' => 'required|email|unique:users,user_email',
-            'user_phone' => 'required|numeric|digits:10|unique:users,user_phone',
+            'user_phone' => 'required|digits:10|unique:users,user_phone',
             'profile_picture' => 'required|image|mimes:jpg,png,jpeg|max:2048',
             'status' => 'required',
         ]);
 
-        if ($request->hasFile('profile_picture')) {
-            $imagePath = $request->file('profile_picture')->store('profile_pictures', 'public');
-        } else {
-            $imagePath = null;
-        }
+        $imagePath = $request->file('profile_picture')->store('profile_pictures', 'public');
 
         try {
             User::create([
@@ -65,6 +113,7 @@ class ClerkController extends Controller
                 'status' => $request->status,
                 'registered_date' => now(),
             ]);
+
             return redirect('/schoolDashboard')->with('success', 'Clerk registered successfully!');
         } catch (QueryException $e) {
             if ($e->errorInfo[1] == 1062) {
@@ -73,6 +122,41 @@ class ClerkController extends Controller
         } catch (\Exception $e) {
             return redirect('/registerClerk')->with('error', 'An error occurred!');
         }
+    }
+
+    public function checkTransferNIC(Request $request)
+    {
+        $nic = $request->input('nic');
+
+        $clerk = User::where('user_nic', $nic)
+                    ->where('role', 'CLERK')
+                    ->first();
+
+        if (!$clerk) {
+            return response()->json(['status' => 'not_found']);
+        }
+
+        if (strtoupper($clerk->status) !== 'TRANSFERRED') {
+            return response()->json(['status' => 'not_transferred']);
+        }
+
+        return response()->json([
+            'status' => 'TRANSFERRED',
+            'clerk' => [
+                'id' => $clerk->id,
+                'first_name' => $clerk->first_name,
+                'last_name' => $clerk->last_name,
+                'user_email' => $clerk->user_email,
+                'user_phone' => $clerk->user_phone,
+                'user_nic' => $clerk->user_nic,
+                'user_dob' => \Carbon\Carbon::parse($clerk->user_dob)->format('Y-m-d'),
+                'school_index' => '',
+                'user_address_no' => $clerk->user_address_no,
+                'user_address_street' => $clerk->user_address_street,
+                'user_address_city' => $clerk->user_address_city,
+                'profile_picture' => $clerk->profile_picture,
+            ]
+        ]);
     }
 
     public function fetchUserAttendance(Request $request)

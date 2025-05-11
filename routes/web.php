@@ -309,5 +309,8 @@ Route::put('/sectionals/{id}/reactivate', [SectionalController::class, 'reactiva
 Route::post('/check-transfer-nic', [TeacherController::class, 'checkTransferNIC'])->name('teachers.checkNIC');
 Route::post('/check-transfer-nic-principal', [PrincipalController::class, 'checkTransferNIC'])->name('principals.checkNIC');
 
+Route::post('/check-transfer-nic-clerk', [ClerkController::class, 'checkTransferNIC'])->name('clerks.checkNIC');
+
+
 Route::get('/teacher/notifications', [SectionalController::class, 'showNotifications'])->name('teacher.notifications');
 Route::get('/clerk/assign-duty-leave', [App\Http\Controllers\ClerkController::class, 'assignDutyLeave'])->name('clerk.assign.duty.leave');
