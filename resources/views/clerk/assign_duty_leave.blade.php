@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,8 +16,9 @@
             }
         }
     </script>
-    <title>Assign Duty Leave</title>
+    <title>Assign Duty Leave | TLMS</title>
 </head>
+
 <body class="bg-gray-300 flex items-center justify-center min-h-screen">
     <!-- Hamburger Menu for Mobile/Tablet (<1000px) -->
     <button id="hamburger" class="lg:hidden fixed top-4 left-4 z-50 p-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded-lg shadow-md flex items-center">
@@ -115,14 +117,14 @@
                 <h1 class="text-xl lg:text-2xl font-bold mb-6">Assign Duty Leave</h1>
 
                 @if (session('success'))
-                    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6" role="alert">
-                        {{ session('success') }}
-                    </div>
+                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6" role="alert">
+                    {{ session('success') }}
+                </div>
                 @endif
                 @if (session('error'))
-                    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6" role="alert">
-                        {{ session('error') }}
-                    </div>
+                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6" role="alert">
+                    {{ session('error') }}
+                </div>
                 @endif
 
                 <div class="max-h-[500px] overflow-y-auto bg-white p-4 lg:p-6 rounded-lg shadow-md">
@@ -135,11 +137,11 @@
                             <select name="user_id" id="user_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xs lg:text-sm" required>
                                 <option value="">Select a teacher</option>
                                 @foreach ($teachers as $teacher)
-                                    <option value="{{ $teacher->id }}" {{ old('user_id') == $teacher->id ? 'selected' : '' }}>{{ $teacher->first_name }} {{ $teacher->last_name }}</option>
+                                <option value="{{ $teacher->id }}" {{ old('user_id') == $teacher->id ? 'selected' : '' }}>{{ $teacher->first_name }} {{ $teacher->last_name }}</option>
                                 @endforeach
                             </select>
                             @error('user_id')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
                         </div>
 
@@ -147,7 +149,7 @@
                             <label for="commence_date" class="block text-xs lg:text-sm font-medium text-gray-700">Start Date</label>
                             <input type="date" name="commence_date" id="commence_date" value="{{ old('commence_date') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xs lg:text-sm" required>
                             @error('commence_date')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
                         </div>
 
@@ -155,7 +157,7 @@
                             <label for="end_date" class="block text-xs lg:text-sm font-medium text-gray-700">End Date</label>
                             <input type="date" name="end_date" id="end_date" value="{{ old('end_date') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xs lg:text-sm" required>
                             @error('end_date')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
                         </div>
 
@@ -163,7 +165,7 @@
                             <label for="reason" class="block text-xs lg:text-sm font-medium text-gray-700">Reason (Optional)</label>
                             <textarea name="reason" id="reason" rows="4" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xs lg:text-sm" placeholder="Enter the reason for duty leave">{{ old('reason') }}</textarea>
                             @error('reason')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
                         </div>
 
@@ -182,7 +184,7 @@
                                 }
                             </script>
                             @error('attachments.*')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
                         </div>
 
@@ -207,4 +209,5 @@
         });
     </script>
 </body>
+
 </html>

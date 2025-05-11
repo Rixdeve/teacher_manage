@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -15,8 +16,9 @@
             }
         }
     </script>
-    <title>Principal Dashboard - Leave Status</title>
+    <title>Principal Dashboard - Leave Status | TLMS</title>
 </head>
+
 <body class="bg-gray-300 flex items-center justify-center min-h-screen">
     <!-- Hamburger Menu for Mobile/Tablet (<1000px) -->
     <button id="hamburger" class="lg:hidden fixed top-4 left-4 z-50 p-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded-lg shadow-md flex items-center">
@@ -110,52 +112,52 @@
                 <div class="overflow-y-auto h-[500px] lg:h-auto">
                     <h2 class="text-base lg:text-lg font-semibold mb-3 lg:mb-4">Your Leave History</h2>
                     @if ($pastApplications->isEmpty())
-                        <p class="text-gray-600 text-sm lg:text-base">No past leave applications found.</p>
+                    <p class="text-gray-600 text-sm lg:text-base">No past leave applications found.</p>
                     @else
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse">
-                                <thead>
-                                    <tr class="bg-gray-200">
-                                        <th class="p-2 lg:p-3 text-gray-700 font-semibold text-sm lg:text-base">Date Submitted</th>
-                                        <th class="p-2 lg:p-3 text-gray-700 font-semibold text-sm lg:text-base">From Date</th>
-                                        <th class="p-2 lg:p-3 text-gray-700 font-semibold text-sm lg:text-base">To Date</th>
-                                        <th class="p-2 lg:p-3 text-gray-700 font-semibold text-sm lg:text-base">Leave Type</th>
-                                        <th class="p-2 lg:p-3 text-gray-700 font-semibold text-sm lg:text-base">Reason</th>
-                                        <th class="p-2 lg:p-3 text-gray-700 font-semibold text-sm lg:text-base">Status</th>
-                                        <th class="p-2 lg:p-3 text-gray-700 font-semibold text-sm lg:text-base">Remarks</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($pastApplications as $application)
-                                        <tr class="border-b hover:bg-gray-50">
-                                            <td class="p-2 lg:p-3 text-sm lg:text-base">{{ $application->created_at->format('Y-m-d') }}</td>
-                                            <td class="p-2 lg:p-3 text-sm lg:text-base">{{ $application->commence_date }}</td>
-                                            <td class="p-2 lg:p-3 text-sm lg:text-base">{{ $application->end_date }}</td>
-                                            <td class="p-2 lg:p-3 text-sm lg:text-base">{{ $application->leave_type }}</td>
-                                            <td class="p-2 lg:p-3 text-sm lg:text-base">{{ $application->reason ?? 'N/A' }}</td>
-                                            <td class="p-2 lg:p-3 text-sm lg:text-base">
-                                                @if ($application->latestStatus)
-                                                    <span class="inline-block px-1 lg:px-2 py-0.5 lg:py-1 rounded text-xs lg:text-sm
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-200">
+                                    <th class="p-2 lg:p-3 text-gray-700 font-semibold text-sm lg:text-base">Date Submitted</th>
+                                    <th class="p-2 lg:p-3 text-gray-700 font-semibold text-sm lg:text-base">From Date</th>
+                                    <th class="p-2 lg:p-3 text-gray-700 font-semibold text-sm lg:text-base">To Date</th>
+                                    <th class="p-2 lg:p-3 text-gray-700 font-semibold text-sm lg:text-base">Leave Type</th>
+                                    <th class="p-2 lg:p-3 text-gray-700 font-semibold text-sm lg:text-base">Reason</th>
+                                    <th class="p-2 lg:p-3 text-gray-700 font-semibold text-sm lg:text-base">Status</th>
+                                    <th class="p-2 lg:p-3 text-gray-700 font-semibold text-sm lg:text-base">Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($pastApplications as $application)
+                                <tr class="border-b hover:bg-gray-50">
+                                    <td class="p-2 lg:p-3 text-sm lg:text-base">{{ $application->created_at->format('Y-m-d') }}</td>
+                                    <td class="p-2 lg:p-3 text-sm lg:text-base">{{ $application->commence_date }}</td>
+                                    <td class="p-2 lg:p-3 text-sm lg:text-base">{{ $application->end_date }}</td>
+                                    <td class="p-2 lg:p-3 text-sm lg:text-base">{{ $application->leave_type }}</td>
+                                    <td class="p-2 lg:p-3 text-sm lg:text-base">{{ $application->reason ?? 'N/A' }}</td>
+                                    <td class="p-2 lg:p-3 text-sm lg:text-base">
+                                        @if ($application->latestStatus)
+                                        <span class="inline-block px-1 lg:px-2 py-0.5 lg:py-1 rounded text-xs lg:text-sm
                                                         {{ $application->latestStatus->status === 'APPROVED' ? 'bg-green-100 text-green-700' : 
                                                            ($application->latestStatus->status === 'REJECTED' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700') }}">
-                                                        {{ $application->latestStatus->status }}
-                                                    </span>
-                                                @else
-                                                    <span class="inline-block px-1 lg:px-2 py-0.5 lg:py-1 rounded text-xs lg:text-sm bg-gray-100 text-gray-700">
-                                                        Unknown
-                                                    </span>
-                                                @endif
-                                            </td>
-                                            <td class="p-2 lg:p-3 text-sm lg:text-base">
-                                                @if ($application->latestStatus && $application->latestStatus->status !== 'PENDING')
-                                                    {{ $application->latestStatus->comment ?? 'N/A' }}
-                                                @endif
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
+                                            {{ $application->latestStatus->status }}
+                                        </span>
+                                        @else
+                                        <span class="inline-block px-1 lg:px-2 py-0.5 lg:py-1 rounded text-xs lg:text-sm bg-gray-100 text-gray-700">
+                                            Unknown
+                                        </span>
+                                        @endif
+                                    </td>
+                                    <td class="p-2 lg:p-3 text-sm lg:text-base">
+                                        @if ($application->latestStatus && $application->latestStatus->status !== 'PENDING')
+                                        {{ $application->latestStatus->comment ?? 'N/A' }}
+                                        @endif
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                     @endif
                 </div>
             </div>
@@ -174,4 +176,5 @@
         });
     </script>
 </body>
+
 </html>

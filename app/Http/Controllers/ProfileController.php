@@ -18,29 +18,26 @@ class ProfileController extends Controller
         $user = Auth::user();
         return view('profile.show', compact('user'));
     }
-    public function changePassword()
+
+
+    public function changePassword(Request $request)
     {
-        return view('profile.change-password');
+        $request->validate([
+            'current_password' => 'required',
+            'new_password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $user = Auth::user();
+
+        if (!Hash::check($request->current_password, $user->user_password)) {
+            return back()->withErrors(['current_password' => 'Current password is incorrect.']);
+        }
+
+        $user->user_password = Hash::make($request->new_password);
+        $user->save();
+
+        return back()->with('success', 'Password updated successfully.');
     }
-
-    // public function updatePassword(Request $request)
-    // {
-
-    //     $request->validate([
-    //         'current_password' => 'required',
-    //         'new_password' => 'required|min:8|confirmed',
-    //     ]);
-
-    //     if (!Hash::check($request->current_password, Auth::user()->user_password)) {
-    //         return back()->withErrors(['current_password' => 'Current password is incorrect']);
-    //     }
-
-    //     Auth::user()->update([
-    //         'user_password' => $request->new_password,
-    //     ]);
-
-    //     return redirect()->route('profile.show')->with('success', 'Password updated successfully.');
-    // }
 
     public function edit()
     {

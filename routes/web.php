@@ -164,8 +164,8 @@ Route::get('/show', [ProfileController::class, 'show'])->name('profile.show');
 Route::get('/change-password', function () {
     return view('profile.change-password');
 })->name('password.change');
+Route::post('/change-password', [ProfileController::class, 'changePassword'])->name('profile.password.update');
 
-Route::post('/change-password', [ProfileController::class, 'changePassword'])->name('password.update');
 
 // Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
 // Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
@@ -329,5 +329,5 @@ Route::post('/password/reset', [PasswordResetController::class, 'reset'])->name(
 Route::get('/sectional/approved-leaves', [SectionalController::class, 'approvedLeaves'])->name('sectional.approved_leaves');
 Route::get('/sectional/assign-relief/{leaveApplicationId}', [SectionalController::class, 'assignReliefForm'])->name('sectional.assign_relief');
 Route::post('/sectional/assign-relief/{leaveApplicationId}', [SectionalController::class, 'storeRelief'])->name('sectional.store_relief');
-   
+
 Route::get('/teacher/notifications', [SectionalController::class, 'showNotifications'])->name('teacher.notifications');

@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Teacher QR Code</title>
+    <title>Teacher QR Code | TLMS</title>
 </head>
 
 <body class="flex items-center justify-center min-h-screen bg-gray-100">

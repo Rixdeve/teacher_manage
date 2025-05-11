@@ -255,8 +255,8 @@ class SectionalController extends Controller
     {
         $schoolId = session('school_id');
         $sectionals = User::where('role', 'SECTIONAL_HEAD')
-                          ->where('school_id', $schoolId)
-                          ->get();
+            ->where('school_id', $schoolId)
+            ->get();
 
         return view('school.manageSectionals', compact('sectionals'));
     }
@@ -379,6 +379,14 @@ class SectionalController extends Controller
         $sectionalHead = Auth::user();
 
         if ($leaveApplication->user->school_id !== $sectionalHead->school_id || $leaveApplication->user->role !== 'TEACHER' || $leaveApplication->user->section !== $sectionalHead->section) {
+            dd([
+                'sectional_school_id' => $sectionalHead->school_id,
+                'teacher_school_id' => $leaveApplication->user->school_id,
+                'sectional_section' => $sectionalHead->section,
+                'teacher_section' => $leaveApplication->user->section,
+                'teacher_role' => $leaveApplication->user->role,
+            ]);
+
             abort(403, 'Unauthorized to assign relief for this leave application.');
         }
 

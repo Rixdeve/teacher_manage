@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Live Attendance</title>
+    <title>Live Attendance | TLMS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <meta http-equiv="refresh" content="10">
@@ -26,14 +27,15 @@
         }
     </script>
 </head>
+
 <body class="bg-white font-sans flex items-center justify-center min-h-screen antialiased">
     <div class="w-full h-screen flex flex-col lg:flex-row">
-       
+
         <button id="hamburger" class="lg:hidden fixed top-4 left-4 z-50 p-3 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-full shadow-md hover:shadow-custom-hover transition-shadow duration-300">
             <span class="text-2xl">☰</span>
         </button>
 
-        
+
         <div id="sidebar" class="hidden lg:flex w-full lg:w-1/4 bg-gradient-to-b from-blue-100 to-gray-500 p-6 m-0 lg:m-4 rounded-none lg:rounded-2xl shadow-none lg:shadow-custom flex-col items-center fixed lg:static top-0 left-0 h-[90vh] lg:h-auto max-h-[100vh] z-40 transition-transform duration-300 ease-in-out transform lg:transform-none bg-opacity-95 overflow-y-auto">
             <div class="relative group">
                 <img src="{{ asset('storage/photos/boy.png') }}" class="w-24 h-24 rounded-full border-4 border-white shadow-md mb-6 transition-transform duration-300 group-hover:scale-105" alt="Profile" />
@@ -86,9 +88,9 @@
             </ul>
         </div>
 
-        
+
         <div class="w-full lg:w-3/4 p-6 lg:p-8 relative">
-           
+
             <div class="absolute top-4 lg:top-6 right-4 lg:right-6 flex items-center space-x-4 group">
                 <img src="{{ asset('storage/' . Auth::user()->profile_picture) }}" class="h-10 w-10 rounded-full border-2 border-gray-400 shadow-md transition-transform duration-300 group-hover:scale-105" alt="Profile" />
                 <a href="{{ url('/show') }}" class="text-right">
@@ -97,13 +99,13 @@
                 </a>
             </div>
 
-          
+
             <button onclick="history.back()" class="absolute top-14 lg:top-6 left-4 lg:left-6 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-full shadow-md hover:shadow-custom-hover flex items-center transition-shadow duration-300" aria-label="Go back">
                 <img src="https://cdn-icons-png.flaticon.com/512/271/271220.png" class="w-5 h-5 mr-2" alt="Back" />
                 Back
             </button>
 
-           
+
             <div class="max-w-6xl mx-auto bg-white shadow-custom rounded-2xl p-6 mt-20 lg:mt-12">
                 <h2 class="text-2xl lg:text-3xl font-bold text-gray-800 mb-6 flex items-center">
                     Live Present List ({{ now()->format('Y-m-d') }})
@@ -158,7 +160,7 @@
             sidebar.classList.toggle('-translate-x-full');
         });
 
-       
+
         document.addEventListener('click', function(event) {
             const sidebar = document.getElementById('sidebar');
             const hamburger = document.getElementById('hamburger');
@@ -169,7 +171,7 @@
             }
         });
 
-       
+
         document.querySelectorAll('#sidebar a').forEach(link => {
             link.addEventListener('click', function() {
                 document.getElementById('sidebar').classList.add('hidden');
@@ -179,4 +181,5 @@
         });
     </script>
 </body>
+
 </html>

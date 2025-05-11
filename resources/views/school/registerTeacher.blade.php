@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <title>Register Teacher</title>
+    <title>Register Teacher | TLMS</title>
 </head>
 
 <body class="bg-gray-300 flex items-center justify-center min-h-screen">
@@ -412,44 +412,46 @@
             const nic = document.getElementById('check_nic').value;
 
             fetch("{{ route('teachers.checkNIC') }}", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({ nic: nic })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'TRANSFERRED') {
-                    // Autofill fields
-                    document.getElementById('first_name').value = data.teacher.first_name;
-                    document.getElementById('last_name').value = data.teacher.last_name;
-                    document.getElementById('user_email').value = data.teacher.user_email;
-                    document.getElementById('user_phone').value = data.teacher.user_phone;
-                    document.getElementById('user_nic').value = data.teacher.user_nic;
-                    document.getElementById('user_dob').value = data.teacher.user_dob;
-                    document.getElementById('user_address_no').value = data.teacher.user_address_no;
-                    document.getElementById('user_address_street').value = data.teacher.user_address_street;
-                    document.getElementById('user_address_city').value = data.teacher.user_address_city;
-                    document.getElementById('currentProfileImage').src = '/storage/' + data.teacher.profile_picture;
-                    document.getElementById('currentProfileWrapper').classList.remove('hidden');
-                    document.getElementById('section').value = data.teacher.section;
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        nic: nic
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'TRANSFERRED') {
+                        // Autofill fields
+                        document.getElementById('first_name').value = data.teacher.first_name;
+                        document.getElementById('last_name').value = data.teacher.last_name;
+                        document.getElementById('user_email').value = data.teacher.user_email;
+                        document.getElementById('user_phone').value = data.teacher.user_phone;
+                        document.getElementById('user_nic').value = data.teacher.user_nic;
+                        document.getElementById('user_dob').value = data.teacher.user_dob;
+                        document.getElementById('user_address_no').value = data.teacher.user_address_no;
+                        document.getElementById('user_address_street').value = data.teacher.user_address_street;
+                        document.getElementById('user_address_city').value = data.teacher.user_address_city;
+                        document.getElementById('currentProfileImage').src = '/storage/' + data.teacher.profile_picture;
+                        document.getElementById('currentProfileWrapper').classList.remove('hidden');
+                        document.getElementById('section').value = data.teacher.section;
 
-                    // Lock NIC
-                    document.getElementById('user_nic').readOnly = true;
-                    document.getElementById('check_nic').readOnly = true;
+                        // Lock NIC
+                        document.getElementById('user_nic').readOnly = true;
+                        document.getElementById('check_nic').readOnly = true;
 
-                    // Hide Check button
-                    document.querySelector('button[onclick="checkNIC()"]').style.display = 'none';
-                } else {
-                    alert('This teacher is not marked as transferred.');
-                }
-            })
-            .catch(err => {
-                console.error(err);
-                alert('NIC not found or error occurred.');
-            });
+                        // Hide Check button
+                        document.querySelector('button[onclick="checkNIC()"]').style.display = 'none';
+                    } else {
+                        alert('This teacher is not marked as transferred.');
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('NIC not found or error occurred.');
+                });
         }
 
         function resetNIC() {
@@ -461,4 +463,5 @@
         }
     </script>
 </body>
+
 </html>

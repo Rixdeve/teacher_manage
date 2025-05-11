@@ -5,6 +5,7 @@ if (!session()->has('school_id')) {
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -20,8 +21,9 @@ if (!session()->has('school_id')) {
             }
         }
     </script>
-    <title>Assign Clerk</title>
+    <title>Assign Clerk | TLMS</title>
 </head>
+
 <body class="bg-white flex items-center justify-center min-h-screen">
     <div class="w-full h-screen flex flex-col lg:flex-row">
         <!-- Hamburger Menu for Mobile/Tablet (<1000px) -->
@@ -282,4 +284,5 @@ if (!session()->has('school_id')) {
         }
     </script>
 </body>
+
 </html>
