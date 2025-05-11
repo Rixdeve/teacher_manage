@@ -13,6 +13,7 @@ class LeaveApplication extends Model
 
     protected $fillable = [
         'user_id',
+        'submitted_by',
         'commence_date',
         'end_date',
         'leave_type',
@@ -30,6 +31,11 @@ class LeaveApplication extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function submittedBy()
+    {
+        return $this->belongsTo(User::class, 'submitted_by');
     }
 
     public function statuses()
@@ -62,6 +68,12 @@ class LeaveApplication extends Model
         if ($this->leave_type === 'SHORT') {
             $year = $start->year;
             $daysByYear[$year] = 0.5;
+            return $daysByYear;
+        }
+
+        if ($this->leave_type === 'DUTY') {
+            $year = $start->year;
+            $daysByYear[$year] = $this->leave_days;
             return $daysByYear;
         }
 
