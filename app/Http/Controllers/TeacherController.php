@@ -207,7 +207,6 @@ class TeacherController extends Controller
         return response()->json(['message' => 'Already checked in and out today']);
     }
 
-<<<<<<< HEAD
 
     public function manage()
     {
@@ -297,15 +296,4 @@ class TeacherController extends Controller
         return redirect()->back()->with('success', 'Teacher reactivated successfully.');
     }
 
-=======
-//     public function showNotifications()
-// {
-//     $user = Auth::user();
-//     $notifications = Notification::where('user_id', $user->id)
-//         ->orderBy('created_at', 'desc')
-//         ->get();
-
-//     return view('teacher.notifications', compact('notifications'));
-// }
->>>>>>> b0984c742833eeb9da4aa277d9de4f29381f65fb
 }

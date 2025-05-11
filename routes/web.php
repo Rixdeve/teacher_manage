@@ -277,7 +277,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/leave/history', [LeaveApplicationController::class, 'history'])->name('leave.history');
 });
 
-<<<<<<< HEAD
 Route::get('/school/manage-teachers', [SchoolController::class, 'manageTeachers'])->name('school.manageTeachers');
 Route::get('/teachers/{id}/edit', [TeacherController::class, 'edit'])->name('teachers.edit');
 Route::put('/teachers/{id}/update', [TeacherController::class, 'update'])->name('teachers.update');
@@ -310,20 +309,3 @@ Route::put('/sectionals/{id}/reactivate', [SectionalController::class, 'reactiva
 Route::post('/check-transfer-nic', [TeacherController::class, 'checkTransferNIC'])->name('teachers.checkNIC');
 Route::post('/check-transfer-nic-principal', [PrincipalController::class, 'checkTransferNIC'])->name('principals.checkNIC');
 
-=======
-
-
-
-Route::get('/clerk/leave/create', [LeaveApplicationController::class, 'clerkCreate'])->name('clerk.leave.create');
-Route::post('/leave/store', [LeaveApplicationController::class, 'store'])->name('leave.store');
-
-Route::get('/sectional/approved-leaves', [SectionalController::class, 'approvedLeaves'])->name('sectional.approved_leaves');
-    Route::get('/sectional/assign-relief/{leaveApplicationId}', [SectionalController::class, 'assignReliefForm'])->name('sectional.assign_relief');
-    Route::post('/sectional/assign-relief/{leaveApplicationId}', [SectionalController::class, 'storeRelief'])->name('sectional.store_relief');
-   
-
-    
-    Route::get('/teacher/notifications', [SectionalController::class, 'showNotifications'])->name('teacher.notifications');
-
-    Route::get('/clerk/assign-duty-leave', [App\Http\Controllers\ClerkController::class, 'assignDutyLeave'])->name('clerk.assign.duty.leave');
->>>>>>> b0984c742833eeb9da4aa277d9de4f29381f65fb
