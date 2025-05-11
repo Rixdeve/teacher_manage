@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -15,7 +15,7 @@
             }
         }
     </script>
-    <title>Clerk Dashboard</title>
+    <title>Assign Duty Leave</title>
 </head>
 <body class="bg-gray-300 flex items-center justify-center min-h-screen">
     <!-- Hamburger Menu for Mobile/Tablet (<1000px) -->
@@ -53,13 +53,12 @@
                         Apply Leave for teacher
                     </a>
                 </li>
-                <li class="w-full py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2">
-    <a href="{{ route('clerk.assign.duty.leave') }}" class="flex items-center w-full">
-        <img src="https://cdn-icons-png.flaticon.com/512/9882/9882238.png" class="w-6 h-6 mr-2" alt="Assign Duty Leave" />
-        Assign Duty Leave
-    </a>
-</li>
-                
+                <li class="w-full py-2 flex items-center text-black font-semibold cursor-pointer bg-gray-200 rounded-lg p-2">
+                    <a href="{{ route('clerk.assign.duty.leave') }}" class="flex items-center w-full">
+                        <img src="https://cdn-icons-png.flaticon.com/512/9882/9882238.png" class="w-6 lg:w-8 h-6 lg:h-8 mr-2" alt="Assign Duty Leave" />
+                        Assign Duty Leave
+                    </a>
+                </li>
                 <li class="w-full py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2">
                     <a href="{{ url('') }}" class="flex items-center w-full">
                         <img src="{{ asset('storage/photos/immigration.png') }}" class="w-6 lg:w-8 h-6 lg:h-8 mr-2" alt="View Leave Application" />
@@ -87,6 +86,7 @@
             </ul>
         </div>
 
+        <!-- Main Content -->
         <div class="w-full lg:w-3/4 p-4 lg:p-8 relative">
             <!-- Back Button -->
             <button onclick="history.back()" class="absolute top-6 left-16 lg:left-6 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg shadow-md flex items-center z-40">
@@ -94,6 +94,7 @@
                 Back
             </button>
 
+            <!-- User Profile -->
             <div class="absolute top-16 lg:top-6 right-4 lg:right-6 flex items-center space-x-3">
                 <img src="{{ asset('storage/' . Auth::user()->profile_picture) }}" class="h-8 lg:h-10 w-8 lg:w-10 rounded-full border border-gray-400" />
                 <div>
@@ -104,48 +105,95 @@
                 </div>
             </div>
 
-            <div class="mt-32 lg:mt-12">
-                <div class="bg-gradient-to-b from-blue-100 to-gray-500 p-4 lg:p-6 rounded-lg mb-4 lg:mb-6 relative">
-                    <div class="absolute top-2 right-2 flex items-center space-x-2">
-                        <!-- <div class="bg-green-500 rounded-full w-3 h-3"></div> -->
-                        <!-- <span class="text-sm text-green-500 font-semibold">On Duty off duty</span> -->
-                    </div>
+            <!-- Form Content -->
+            <div class="mt-32 lg:mt-12 max-w-2xl mx-auto">
+                <div class="bg-gradient-to-b from-blue-100 to-gray-500 p-4 lg:p-6 rounded-lg mb-4 lg:mb-6">
                     <p class="text-gray-700 text-sm lg:text-base">Welcome back!</p>
                     <h1 class="text-xl lg:text-2xl font-bold">{{ Auth::user()->first_name }}</h1>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
-                    <div class="bg-blue-100 p-4 lg:p-6 rounded-lg text-center shadow-md hover:shadow-lg">
-                        <div class="flex flex-col items-center justify-center">
-                            <a href="{{ url('/manualAttendance') }}">
-                                <p class="text-gray-700 font-semibold text-sm lg:text-base">Manual Attendance Marking</p>
-                                <img src="{{ asset('storage/photos/fingerprint-scan.png') }}" class="w-8 lg:w-12 h-8 lg:h-12 mb-2 lg:mb-4" alt="Casual Leave" />
-                            </a>
-                        </div>
+                <h1 class="text-xl lg:text-2xl font-bold mb-6">Assign Duty Leave</h1>
+
+                @if (session('success'))
+                    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6" role="alert">
+                        {{ session('success') }}
                     </div>
-                    <div class="bg-blue-100 p-4 lg:p-6 rounded-lg text-center shadow-md hover:shadow-lg">
-                        <div class="flex flex-col items-center justify-center">
-                            <a href="{{ url('/liveAttendanceclerk') }}">
-                                <p class="text-gray-700 font-semibold text-sm lg:text-base">Live Attendance</p>
-                                <img src="{{ asset('storage/photos/live.png') }}" class="w-8 lg:w-12 h-8 lg:h-12 mb-2 lg:mb-4" alt="Attendance" />
-                            </a>
-                        </div>
+                @endif
+                @if (session('error'))
+                    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6" role="alert">
+                        {{ session('error') }}
                     </div>
-                    <div class="bg-blue-100 p-4 lg:p-6 rounded-lg text-center shadow-md hover:shadow-lg">
-                        <div class="flex flex-col items-center justify-center">
-                            <a href="{{ url('/absenteesclerk') }}">
-                                <p class="text-gray-700 font-semibold text-sm lg:text-base">Live Absentees</p>
-                                <img src="{{ asset('storage/photos/absence.png') }}" class="w-8 lg:w-12 h-8 lg:h-12 mb-2 lg:mb-4" alt="Absentees" />
-                            </a>
-                        </div>
+                @endif
+
+                <form action="{{ route('leave.store') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <input type="hidden" name="leave_type" value="DUTY">
+
+                    <div class="mb-4">
+                        <label for="user_id" class="block text-gray-700 font-semibold mb-2">Select Teacher</label>
+                        <select name="user_id" id="user_id" class="w-full p-2 border rounded-lg" required>
+                            <option value="">Select a teacher</option>
+                            @foreach ($teachers as $teacher)
+                                <option value="{{ $teacher->id }}">{{ $teacher->first_name }} {{ $teacher->last_name }}</option>
+                            @endforeach
+                        </select>
+                        @error('user_id')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
-                    <div class="bg-blue-100 p-4 lg:p-6 rounded-lg text-center shadow-md hover:shadow-lg">
-                        <div class="flex flex-col items-center justify-center">
-                            <p class="text-gray-700 font-semibold text-sm lg:text-base">View Leave Applications</p>
-                            <img src="{{ asset('storage/photos/leave.png') }}" class="w-8 lg:w-12 h-8 lg:h-12 mb-2 lg:mb-4" alt="Medical Leave" />
-                        </div>
+
+                    <div class="mb-4">
+                        <label for="commence_date" class="block text-gray-700 font-semibold mb-2">Start Date</label>
+                        <input type="date" name="commence_date" id="commence_date" class="w-full p-2 border rounded-lg" required>
+                        @error('commence_date')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
-                </div>
+
+                    <div class="mb-4">
+                        <label for="end_date" class="block text-gray-700 font-semibold mb-2">End Date</label>
+                        <input type="date" name="end_date" id="end_date" class="w-full p-2 border rounded-lg" required>
+                        @error('end_date')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="reason" class="block text-gray-700 font-semibold mb-2">Reason</label>
+                        <textarea name="reason" id="reason" class="w-full p-2 border rounded-lg" rows="4" placeholder="Enter the reason for duty leave"></textarea>
+                        @error('reason')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="attachment_url_1" class="block text-gray-700 font-semibold mb-2">Attachment 1 (Optional)</label>
+                        <input type="file" name="attachment_url_1" id="attachment_url_1" class="w-full p-2 border rounded-lg" accept=".pdf,.jpg,.jpeg,.png">
+                        @error('attachment_url_1')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="attachment_url_2" class="block text-gray-700 font-semibold mb-2">Attachment 2 (Optional)</label>
+                        <input type="file" name="attachment_url_2" id="attachment_url_2" class="w-full p-2 border rounded-lg" accept=".pdf,.jpg,.jpeg,.png">
+                        @error('attachment_url_2')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="attachment_url_3" class="block text-gray-700 font-semibold mb-2">Attachment 3 (Optional)</label>
+                        <input type="file" name="attachment_url_3" id="attachment_url_3" class="w-full p-2 border rounded-lg" accept=".pdf,.jpg,.jpeg,.png">
+                        @error('attachment_url_3')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="flex justify-end">
+                        <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600">Assign Duty Leave</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

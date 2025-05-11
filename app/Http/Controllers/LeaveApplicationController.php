@@ -9,6 +9,7 @@ use App\Models\LeaveApplication;
 use App\Models\LeaveStatus;
 use App\Models\LeaveCounter;
 use App\Models\User;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -17,7 +18,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\File;
 use App\Mail\LeaveRequestMail;
 use Illuminate\Support\Facades\Mail;
-use Exeption;
+use Exception;
 
 class LeaveApplicationController extends Controller
 {
@@ -60,12 +61,13 @@ class LeaveApplicationController extends Controller
             'user_id' => 'sometimes|exists:users,id',
             'commence_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:commence_date',
-            'leave_type' => 'required|string',
+            'leave_type' => 'required|in:CASUAL,MEDICAL,SHORT,DUTY',
             'reason' => 'nullable|string',
             'attachment_url_1' => 'nullable|file|mimes:pdf,jpg,jpeg,png',
             'attachment_url_2' => 'nullable|file|mimes:pdf,jpg,jpeg,png',
             'attachment_url_3' => 'nullable|file|mimes:pdf,jpg,jpeg,png',
         ]);
+
         $subject = 'Leave Request Submitted';
         $name = Auth::user()->name;
         $user_email = Auth::user()->user_email;
@@ -78,7 +80,7 @@ class LeaveApplicationController extends Controller
         $leaveType = strtoupper($request->leave_type);
         $principal_email = $principal->user_email ?? null;
         $principal_name = $principal->name ?? null;
-        $principal_subject = 'Leave Request Recived From ' . $user->name;
+        $principal_subject = 'Leave Request Received From ' . $user->name;
         $mailService = new PHPMailerService();
         $targetUserId = $request->input('user_id', Auth::id());
 
@@ -95,6 +97,7 @@ class LeaveApplicationController extends Controller
         $leaveApplication->commence_date = $request->commence_date;
         $leaveApplication->end_date = $request->end_date;
         $leaveApplication->leave_type = $leaveType;
+        $leaveApplication->reason = $request->reason;
 
         Log::info('Leave Application Dates', [
             'commence_date' => $request->commence_date,
@@ -131,29 +134,37 @@ class LeaveApplicationController extends Controller
             }
         }
 
-        $leaveApplication->reason = $request->reason;
-
-        if ($request->hasFile('attachments')) {
-            $attachments = $request->file('attachments');
-            $attachmentFields = ['attachment_url_1', 'attachment_url_2', 'attachment_url_3'];
-            foreach ($attachments as $index => $file) {
-                if ($index < 3) {
-                    $leaveApplication->{$attachmentFields[$index]} = $file->store('', 'private_leave_attachments');
-                }
-            }
+        if ($request->hasFile('attachment_url_1')) {
+            $leaveApplication->attachment_url_1 = $request->file('attachment_url_1')->store('', 'private_leave_attachments');
+        }
+        if ($request->hasFile('attachment_url_2')) {
+            $leaveApplication->attachment_url_2 = $request->file('attachment_url_2')->store('', 'private_leave_attachments');
+        }
+        if ($request->hasFile('attachment_url_3')) {
+            $leaveApplication->attachment_url_3 = $request->file('attachment_url_3')->store('', 'private_leave_attachments');
         }
 
         $leaveApplication->save();
 
+        $status = $leaveType === 'DUTY' ? 'APPROVED' : 'PENDING';
         LeaveStatus::create([
             'leave_id' => $leaveApplication->id,
             'user_id' => $targetUserId,
-            'status' => 'PENDING',
+            'status' => $status,
         ]);
-        Mail::to($user_email)->send(new LeaveRequestMail($name, $subject, $leaveType, $start_date, $end_date, $reason));
 
-        // $mailService->sendMail($user->user_email, 'Leave Request Submitted', 'Your leave request has been successfully submitted.');
-        Mail::to($principal_email)->send(new LeaveReqestRecivedMail($principal_name, $principal_email, $name, $principal_subject, $leave_type, $start_date, $end_date, $reason));
+        if ($leaveType === 'DUTY') {
+            Notification::create([
+                'user_id' => $targetUserId,
+                'title' => 'Duty Leave Assigned',
+                'message' => "You have been assigned a duty leave from {$start_date} to {$end_date}. Reason: {$reason}",
+                'read' => false,
+            ]);
+        } else {
+            Mail::to($user_email)->send(new LeaveRequestMail($name, $subject, $leaveType, $start_date, $end_date, $reason));
+            Mail::to($principal_email)->send(new LeaveReqestRecivedMail($principal_name, $principal_email, $name, $principal_subject, $leave_type, $start_date, $end_date, $reason));
+        }
+
         return redirect()->route($user->role === 'CLERK' ? 'clerk.leave.create' : 'leave.create')
             ->with('success', 'Leave application submitted successfully.');
     }
@@ -186,7 +197,6 @@ class LeaveApplicationController extends Controller
 
     public function updateStatus(Request $request, $leaveId)
     {
-
         $request->validate([
             'status' => 'required|in:APPROVED,REJECTED',
             'comment' => 'required_if:status,REJECTED|string|nullable',
@@ -201,7 +211,6 @@ class LeaveApplicationController extends Controller
         $end_date = $leaveApplication->end_date;
         $reject_comment = $request->comment;
         $status = $request->status;
-
 
         if (Auth::user()->role !== 'PRINCIPAL') {
             return redirect()->back()->with('error', 'Unauthorized action.');
@@ -222,7 +231,7 @@ class LeaveApplicationController extends Controller
             'leave_days_by_year' => $leaveDaysByYear,
         ]);
 
-        if ($request->status === 'APPROVED') {
+        if ($request->status === 'APPROVED' && $leaveApplication->leave_type !== 'DUTY') {
             try {
                 if (in_array($leaveApplication->leave_type, ['CASUAL', 'MEDICAL'])) {
                     foreach ($leaveDaysByYear as $year => $days) {
@@ -269,16 +278,14 @@ class LeaveApplicationController extends Controller
             }
         }
 
-
         $latestStatus->update([
             'status' => $request->status,
             'comment' => $request->comment,
         ]);
-        Mail::to(($teacher_email))->send(new LeaveRequestUpdateMail($teacher_name, $subject, $teacher_email, $leave_type, $start_date, $end_date, $status, $reject_comment));
+        Mail::to($teacher_email)->send(new LeaveRequestUpdateMail($teacher_name, $subject, $teacher_email, $leave_type, $start_date, $end_date, $status, $reject_comment));
 
         return redirect()->route('leave.index')->with('success', 'Leave application status updated successfully.');
     }
-
 
     public function history()
     {

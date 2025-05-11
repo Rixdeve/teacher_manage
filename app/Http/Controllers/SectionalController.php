@@ -249,6 +249,114 @@ class SectionalController extends Controller
 
         return redirect()->route('sectional_head.dashboard')->with('success', 'Leave application status updated successfully.');
     }
+    public function approvedLeaves()
+    {
+        $sectionalHead = Auth::user();
+        $schoolId = $sectionalHead->school_id;
+
+        $approvedLeaves = LeaveApplication::whereHas('latestStatus', function ($query) {
+            $query->where('status', 'APPROVED');
+        })
+            ->whereHas('user', function ($query) use ($schoolId) {
+                $query->where('school_id', $schoolId)->where('role', 'TEACHER');
+            })
+            ->with(['user', 'latestStatus'])
+            ->get();
+
+        return view('sectional_head.approved_leaves', compact('approvedLeaves'));
+    }
+
+    public function assignReliefForm($leaveApplicationId)
+    {
+        $leaveApplication = LeaveApplication::findOrFail($leaveApplicationId);
+        $sectionalHead = Auth::user();
+
+        if ($leaveApplication->user->school_id !== $sectionalHead->school_id || $leaveApplication->user->role !== 'TEACHER') {
+            abort(403, 'Unauthorized to assign relief for this leave application.');
+        }
+
+        $startDate = Carbon::parse($leaveApplication->commence_date);
+        $endDate = Carbon::parse($leaveApplication->end_date);
+        $dates = [];
+        for ($date = $startDate; $date->lte($endDate); $date->addDay()) {
+            $dates[] = $date->toDateString();
+        }
+
+        $teachers = User::where('school_id', $sectionalHead->school_id)
+            ->where('role', 'TEACHER')
+            ->where('id', '!=', $leaveApplication->user_id)
+            ->get(['id', 'first_name', 'last_name']);
+
+        return view('sectional_head.assign_relief', compact('leaveApplication', 'dates', 'teachers'));
+    }
+
+    public function storeRelief(Request $request, $leaveApplicationId)
+    {
+        $leaveApplication = LeaveApplication::findOrFail($leaveApplicationId);
+        $sectionalHead = Auth::user();
+
+        if ($leaveApplication->user->school_id !== $sectionalHead->school_id || $leaveApplication->user->role !== 'TEACHER') {
+            abort(403, 'Unauthorized to assign relief for this leave application.');
+        }
+
+        $request->validate([
+            'date' => 'required|date',
+            'relief_teacher_id' => 'required|exists:users,id',
+            'subjects' => 'required|string',
+            'time_slot' => 'required|string',
+            'class' => 'required|string',
+        ]);
+
+        $reliefTeacher = User::findOrFail($request->relief_teacher_id);
+        if ($reliefTeacher->school_id !== $sectionalHead->school_id || $reliefTeacher->role !== 'TEACHER') {
+            return redirect()->back()->with('error', 'Invalid relief teacher selected.');
+        }
+
+        $selectedDate = Carbon::parse($request->date);
+        $isAvailable = !$reliefTeacher->leaveApplications()
+            ->whereHas('latestStatus', function ($q) {
+                $q->where('status', 'APPROVED');
+            })
+            ->whereDate('commence_date', '<=', $selectedDate)
+            ->whereDate('end_date', '>=', $selectedDate)
+            ->exists();
+
+        if (!$isAvailable) {
+            return redirect()->back()->with('error', 'The selected relief teacher is not available on this date.');
+        }
+
+        $reliefAssignment = ReliefAssignment::create([
+            'leave_application_id' => $leaveApplication->id,
+            'absent_teacher_id' => $leaveApplication->user_id,
+            'relief_teacher_id' => $request->relief_teacher_id,
+            'date' => $request->date,
+            'subjects' => $request->subjects,
+            'time_slot' => $request->time_slot,
+            'class' => $request->class,
+        ]);
+
+        Notification::create([
+            'user_id' => $reliefTeacher->id,
+            'title' => 'Relief Assignment',
+            'message' => "You have been assigned as a relief teacher for {$leaveApplication->user->first_name} {$leaveApplication->user->last_name} on {$request->date} during {$request->time_slot} for class {$request->class}, teaching {$request->subjects}.",
+            'read' => false,
+        ]);
+
+        return redirect()->route('sectional.approved_leaves')->with('success', 'Relief teacher assigned successfully, and notification sent.');
+    }
+
+    public function showNotifications()
+    {
+        $user = Auth::user();
+        $notifications = Notification::where('user_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('sectional_head.notifications', compact('notifications'));
+    }
+}
+
+
 
     // public function showAssignReliefForm($leaveApplicationId)
     // {
@@ -405,4 +513,3 @@ class SectionalController extends Controller
 
     //     return view('sectional_head.notifications', compact('notifications'));
     // }
-}
