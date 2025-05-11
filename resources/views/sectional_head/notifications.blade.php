@@ -84,7 +84,8 @@
                         <div class="bg-white border rounded-lg p-4 shadow-sm {{ $notification->read ? 'opacity-75' : 'bg-blue-50' }}">
                             <h3 class="text-lg font-semibold">{{ $notification->title }}</h3>
                             <p class="text-gray-700">{{ $notification->message }}</p>
-                            <p class="text-sm text-gray-500">{{ $notification->created_at->format('Y-m-d H:i:s') }}</p>
+                            <p 
+                            class="text-sm text-gray-500">{{ $notification->created_at->format('Y-m-d H:i:s') }}</p>
                         </div>
                     @endforeach
                 </div>
