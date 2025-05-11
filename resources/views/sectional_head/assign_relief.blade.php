@@ -83,6 +83,7 @@
                 <h1 class="text-2xl font-bold">{{ Auth::user()->first_name }}</h1>
             </div>
             <h1 class="text-2xl font-bold mb-6">Assign Relief Teacher for {{ trim($leaveApplication->user->first_name . ' ' . $leaveApplication->user->last_name) }}</h1>
+            <p class="text-gray-600 mb-4">Note: Relief can only be assigned for today or future dates.</p>
             @if (session('error'))
                 <div class="bg-red-100 text-red-700 p-4 rounded mb-4">
                     {{ session('error') }}

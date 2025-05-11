@@ -82,7 +82,7 @@
                 <p class="text-gray-700">Welcome back!</p>
                 <h1 class="text-2xl font-bold">{{ Auth::user()->first_name }}</h1>
             </div>
-            <h1 class="text-2xl font-bold mb-6">Approved Leave Applications</h1>
+            <h1 class="text-2xl font-bold mb-6">Approved Leave Applications for Section {{ Auth::user()->section }}</h1>
             @if (session('success'))
                 <div class="bg-green-100 text-green-700 p-4 rounded mb-4">
                     {{ session('success') }}
@@ -94,7 +94,7 @@
                 </div>
             @endif
             @if ($approvedLeaves->isEmpty())
-                <p class="text-gray-600">No approved leave applications found.</p>
+                <p class="text-gray-600">No approved leave applications found for section {{ Auth::user()->section }}.</p>
             @else
                 <div class="max-h-[500px] overflow-y-auto border border-gray-200 rounded-lg">
                     <table class="w-full border-collapse">
