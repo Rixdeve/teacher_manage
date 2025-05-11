@@ -309,3 +309,4 @@ Route::put('/sectionals/{id}/reactivate', [SectionalController::class, 'reactiva
 Route::post('/check-transfer-nic', [TeacherController::class, 'checkTransferNIC'])->name('teachers.checkNIC');
 Route::post('/check-transfer-nic-principal', [PrincipalController::class, 'checkTransferNIC'])->name('principals.checkNIC');
 
+Route::get('/teacher/notifications', [SectionalController::class, 'showNotifications'])->name('teacher.notifications');

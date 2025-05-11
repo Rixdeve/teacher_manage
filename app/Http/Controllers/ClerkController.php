@@ -189,7 +189,6 @@ class ClerkController extends Controller
         return view('clerk.clerkDashboard', compact('attendanceRecords'));
     }
 
-<<<<<<< HEAD
     public function manageClerks()
     {
         $schoolId = session('school_id');
@@ -276,18 +275,11 @@ class ClerkController extends Controller
     // {
     //     $teacher = User::findOrFail($id);
     //     $qrContent = $teacher->id;
-=======
-    public function assignDutyLeave()
-    {
-        if (Auth::user()->role !== 'CLERK') {
-            abort(403, 'Unauthorized access.');
-        }
->>>>>>> b0984c742833eeb9da4aa277d9de4f29381f65fb
 
-        $schoolId = Auth::user()->school_id;
-        $teachers = User::where('school_id', $schoolId)
-            ->where('role', 'TEACHER')
-            ->get();
-        return view('clerk.assign_duty_leave', compact('teachers'));
-    }
+//         $schoolId = Auth::user()->school_id;
+//         $teachers = User::where('school_id', $schoolId)
+//             ->where('role', 'TEACHER')
+//             ->get();
+//         return view('clerk.assign_duty_leave', compact('teachers'));
+//     }
 }

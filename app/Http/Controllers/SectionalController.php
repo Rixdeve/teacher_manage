@@ -132,9 +132,10 @@ class SectionalController extends Controller
         $attendances = Attendance::with('user')
             ->whereDate('date', $today)
             ->where('status', 'PRESENT')
-            ->whereHas('user', function ($query) use ($schoolId, $section) {
+            ->whereHas('user', function ($query) use ($sectionalHead) {
+                $schoolId = $sectionalHead->school_id;
                 $query->where('school_id', $schoolId)
-                    ->where('section', '=', (string) $section)
+                    ->where('section', '=', (string) $sectionalHead->section)
                     ->whereIn('role', ['TEACHER']);
             })
             ->get();
@@ -250,7 +251,6 @@ class SectionalController extends Controller
         return redirect()->route('sectional_head.dashboard')->with('success', 'Leave application status updated successfully.');
     }
 
-<<<<<<< HEAD
     public function manageSectionals()
     {
         $schoolId = session('school_id');
@@ -336,17 +336,12 @@ class SectionalController extends Controller
         return redirect()->back()->with('success', 'Sectional Head reactivated successfully!');
     }
 
-    // public function showAssignReliefForm($leaveApplicationId)
-    // {
-    //     $leaveApplication = LeaveApplication::findOrFail($leaveApplicationId);
-    //     $sectionalHead = Auth::user();
-=======
-    public function approvedLeaves()
+    public function showAssignReliefForm($leaveApplicationId)
     {
+        $leaveApplication = LeaveApplication::findOrFail($leaveApplicationId);
         $sectionalHead = Auth::user();
         $schoolId = $sectionalHead->school_id;
         $section = $sectionalHead->section;
->>>>>>> b0984c742833eeb9da4aa277d9de4f29381f65fb
 
         $approvedLeaves = LeaveApplication::whereHas('latestStatus', function ($query) {
             $query->where('status', 'APPROVED');

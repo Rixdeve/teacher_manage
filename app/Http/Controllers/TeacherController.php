@@ -51,7 +51,7 @@ class TeacherController extends Controller
 
         if ($existingTeacher) {
             // Block registration if not marked as TRANSFERRED
-            if ($existingTeacher->status !== 'TRANSFERRED') {
+            if ($existingTeacher && $existingTeacher->status !== 'TRANSFERRED') {
                 return redirect('/registerTeacher')->with('error', 'This teacher already exists and is not marked as transferred from the previous school.');
             }
 
@@ -68,27 +68,29 @@ class TeacherController extends Controller
             }
 
             // Update fields
-            $existingTeacher->school_id = $schoolId;
-            $existingTeacher->role = 'TEACHER';
-            $existingTeacher->user_password = Hash::make('Teacher@123');
-            $existingTeacher->first_name = $request->first_name;
-            $existingTeacher->last_name = $request->last_name;
-            $existingTeacher->section = trim($request->section);
-            $existingTeacher->subjects = json_encode($selectedSubjects);
-            $existingTeacher->school_index = $request->school_index;
-            $existingTeacher->user_address_no = $request->user_address_no;
-            $existingTeacher->user_address_street = $request->user_address_street;
-            $existingTeacher->user_address_city = $request->user_address_city;
-            $existingTeacher->user_dob = $request->user_dob;
-            $existingTeacher->user_email = $request->user_email;
-            $existingTeacher->user_phone = $request->user_phone;
-            $existingTeacher->profile_picture = $imagePath;
-            $existingTeacher->status = 'ACTIVE';
-            $existingTeacher->registered_date = now();
+            if ($existingTeacher && strtoupper($existingTeacher->status) === 'TRANSFERRED') {
+                $existingTeacher->update([
+                    'school_id' => $schoolId,
+                    'role' => 'TEACHER',
+                    'user_password' => Hash::make('Teacher@123'),
+                    'first_name' => $request->first_name,
+                    'last_name' => $request->last_name,
+                    'section' => trim($request->section),
+                    'subjects' => json_encode($selectedSubjects),
+                    'school_index' => $request->school_index,
+                    'user_address_no' => $request->user_address_no,
+                    'user_address_street' => $request->user_address_street,
+                    'user_address_city' => $request->user_address_city,
+                    'user_dob' => $request->user_dob,
+                    'user_email' => $request->user_email,
+                    'user_phone' => $request->user_phone,
+                    'profile_picture' => $imagePath,
+                    'status' => 'ACTIVE',
+                    'registered_date' => now(),
+                ]);
 
-            $existingTeacher->save(); // <-- REQUIRED to persist the update
-
-            return redirect('/schoolDashboard')->with('success', 'Transferred teacher registered successfully to your school!');
+                return redirect('/schoolDashboard')->with('success', 'Transferred teacher registered successfully to your school!');
+            }
         }
 
         // ✅ If teacher doesn't exist, proceed with fresh registration
@@ -116,7 +118,6 @@ class TeacherController extends Controller
                 'registered_date' => now(),
             ]);
 
-             $existingTeacher->save();            
 
             return redirect('/schoolDashboard')->with('success', 'Teacher registered successfully!');
         } catch (QueryException $e) {
@@ -130,35 +131,36 @@ class TeacherController extends Controller
     {
         $nic = trim($request->input('nic'));
 
-        $principal = User::where('user_nic', $nic)
-            ->whereRaw('UPPER(role) = ?', ['PRINCIPAL'])
+        $teacher = User::where('user_nic', $nic)
+            ->whereRaw('UPPER(role) = ?', ['TEACHER'])
             ->first();
 
-        if (!$principal) {
+        if (!$teacher) {    
             return response()->json(['status' => 'not_found'], 404);
         }
 
-        if (strtoupper($principal->status) !== 'TRANSFERRED') {
+        if (strtoupper($teacher->status) !== 'TRANSFERRED') {
             return response()->json(['status' => 'not_transferred'], 403);
         }
 
         return response()->json([
-            'status' => 'TRANSFERRED',
-            'principal' => [
-                'id' => $principal->id,
-                'first_name' => $principal->first_name,
-                'last_name' => $principal->last_name,
-                'user_email' => $principal->user_email,
-                'user_phone' => $principal->user_phone,
-                'user_nic' => $principal->user_nic,
-                'user_dob' => \Carbon\Carbon::parse($principal->user_dob)->format('Y-m-d'),
-                'school_index' => '', // Always empty for transferred
-                'user_address_no' => $principal->user_address_no,
-                'user_address_street' => $principal->user_address_street,
-                'user_address_city' => $principal->user_address_city,
-                'profile_picture' => $principal->profile_picture
-            ]
-        ], 200);
+                'status' => 'TRANSFERRED',
+                'teacher' => [
+                    'id' => $teacher->id,
+                    'first_name' => $teacher->first_name,
+                    'last_name' => $teacher->last_name,
+                    'user_email' => $teacher->user_email,
+                    'user_phone' => $teacher->user_phone,
+                    'user_nic' => $teacher->user_nic,
+                    'user_dob' => \Carbon\Carbon::parse($teacher->user_dob)->format('Y-m-d'),
+                    'school_index' => $teacher->school_index,
+                    'user_address_no' => $teacher->user_address_no,
+                    'user_address_street' => $teacher->user_address_street,
+                    'user_address_city' => $teacher->user_address_city,
+                    'section' => $teacher->section,
+                    'profile_picture' => $teacher->profile_picture
+                ],
+        ]);
     }
 
 

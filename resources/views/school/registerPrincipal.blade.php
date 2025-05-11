@@ -97,7 +97,6 @@ if (!session()->has('school_id')) {
             <div class="mt-32 lg:mt-12">
                 <h2 class="text-xl lg:text-2xl font-semibold mb-6">Assign Principal</h2>
                 <div class="max-h-[78vh] overflow-y-auto px-2 pr-4">
-<<<<<<< HEAD
 
                     <div class="mb-4">
                         <label for="check_nic" class="block text-lg font-medium text-gray-800">Enter NIC to Check Transfer Status</label>
@@ -118,9 +117,6 @@ if (!session()->has('school_id')) {
 
                     <form action="{{route ('principal.store')}}" method="POST" enctype="multipart/form-data"
                         class="space-y-6">
-=======
-                    <form action="{{ route('principal.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
->>>>>>> b0984c742833eeb9da4aa277d9de4f29381f65fb
                         @csrf
                         @if(session('success'))
                         <p style="color: green;">{{ session('success') }}</p>
