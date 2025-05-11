@@ -188,4 +188,17 @@ class ClerkController extends Controller
 
         return view('clerk.clerkDashboard', compact('attendanceRecords'));
     }
+
+    public function assignDutyLeave()
+    {
+        if (Auth::user()->role !== 'CLERK') {
+            abort(403, 'Unauthorized access.');
+        }
+
+        $schoolId = Auth::user()->school_id;
+        $teachers = User::where('school_id', $schoolId)
+            ->where('role', 'TEACHER')
+            ->get();
+        return view('clerk.assign_duty_leave', compact('teachers'));
+    }
 }

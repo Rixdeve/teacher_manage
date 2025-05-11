@@ -291,4 +291,4 @@ Route::get('/sectional/approved-leaves', [SectionalController::class, 'approvedL
     
     Route::get('/teacher/notifications', [SectionalController::class, 'showNotifications'])->name('teacher.notifications');
 
-   
+    Route::get('/clerk/assign-duty-leave', [App\Http\Controllers\ClerkController::class, 'assignDutyLeave'])->name('clerk.assign.duty.leave');

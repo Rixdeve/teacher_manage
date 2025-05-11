@@ -71,6 +71,12 @@ class LeaveApplication extends Model
             return $daysByYear;
         }
 
+        if ($this->leave_type === 'DUTY') {
+            $year = $start->year;
+            $daysByYear[$year] = $this->leave_days;
+            return $daysByYear;
+        }
+
         $currentDate = $start->copy();
         while ($currentDate <= $end) {
             $year = $currentDate->year;
