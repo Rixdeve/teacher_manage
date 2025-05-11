@@ -90,12 +90,15 @@ if (!session()->has('school_id')) {
                 <h1 class="text-2xl font-bold">{{ $school->school_name }}</h1>
             </div>
             <div class="grid grid-cols-3 gap-6">
-                <div class="bg-blue-100 p-6 rounded-lg text-center shadow-md hover:shadow-lg">
+            <a href="{{ url('/manageUsers') }}">
+                <div class="bg-blue-100 p-6 rounded-lg text-center shadow-md hover:shadow-lg hover:bg-blue-200 transition duration-300 ease-in-out">
                     <div class="flex flex-col items-center justify-center">
-                        <p class="text-gray-700 font-semibold">Manage Teachers</p>
-                        <img src="{{asset('storage/photos/group.png')}}" class="w-12 h-12 mb-4" alt="Manage Teachers" />
+                        <p class="text-gray-700 font-semibold">Manage Users</p>
+                        <img src="{{asset('storage/photos/group.png')}}" class="w-12 h-12 mb-4" alt="Manage Users" />
                     </div>
                 </div>
+            </a>
+
                 <div
                     class="bg-blue-100 p-6 rounded-lg text-center shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105">
                     <div class="flex flex-col items-center justify-center">

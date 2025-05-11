@@ -84,6 +84,16 @@
                 <h2 class="text-2xl font-semibold mb-6">Assign Teacher</h2>
                 <div class="max-h-[78vh] overflow-y-auto px-2 pr-4">
 
+                    <div class="mb-6">
+                        <label for="check_nic" class="block text-lg font-medium text-gray-800">Enter NIC to Check for Transfer</label>
+                        <div class="flex space-x-2 mt-2">
+                            <input type="text" id="check_nic" class="p-3 border border-gray-300 rounded-lg w-full" placeholder="Enter NIC to check">
+                            <button type="button" onclick="checkNIC()" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Check</button>
+                            <button type="button" onclick="resetNIC()" class="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded-lg">Reset</button>
+
+                        </div>
+                    </div>
+
                     <form action="{{route ('teacher.store')}}" method="POST" enctype="multipart/form-data"
                         class="space-y-6">
                         @csrf
@@ -173,6 +183,11 @@
                             </div>
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div id="currentProfileWrapper" class="mt-4 hidden">
+                                    <label class="block text-sm font-medium text-gray-700">Current Profile Picture:</label>
+                                    <img id="currentProfileImage" src="" alt="Profile" class="w-20 h-20 mt-2 rounded-lg border" />
+                                </div>
+
                                 <div>
                                     <label for="profile_photo" class="block text-lg font-medium text-gray-800">Profile
                                         Photo</label>
@@ -392,6 +407,58 @@
     </div>
     </div>
     </div>
-</body>
+    <script>
+        function checkNIC() {
+            const nic = document.getElementById('check_nic').value;
 
+            fetch("{{ route('teachers.checkNIC') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ nic: nic })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'TRANSFERRED') {
+                    // Autofill fields
+                    document.getElementById('first_name').value = data.teacher.first_name;
+                    document.getElementById('last_name').value = data.teacher.last_name;
+                    document.getElementById('user_email').value = data.teacher.user_email;
+                    document.getElementById('user_phone').value = data.teacher.user_phone;
+                    document.getElementById('user_nic').value = data.teacher.user_nic;
+                    document.getElementById('user_dob').value = data.teacher.user_dob;
+                    document.getElementById('user_address_no').value = data.teacher.user_address_no;
+                    document.getElementById('user_address_street').value = data.teacher.user_address_street;
+                    document.getElementById('user_address_city').value = data.teacher.user_address_city;
+                    document.getElementById('currentProfileImage').src = '/storage/' + data.teacher.profile_picture;
+                    document.getElementById('currentProfileWrapper').classList.remove('hidden');
+                    document.getElementById('section').value = data.teacher.section;
+
+                    // Lock NIC
+                    document.getElementById('user_nic').readOnly = true;
+                    document.getElementById('check_nic').readOnly = true;
+
+                    // Hide Check button
+                    document.querySelector('button[onclick="checkNIC()"]').style.display = 'none';
+                } else {
+                    alert('This teacher is not marked as transferred.');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('NIC not found or error occurred.');
+            });
+        }
+
+        function resetNIC() {
+            document.getElementById('check_nic').value = '';
+            document.getElementById('user_nic').value = '';
+            document.getElementById('user_nic').readOnly = false;
+            document.getElementById('check_nic').readOnly = false;
+            document.querySelector('button[onclick="checkNIC()"]').style.display = 'inline-block';
+        }
+    </script>
+</body>
 </html>
