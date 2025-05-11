@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\School;
 use Illuminate\Database\QueryException;
 use App\Models\User;
+use Exception;
 // use function Laravel\Prompts\alert;
 
 class SchoolController extends Controller
@@ -60,7 +61,7 @@ class SchoolController extends Controller
             if ($e->errorInfo[1] == 1062) {
                 return redirect('/registerschool')->with('error', 'School already exists!');
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return redirect('/registerschool')->with('error', 'An error occurred!');
         }
     }
