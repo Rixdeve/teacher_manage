@@ -53,6 +53,12 @@
                         Apply Leave for teacher
                     </a>
                 </li>
+                <li class="w-full py-3 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-3 mx-auto transition-colors duration-200">
+                    <a href="{{ route('clerk.assign.duty.leave') }}" class="flex items-center w-full">
+                        <img src="https://cdn-icons-png.flaticon.com/512/9882/9882238.png" class="w-8 h-8 mr-3" alt="Assign Duty Leave" />
+                        Assign Duty Leave
+                    </a>
+                </li>
                 <li class="w-full py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2">
                     <a href="{{ url('') }}" class="flex items-center w-full">
                         <img src="{{ asset('storage/photos/immigration.png') }}" class="w-6 lg:w-8 h-6 lg:h-8 mr-2" alt="View Leave Application" />
