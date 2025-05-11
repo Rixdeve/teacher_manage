@@ -59,14 +59,14 @@
 
             <div>
                 <button type="submit"
-                    class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition">
+                    class="w-full bg-gray-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition">
                     Reset Password
                 </button>
             </div>
         </form>
 
         <div class="mt-6 text-center">
-            <a href="{{ route('login') }}" class="text-blue-500 hover:underline text-sm">Back to Login</a>
+            <a href="{{ route('login') }}" class="text-gray-500 hover:underline text-sm">Back to Login</a>
         </div>
     </div>
 </body>
