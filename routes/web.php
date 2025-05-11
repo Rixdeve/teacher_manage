@@ -326,3 +326,8 @@ Route::post('/password/email', [PasswordResetController::class, 'sendResetLinkEm
 Route::get('/password/reset/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
 Route::post('/password/reset', [PasswordResetController::class, 'reset'])->name('password.update');
 
+Route::get('/sectional/approved-leaves', [SectionalController::class, 'approvedLeaves'])->name('sectional.approved_leaves');
+Route::get('/sectional/assign-relief/{leaveApplicationId}', [SectionalController::class, 'assignReliefForm'])->name('sectional.assign_relief');
+Route::post('/sectional/assign-relief/{leaveApplicationId}', [SectionalController::class, 'storeRelief'])->name('sectional.store_relief');
+   
+Route::get('/teacher/notifications', [SectionalController::class, 'showNotifications'])->name('teacher.notifications');
