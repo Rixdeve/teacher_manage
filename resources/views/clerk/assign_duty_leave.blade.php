@@ -50,7 +50,7 @@
                 <li class="w-full py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2">
                     <a href="{{ route('clerk.leave.create') }}" class="flex items-center w-full">
                         <img src="https://media.istockphoto.com/id/1059233806/vector/man-hold-attendance-clipboard-with-checklist-questionnaire-survey-clipboard-task-list-flat.jpg?s=612x612&w=0&k=20&c=Yv3g79R_g5mMliBx4McY2Xt0k552tVZ0xHbIBO2cMx8=" class="w-6 lg:w-8 h-6 lg:h-8 mr-2" alt="Apply Manual Leave" />
-                        Apply Leave for teacher
+                        Apply Leave for Teacher
                     </a>
                 </li>
                 <li class="w-full py-2 flex items-center text-black font-semibold cursor-pointer bg-gray-200 rounded-lg p-2">
@@ -125,75 +125,72 @@
                     </div>
                 @endif
 
-                <form action="{{ route('leave.store') }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    <input type="hidden" name="leave_type" value="DUTY">
+                <div class="max-h-[500px] overflow-y-auto bg-white p-4 lg:p-6 rounded-lg shadow-md">
+                    <form action="{{ route('leave.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+                        @csrf
+                        <input type="hidden" name="leave_type" value="DUTY">
 
-                    <div class="mb-4">
-                        <label for="user_id" class="block text-gray-700 font-semibold mb-2">Select Teacher</label>
-                        <select name="user_id" id="user_id" class="w-full p-2 border rounded-lg" required>
-                            <option value="">Select a teacher</option>
-                            @foreach ($teachers as $teacher)
-                                <option value="{{ $teacher->id }}">{{ $teacher->first_name }} {{ $teacher->last_name }}</option>
-                            @endforeach
-                        </select>
-                        @error('user_id')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
+                        <div>
+                            <label for="user_id" class="block text-xs lg:text-sm font-medium text-gray-700">Select Teacher</label>
+                            <select name="user_id" id="user_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xs lg:text-sm" required>
+                                <option value="">Select a teacher</option>
+                                @foreach ($teachers as $teacher)
+                                    <option value="{{ $teacher->id }}" {{ old('user_id') == $teacher->id ? 'selected' : '' }}>{{ $teacher->first_name }} {{ $teacher->last_name }}</option>
+                                @endforeach
+                            </select>
+                            @error('user_id')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
 
-                    <div class="mb-4">
-                        <label for="commence_date" class="block text-gray-700 font-semibold mb-2">Start Date</label>
-                        <input type="date" name="commence_date" id="commence_date" class="w-full p-2 border rounded-lg" required>
-                        @error('commence_date')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
+                        <div>
+                            <label for="commence_date" class="block text-xs lg:text-sm font-medium text-gray-700">Start Date</label>
+                            <input type="date" name="commence_date" id="commence_date" value="{{ old('commence_date') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xs lg:text-sm" required>
+                            @error('commence_date')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
 
-                    <div class="mb-4">
-                        <label for="end_date" class="block text-gray-700 font-semibold mb-2">End Date</label>
-                        <input type="date" name="end_date" id="end_date" class="w-full p-2 border rounded-lg" required>
-                        @error('end_date')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
+                        <div>
+                            <label for="end_date" class="block text-xs lg:text-sm font-medium text-gray-700">End Date</label>
+                            <input type="date" name="end_date" id="end_date" value="{{ old('end_date') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xs lg:text-sm" required>
+                            @error('end_date')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
 
-                    <div class="mb-4">
-                        <label for="reason" class="block text-gray-700 font-semibold mb-2">Reason</label>
-                        <textarea name="reason" id="reason" class="w-full p-2 border rounded-lg" rows="4" placeholder="Enter the reason for duty leave"></textarea>
-                        @error('reason')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
+                        <div>
+                            <label for="reason" class="block text-xs lg:text-sm font-medium text-gray-700">Reason (Optional)</label>
+                            <textarea name="reason" id="reason" rows="4" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xs lg:text-sm" placeholder="Enter the reason for duty leave">{{ old('reason') }}</textarea>
+                            @error('reason')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
 
-                    <div class="mb-4">
-                        <label for="attachment_url_1" class="block text-gray-700 font-semibold mb-2">Attachment 1 (Optional)</label>
-                        <input type="file" name="attachment_url_1" id="attachment_url_1" class="w-full p-2 border rounded-lg" accept=".pdf,.jpg,.jpeg,.png">
-                        @error('attachment_url_1')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
+                        <div>
+                            <label for="attachments" class="block text-xs lg:text-sm font-medium text-gray-700">Attachments (Up to 3, Optional, PDF/JPG/PNG, Max 2MB each)</label>
+                            <input type="file" name="attachments[]" id="attachments" multiple class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xs lg:text-sm" accept=".pdf,.jpg,.jpeg,.png" onchange="limitFiles(this)">
+                            <script>
+                                function limitFiles(input) {
+                                    const files = Array.from(input.files).filter(file => file.size > 0);
+                                    if (files.length > 3) {
+                                        alert('You can only upload a maximum of 3 files.');
+                                        input.value = '';
+                                    } else if (files.length === 0) {
+                                        input.value = '';
+                                    }
+                                }
+                            </script>
+                            @error('attachments.*')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
 
-                    <div class="mb-4">
-                        <label for="attachment_url_2" class="block text-gray-700 font-semibold mb-2">Attachment 2 (Optional)</label>
-                        <input type="file" name="attachment_url_2" id="attachment_url_2" class="w-full p-2 border rounded-lg" accept=".pdf,.jpg,.jpeg,.png">
-                        @error('attachment_url_2')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div class="mb-4">
-                        <label for="attachment_url_3" class="block text-gray-700 font-semibold mb-2">Attachment 3 (Optional)</label>
-                        <input type="file" name="attachment_url_3" id="attachment_url_3" class="w-full p-2 border rounded-lg" accept=".pdf,.jpg,.jpeg,.png">
-                        @error('attachment_url_3')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div class="flex justify-end">
-                        <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600">Assign Duty Leave</button>
-                    </div>
-                </form>
+                        <div class="flex justify-end">
+                            <button type="submit" class="bg-gradient-to-b from-blue-100 to-gray-500 text-white px-4 lg:px-6 py-1.5 lg:py-2 rounded-lg hover:bg-blue-600 text-sm lg:text-base">Assign Duty Leave</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
