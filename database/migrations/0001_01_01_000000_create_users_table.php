@@ -27,7 +27,7 @@ return new class extends Migration
             $table->string('profile_picture')->nullable();
             $table->string('user_phone')->unique();
             $table->date('registered_date');
-            $table->enum('status', ['ACTIVE', 'INACTIVE', 'ONLEAVE'])->default('ACTIVE');
+            $table->enum('status', ['ACTIVE', 'INACTIVE', 'ONLEAVE', 'TRANSFERRED', 'RETIRED'])->default('ACTIVE');
             $table->string('user_nic')->unique();
             $table->string('user_address_no');
             $table->string('user_address_street');

@@ -97,7 +97,26 @@ if (!session()->has('school_id')) {
             <div class="mt-32 lg:mt-12">
                 <h2 class="text-xl lg:text-2xl font-semibold mb-6">Assign Principal</h2>
                 <div class="max-h-[78vh] overflow-y-auto px-2 pr-4">
-                    <form action="{{ route('principal.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+
+                    <div class="mb-4">
+                        <label for="check_nic" class="block text-lg font-medium text-gray-800">Enter NIC to Check Transfer Status</label>
+                        <div class="flex space-x-2 mt-2">
+                            <input type="text" id="check_nic" name="check_nic"
+                                class="p-3 border border-gray-300 rounded-lg w-full"
+                                placeholder="Enter NIC..." required>
+                            <button type="button" onclick="checkPrincipalNIC()"
+                                    class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
+                                Check
+                            </button>
+                            <button type="button" onclick="resetNIC()"
+                                    class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg">
+                                Reset
+                            </button>
+                        </div>
+                    </div>
+
+                    <form action="{{route ('principal.store')}}" method="POST" enctype="multipart/form-data"
+                        class="space-y-6">
                         @csrf
                         @if(session('success'))
                         <p style="color: green;">{{ session('success') }}</p>
@@ -161,6 +180,11 @@ if (!session()->has('school_id')) {
                             </div>
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div id="current-photo-preview" class="mt-2 hidden">
+                                    <label class="block text-sm text-gray-700">Current Photo:</label>
+                                    <img id="current-profile-pic" src="" alt="Profile Picture" class="w-24 h-24 rounded-lg border mt-2">
+                                </div>
+
                                 <div>
                                     <label for="profile_photo" class="block text-sm lg:text-lg font-medium text-gray-800">Profile Photo</label>
                                     <input type="file" id="profile_picture" name="profile_picture" class="mt-2 p-2 lg:p-3 border border-gray-300 rounded-lg w-full" />
@@ -207,6 +231,59 @@ if (!session()->has('school_id')) {
                 document.getElementById('sidebar').classList.add('hidden');
             });
         });
+    </script>
+    <script>
+        function checkPrincipalNIC() {
+            const nic = document.getElementById('check_nic').value;
+
+            fetch('{{ route("principals.checkNIC") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ nic })
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Network error');
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'TRANSFERRED') {
+                    const principal = data.principal; // make sure key matches
+
+                    document.getElementById('first_name').value = principal.first_name;
+                    document.getElementById('last_name').value = principal.last_name;
+                    document.getElementById('user_email').value = principal.user_email;
+                    document.getElementById('user_phone').value = principal.user_phone;
+                    document.getElementById('user_nic').value = principal.user_nic;
+                    document.getElementById('user_dob').value = principal.user_dob;
+                    document.getElementById('user_address_no').value = principal.user_address_no;
+                    document.getElementById('user_address_street').value = principal.user_address_street;
+                    document.getElementById('user_address_city').value = principal.user_address_city;
+                    document.getElementById('school_index').value = '';
+
+                    if (principal.profile_picture) {
+                        const profileImage = document.getElementById('current-profile-pic');
+                        profileImage.src = '/storage/' + principal.profile_picture;
+                        document.getElementById('current-photo-preview').classList.remove('hidden');
+                    }
+
+                    document.getElementById('user_nic').readOnly = true;
+                    document.getElementById('check_nic').readOnly = true;
+                    document.querySelector('button[onclick="checkPrincipalNIC()"]').style.display = 'none';
+
+                } else if (data.status === 'not_transferred') {
+                    alert('This principal is not marked as transferred.');
+                } else {
+                    alert('NIC not found.');
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                alert('Something went wrong while checking NIC.');
+            });
+        }
     </script>
 </body>
 </html>

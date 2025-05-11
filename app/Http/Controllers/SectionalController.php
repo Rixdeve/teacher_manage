@@ -132,9 +132,10 @@ class SectionalController extends Controller
         $attendances = Attendance::with('user')
             ->whereDate('date', $today)
             ->where('status', 'PRESENT')
-            ->whereHas('user', function ($query) use ($schoolId, $section) {
+            ->whereHas('user', function ($query) use ($sectionalHead) {
+                $schoolId = $sectionalHead->school_id;
                 $query->where('school_id', $schoolId)
-                    ->where('section', '=', (string) $section)
+                    ->where('section', '=', (string) $sectionalHead->section)
                     ->whereIn('role', ['TEACHER']);
             })
             ->get();
@@ -250,8 +251,94 @@ class SectionalController extends Controller
         return redirect()->route('sectional_head.dashboard')->with('success', 'Leave application status updated successfully.');
     }
 
-    public function approvedLeaves()
+    public function manageSectionals()
     {
+        $schoolId = session('school_id');
+        $sectionals = User::where('role', 'SECTIONAL_HEAD')
+                          ->where('school_id', $schoolId)
+                          ->get();
+
+        return view('school.manageSectionals', compact('sectionals'));
+    }
+
+    public function edit($id)
+    {
+        $sectional = User::where('role', 'SECTIONAL_HEAD')->findOrFail($id);
+        $sectional->subjects = is_array($sectional->subjects) ? $sectional->subjects : json_decode($sectional->subjects, true);
+        return view('school.editSectional', compact('sectional'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $sectional = User::where('role', 'SECTIONAL_HEAD')->findOrFail($id);
+
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'school_index' => 'nullable|string',
+            'user_email' => 'required|email|unique:users,user_email,' . $id,
+            'user_phone' => 'required|digits:10|unique:users,user_phone,' . $id,
+            'user_nic' => 'required|string',
+            'user_address_no' => 'required|string',
+            'user_address_street' => 'required|string',
+            'user_address_city' => 'required|string',
+            'user_dob' => 'required|date',
+            'section' => 'required|string|max:255',
+        ]);
+
+        // Handle profile picture update if uploaded
+        if ($request->hasFile('profile_picture')) {
+            if ($sectional->profile_picture && Storage::disk('public')->exists($sectional->profile_picture)) {
+                Storage::disk('public')->delete($sectional->profile_picture);
+            }
+            $imagePath = $request->file('profile_picture')->store('profile_pictures', 'public');
+            $sectional->profile_picture = $imagePath;
+        }
+
+        $sectional->update([
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'school_index' => $request->school_index,
+            'user_email' => $request->user_email,
+            'user_phone' => $request->user_phone,
+            'user_nic' => $request->user_nic,
+            'user_address_no' => $request->user_address_no,
+            'user_address_street' => $request->user_address_street,
+            'user_address_city' => $request->user_address_city,
+            'user_dob' => $request->user_dob,
+            'section' => $request->section,
+            'subjects' => $request->has('subjects') ? json_encode($request->subjects) : null,
+        ]);
+
+        return redirect()->route('sectionals.manage')->with('success', 'Sectional Head updated successfully!');
+    }
+
+    public function updateStatus($id, $status)
+    {
+        $validStatuses = ['INACTIVE', 'TRANSFERRED', 'RETIRED'];
+        if (!in_array(strtoupper($status), $validStatuses)) {
+            return redirect()->back()->with('error', 'Invalid status');
+        }
+
+        $sectional = User::where('role', 'SECTIONAL_HEAD')->findOrFail($id);
+        $sectional->status = strtoupper($status);
+        $sectional->save();
+
+        return redirect()->back()->with('success', 'Sectional Head status updated successfully!');
+    }
+
+    public function reactivate($id)
+    {
+        $sectional = User::where('role', 'SECTIONAL_HEAD')->findOrFail($id);
+        $sectional->status = 'ACTIVE';
+        $sectional->save();
+
+        return redirect()->back()->with('success', 'Sectional Head reactivated successfully!');
+    }
+
+    public function showAssignReliefForm($leaveApplicationId)
+    {
+        $leaveApplication = LeaveApplication::findOrFail($leaveApplicationId);
         $sectionalHead = Auth::user();
         $schoolId = $sectionalHead->school_id;
         $section = $sectionalHead->section;

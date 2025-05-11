@@ -23,26 +23,6 @@
                         Dashboard</a>
                 </li>
                 <li
-                    class="w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
-                    <a href="{{ url('') }}" class="flex items-center w-full">
-                        <img src="{{asset('storage/photos/log-file.png')}}" class="w-8 h-8 mr-2" alt="Audit Log" />
-                        Audit Log</a>
-                </li>
-                <li
-                    class="w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
-                    <a href="{{ url('/manageSchool') }}" class="flex items-center w-full">
-                        <img src="{{asset('storage/photos/vocational.png')}}" class="w-8 h-8 mr-2"
-                            alt="Manage Schools" />
-                        Manage Schools</a>
-                </li>
-                <li
-                    class="w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
-                    <a href="{{ url('') }}" class="flex items-center w-full">
-                        <img src="{{asset('storage/photos/chat-box.png')}}" class="w-8 h-8 mr-2"
-                            alt="Write Notification" />
-                        Write Notification</a>
-                </li>
-                <li
                     class="mt-12 w-48 py-2 flex items-center text-red-500 font-bold hover:text-red-700 cursor-pointer hover:bg-gray-300 rounded-lg p-2 mx-auto">
                     <a href="{{ url('/logout') }}" class="flex items-center w-full">
                         <img src="{{asset('storage/photos/logout.png')}}" class="w-8 h-8 mr-2" alt="Logout" />

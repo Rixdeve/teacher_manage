@@ -89,31 +89,28 @@ if (!session()->has('school_id')) {
             </div>
             @endif
 
-            <button onclick="history.back()" class="absolute top-24 lg:top-6 left-4 lg:left-6 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-1.5 px-3 lg:py-2 lg:px-4 rounded-lg shadow-md flex items-center" aria-label="Go back">
-                <img src="https://cdn-icons-png.flaticon.com/512/271/271220.png" class="w-4 lg:w-5 h-4 lg:h-5 mr-2" alt="Back" />
-                Back
-            </button>
-
-            <div class="bg-gradient-to-b from-blue-100 to-gray-500 p-4 lg:p-6 rounded-lg mt-32 lg:mt-12 mb-6 relative">
-                <p class="text-gray-700 text-sm lg:text-base">Welcome back!</p>
-                <h1 class="text-xl lg:text-2xl font-bold">{{ $school->school_name }}</h1>
+            <div class="bg-gradient-to-b from-blue-100 to-gray-500 p-6 rounded-lg mt-12 mb-6 relative">
+                <p class="text-gray-700">Welcome back!</p>
+                <h1 class="text-2xl font-bold">{{ $school->school_name }}</h1>
             </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
-                <div class="bg-blue-100 p-4 lg:p-6 rounded-lg text-center shadow-md hover:shadow-lg">
+            <div class="grid grid-cols-3 gap-6">
+            <a href="{{ url('/manageUsers') }}">
+                <div class="bg-blue-100 p-6 rounded-lg text-center shadow-md hover:shadow-lg hover:bg-blue-200 transition duration-300 ease-in-out">
                     <div class="flex flex-col items-center justify-center">
-                        <p class="text-gray-700 font-semibold text-sm lg:text-base">Manage Teachers</p>
-                        <img src="{{ asset('storage/photos/group.png') }}" class="w-10 lg:w-12 h-10 lg:h-12 mb-4" alt="Manage Teachers" />
+                        <p class="text-gray-700 font-semibold">Manage Users</p>
+                        <img src="{{asset('storage/photos/group.png')}}" class="w-12 h-12 mb-4" alt="Manage Users" />
                     </div>
                 </div>
-                <div class="bg-blue-100 p-4 lg:p-6 rounded-lg text-center shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105">
+            </a>
+
+                <div
+                    class="bg-blue-100 p-6 rounded-lg text-center shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105">
                     <div class="flex flex-col items-center justify-center">
-                        <p class="text-gray-700 font-semibold text-sm lg:text-lg mb-2">View Users</p>
-                        <h3 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">{{ $userCount }}</h3>
-                        <p class="text-gray-500 text-xs lg:text-sm">Total users currently in the system</p>
+                        <p class="text-gray-700 font-semibold text-lg mb-2">View Users</p>
+                        <h3 class="text-4xl font-bold text-gray-900 mb-4">{{ $userCount }}</h3>
+                        <p class="text-gray-500 text-sm">Total users currently in the system</p>
                     </div>
                 </div>
-            </div>
         </div>
     </div>
 

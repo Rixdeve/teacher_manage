@@ -479,6 +479,10 @@ class PrincipalController extends Controller
     {
         $schoolId = session('school_id');
 
+        $existingPrincipal = User::where('user_nic', $request->user_nic)
+            ->orWhere('user_email', $request->user_email)
+            ->first();
+
         $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
@@ -486,19 +490,48 @@ class PrincipalController extends Controller
             'user_address_no' => 'required|string',
             'user_address_street' => 'required|string',
             'user_address_city' => 'required|string',
-            'user_nic' => 'required|string|unique:users,user_nic',
+            'user_nic' => 'required|string',
             'user_dob' => 'required|date',
-            'user_email' => 'required|email|unique:users,user_email',
-            'user_phone' => 'required|numeric|digits:10|unique:users,user_phone',
-            'profile_picture' => 'required|image|mimes:jpg,png,jpeg|max:2048',
+            'user_email' => 'required|email',
+            'user_phone' => 'required|numeric|digits:10',
+            'profile_picture' => $existingPrincipal ? 'nullable|image|mimes:jpg,png,jpeg|max:2048' : 'required|image|mimes:jpg,png,jpeg|max:2048',
             'status' => 'required',
         ]);
 
-        if ($request->hasFile('profile_picture')) {
-            $imagePath = $request->file('profile_picture')->store('profile_pictures', 'public');
-        } else {
-            $imagePath = null;
+        if ($existingPrincipal && strtoupper($existingPrincipal->status) === 'TRANSFERRED') {
+
+            if ($request->hasFile('profile_picture')) {
+                if ($existingPrincipal->profile_picture && Storage::disk('public')->exists($existingPrincipal->profile_picture)) {
+                    Storage::disk('public')->delete($existingPrincipal->profile_picture);
+                }
+                $imagePath = $request->file('profile_picture')->store('profile_pictures', 'public');
+            } else {
+                $imagePath = $existingPrincipal->profile_picture;
+            }
+
+            $existingPrincipal->school_id = $schoolId;
+            $existingPrincipal->role = 'PRINCIPAL';
+            $existingPrincipal->user_password = Hash::make('Principal@123');
+            $existingPrincipal->first_name = $request->first_name;
+            $existingPrincipal->last_name = $request->last_name;
+            $existingPrincipal->school_index = $request->school_index;
+            $existingPrincipal->user_address_no = $request->user_address_no;
+            $existingPrincipal->user_address_street = $request->user_address_street;
+            $existingPrincipal->user_address_city = $request->user_address_city;
+            $existingPrincipal->user_dob = $request->user_dob;
+            $existingPrincipal->user_email = $request->user_email;
+            $existingPrincipal->user_phone = $request->user_phone;
+            $existingPrincipal->profile_picture = $imagePath;
+            $existingPrincipal->status = 'ACTIVE';
+            $existingPrincipal->registered_date = now();
+
+            $existingPrincipal->save();
+
+            return redirect('/schoolDashboard')->with('success', 'Transferred principal registered successfully!');
         }
+
+        // ✅ New registration flow
+        $imagePath = $request->file('profile_picture')->store('profile_pictures', 'public');
 
         try {
             User::create([
@@ -526,9 +559,45 @@ class PrincipalController extends Controller
                 return redirect('/registerPrincipal')->with('error', 'Principal already exists!');
             }
         } catch (\Exception $e) {
-            return redirect('/registerPrincipal')->with('error', 'An error occurred!');
+            dd($e->getMessage());        
         }
     }
+
+    public function checkTransferNIC(Request $request)
+    {
+        $nic = $request->input('nic');
+
+        $principal = User::where('user_nic', $nic)
+            ->where('role', 'PRINCIPAL')
+            ->first();
+
+        if (!$principal) {
+            return response()->json(['status' => 'not_found']);
+        }
+
+        if (strtoupper($principal->status) !== 'TRANSFERRED') {
+            return response()->json(['status' => 'not_transferred']);
+        }
+
+        return response()->json([
+            'status' => 'TRANSFERRED',
+            'principal' => [ // IMPORTANT: key is "principal"
+                'id' => $principal->id,
+                'first_name' => $principal->first_name,
+                'last_name' => $principal->last_name,
+                'user_email' => $principal->user_email,
+                'user_phone' => $principal->user_phone,
+                'user_nic' => $principal->user_nic,
+                'user_dob' => \Carbon\Carbon::parse($principal->user_dob)->format('Y-m-d'),
+                'school_index' => '',
+                'user_address_no' => $principal->user_address_no,
+                'user_address_street' => $principal->user_address_street,
+                'user_address_city' => $principal->user_address_city,
+                'profile_picture' => $principal->profile_picture,
+            ]
+        ]);
+    }
+
 
     public function showQRCode($id)
     {
@@ -752,5 +821,92 @@ class PrincipalController extends Controller
         ]);
 
         return redirect()->route('principal.dashboard')->with('success', 'Leave application status updated successfully.');
+    }
+
+    public function managePrincipals()
+    {
+        $schoolId = session('school_id');
+
+        $principals = User::where('role', 'PRINCIPAL')
+                        ->where('school_id', $schoolId)
+                        ->get();
+
+        return view('school.managePrincipals', compact('principals'));
+    }
+
+    public function edit($id)
+    {
+        $principal = User::where('role', 'PRINCIPAL')->findOrFail($id);
+        return view('school.editPrincipal', compact('principal'));
+    }
+
+    // Handle update
+    public function update(Request $request, $id)
+    {
+        $principal = User::where('role', 'PRINCIPAL')->findOrFail($id);
+
+        $request->validate([
+            'first_name'         => 'required|string|max:255',
+            'last_name'          => 'required|string|max:255',
+            'school_index'       => 'nullable|string',
+            'user_email'         => 'required|email|unique:users,user_email,' . $id,
+            'user_phone'         => 'required|digits:10|unique:users,user_phone,' . $id,
+            'user_nic'           => 'required|string',
+            'user_address_no'    => 'required|string',
+            'user_address_street'=> 'required|string',
+            'user_address_city'  => 'required|string',
+            'user_dob'           => 'required|date',
+        ]);
+
+        // Handle profile picture replacement
+        if ($request->hasFile('profile_picture')) {
+            if ($principal->profile_picture && Storage::disk('public')->exists($principal->profile_picture)) {
+                Storage::disk('public')->delete($principal->profile_picture);
+            }
+            $imagePath = $request->file('profile_picture')->store('profile_pictures', 'public');
+            $principal->profile_picture = $imagePath;
+        }
+
+        // Update all fields
+        $principal->update([
+            'first_name'          => $request->first_name,
+            'last_name'           => $request->last_name,
+            'school_index'        => $request->school_index,
+            'user_email'          => $request->user_email,
+            'user_phone'          => $request->user_phone,
+            'user_nic'            => $request->user_nic,
+            'user_address_no'     => $request->user_address_no,
+            'user_address_street' => $request->user_address_street,
+            'user_address_city'   => $request->user_address_city,
+            'user_dob'            => $request->user_dob,
+            'profile_picture'     => $principal->profile_picture, // Only if changed
+        ]);
+
+        return redirect()->route('principals.manage')->with('success', 'Principal updated successfully!');
+    }
+
+    // Update status (INACTIVE, TRANSFERRED, RETIRED)
+    public function updateStatus($id, $status)
+    {
+        $validStatuses = ['INACTIVE', 'TRANSFERRED', 'RETIRED'];
+        if (!in_array(strtoupper($status), $validStatuses)) {
+            return redirect()->back()->with('error', 'Invalid status');
+        }
+
+        $principal = User::where('role', 'PRINCIPAL')->findOrFail($id);
+        $principal->status = strtoupper($status);
+        $principal->save();
+
+        return redirect()->back()->with('success', 'Principal status updated successfully!');
+    }
+
+    // Reactivate principal
+    public function reactivate($id)
+    {
+        $principal = User::where('role', 'PRINCIPAL')->findOrFail($id);
+        $principal->status = 'ACTIVE';
+        $principal->save();
+
+        return redirect()->back()->with('success', 'Principal reactivated successfully!');
     }
 }

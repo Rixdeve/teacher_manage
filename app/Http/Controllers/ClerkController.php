@@ -189,16 +189,97 @@ class ClerkController extends Controller
         return view('clerk.clerkDashboard', compact('attendanceRecords'));
     }
 
-    public function assignDutyLeave()
+    public function manageClerks()
     {
-        if (Auth::user()->role !== 'CLERK') {
-            abort(403, 'Unauthorized access.');
+        $schoolId = session('school_id');
+        $clerks = User::where('role', 'CLERK')->where('school_id', $schoolId)->get();
+        return view('school.manageClerks', compact('clerks'));
+    }
+
+    public function edit($id)
+    {
+        $clerk = User::where('role', 'CLERK')->findOrFail($id);
+        return view('school.editClerk', compact('clerk'));
+    }
+
+
+    public function update(Request $request, $id)
+    {
+        $clerk = User::where('role', 'CLERK')->findOrFail($id);
+
+        $request->validate([
+            'first_name'           => 'required|string|max:255',
+            'last_name'            => 'required|string|max:255',
+            'school_index'         => 'required|string|max:255',
+            'user_email'           => 'required|email|unique:users,user_email,' . $id,
+            'user_phone'           => 'required|digits:10|unique:users,user_phone,' . $id,
+            'user_nic'             => 'required|string|max:20',
+            'user_address_no'      => 'required|string|max:255',
+            'user_address_street'  => 'required|string|max:255',
+            'user_address_city'    => 'required|string|max:255',
+            'user_dob'             => 'required|date',
+            'profile_picture'      => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
+        ]);
+
+        if ($request->hasFile('profile_picture')) {
+            if ($clerk->profile_picture && Storage::disk('public')->exists($clerk->profile_picture)) {
+                Storage::disk('public')->delete($clerk->profile_picture);
+            }
+            $imagePath = $request->file('profile_picture')->store('profile_pictures', 'public');
+            $clerk->profile_picture = $imagePath;
         }
 
-        $schoolId = Auth::user()->school_id;
-        $teachers = User::where('school_id', $schoolId)
-            ->where('role', 'TEACHER')
-            ->get();
-        return view('clerk.assign_duty_leave', compact('teachers'));
+        $clerk->update([
+            'first_name'           => $request->first_name,
+            'last_name'            => $request->last_name,
+            'school_index'         => $request->school_index,
+            'user_email'           => $request->user_email,
+            'user_phone'           => $request->user_phone,
+            'user_nic'             => $request->user_nic,
+            'user_address_no'      => $request->user_address_no,
+            'user_address_street'  => $request->user_address_street,
+            'user_address_city'    => $request->user_address_city,
+            'user_dob'             => $request->user_dob,
+            'profile_picture'      => $clerk->profile_picture, // retained or newly set
+        ]);
+
+        return redirect()->route('clerks.manage')->with('success', 'Clerk profile updated successfully!');
     }
+
+    public function updateStatus($id, $status)
+    {
+        $validStatuses = ['INACTIVE', 'TRANSFERRED', 'RETIRED'];
+        if (!in_array(strtoupper($status), $validStatuses)) {
+            return redirect()->back()->with('error', 'Invalid status');
+        }
+
+        $clerk = User::findOrFail($id);
+        $clerk->status = strtoupper($status);
+        $clerk->save();
+
+        return redirect()->back()->with('success', 'Clerk status updated successfully!');
+    }
+
+    public function reactivate($id)
+    {
+        $clerk = User::findOrFail($id);
+        $clerk->status = 'ACTIVE';
+        $clerk->save();
+
+        return redirect()->back()->with('success', 'Clerk reactivated successfully.');
+    }
+
+
+
+    // public function showQRCode($id)
+    // {
+    //     $teacher = User::findOrFail($id);
+    //     $qrContent = $teacher->id;
+
+//         $schoolId = Auth::user()->school_id;
+//         $teachers = User::where('school_id', $schoolId)
+//             ->where('role', 'TEACHER')
+//             ->get();
+//         return view('clerk.assign_duty_leave', compact('teachers'));
+//     }
 }
