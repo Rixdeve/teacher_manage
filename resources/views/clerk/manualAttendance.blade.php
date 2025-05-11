@@ -49,10 +49,17 @@
                 </li>
                 <li class="w-full py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2">
                     <a href="{{ route('clerk.leave.create') }}" class="flex items-center w-full">
-                        <img src="{{ asset('storage/photos/leave_application.png') }}" class="w-6 lg:w-8 h-6 lg:h-8 mr-2" alt="Leave Application" />
-                        Apply Leave for Teacher
+                        <img src="https://media.istockphoto.com/id/1059233806/vector/man-hold-attendance-clipboard-with-checklist-questionnaire-survey-clipboard-task-list-flat.jpg?s=612x612&w=0&k=20&c=Yv3g79R_g5mMliBx4McY2Xt0k552tVZ0xHbIBO2cMx8=" class="w-6 lg:w-8 h-6 lg:h-8 mr-2" alt="Apply Manual Leave" />
+                        Apply Leave for teacher
                     </a>
                 </li>
+                <li class="w-full py-3 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-3 mx-auto transition-colors duration-200">
+                    <a href="{{ route('clerk.assign.duty.leave') }}" class="flex items-center w-full">
+                        <img src="https://cdn-icons-png.flaticon.com/512/9882/9882238.png" class="w-8 h-8 mr-3" alt="Assign Duty Leave" />
+                        Assign Duty Leave
+                    </a>
+                </li>
+                
                 <li class="w-full py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2">
                     <a href="{{ url('') }}" class="flex items-center w-full">
                         <img src="{{asset('storage/photos/immigration.png')}}" class="w-6 lg:w-8 h-6 lg:h-8 mr-2" alt="Attendance" />

@@ -53,42 +53,65 @@
 
             <!-- Leave Application Form -->
             <div class="overflow-y-auto max-h-[400px] sm:max-h-[360px]">
-                <form action="{{ route('leave.store') }}" method="POST" enctype="multipart/form-data">
-                    @csrf
+            <form action="{{ route('leave.store') }}" method="POST" enctype="multipart/form-data">
+    @csrf
 
-                    <div class="mb-4">
-                        <label for="commence_date" class="block text-gray-700 text-sm sm:text-base">From Date</label>
-                        <input type="date" name="commence_date" id="commence_date" class="w-full p-3 mt-2 border rounded text-sm sm:text-base" required>
-                    </div>
+    <div class="mb-4">
+        <label for="commence_date" class="block text-gray-700 text-sm sm:text-base">From Date</label>
+        <input type="date" name="commence_date" id="commence_date" class="w-full p-3 mt-2 border rounded text-sm sm:text-base" required>
+        @error('commence_date')
+            <span class="text-red-500 text-xs">{{ $message }}</span>
+        @enderror
+    </div>
 
-                    <div class="mb-4">
-                        <label for="end_date" class="block text-gray-700 text-sm sm:text-base">To Date</label>
-                        <input type="date" name="end_date" id="end_date" class="w-full p-3 mt-2 border rounded text-sm sm:text-base" required>
-                    </div>
+    <div class="mb-4">
+        <label for="end_date" class="block text-gray-700 text-sm sm:text-base">To Date</label>
+        <input type="date" name="end_date" id="end_date" class="w-full p-3 mt-2 border rounded text-sm sm:text-base" required>
+        @error('end_date')
+            <span class="text-red-500 text-xs">{{ $message }}</span>
+        @enderror
+    </div>
 
-                    <div class="mb-4">
-                        <label for="leave_type" class="block text-gray-700 text-sm sm:text-base">Leave Type</label>
-                        <select name="leave_type" id="leave_type" class="w-full p-3 mt-2 border rounded text-sm sm:text-base" required>
-                            <option value="CASUAL">Casual Leave</option>
-                            <option value="MEDICAL">Medical Leave</option>
-                            <option value="SHORT">Short Leave</option>
-                        </select>
-                    </div>
+    <div class="mb-4">
+        <label for="leave_type" class="block text-gray-700 text-sm sm:text-base">Leave Type</label>
+        <select name="leave_type" id="leave_type" class="w-full p-3 mt-2 border rounded text-sm sm:text-base" required>
+            <option value="CASUAL">Casual Leave</option>
+            <option value="MEDICAL">Medical Leave</option>
+            <option value="SHORT">Short Leave</option>
+        </select>
+        @error('leave_type')
+            <span class="text-red-500 text-xs">{{ $message }}</span>
+        @enderror
+    </div>
 
-                    <div class="mb-4">
-                        <label for="reason" class="block text-gray-700 text-sm sm:text-base">Reason</label>
-                        <textarea name="reason" id="reason" rows="4" class="w-full p-3 mt-2 border rounded text-sm sm:text-base" required></textarea>
-                    </div>
+    <div class="mb-4">
+        <label for="reason" class="block text-gray-700 text-sm sm:text-base">Reason</label>
+        <textarea name="reason" id="reason" rows="4" class="w-full p-3 mt-2 border rounded text-sm sm:text-base"></textarea>
+        @error('reason')
+            <span class="text-red-500 text-xs">{{ $message }}</span>
+        @enderror
+    </div>
 
-                    <div class="mb-4">
-                        <label for="attachments" class="block text-gray-700 text-sm sm:text-base">Attachments (up to 3, optional)</label>
-                        <input type="file" name="attachments[]" id="attachments" class="w-full p-3 mt-2 border rounded text-sm sm:text-base" accept=".pdf,.jpg,.jpeg,.png" multiple>
-                    </div>
+    <div class="mb-4">
+        <label for="attachments" class="block text-gray-700 text-sm sm:text-base">Attachments (Up to 3, Optional, PDF/JPG/PNG, Max 2MB each)</label>
+        <input type="file" name="attachments[]" id="attachments" class="w-full p-3 mt-2 border rounded text-sm sm:text-base" accept=".pdf,.jpg,.jpeg,.png" multiple onchange="limitFiles(this)">
+        <script>
+            function limitFiles(input) {
+                if (input.files.length > 3) {
+                    alert('You can only upload a maximum of 3 files.');
+                    input.value = '';
+                }
+            }
+        </script>
+        @error('attachments.*')
+            <span class="text-red-500 text-xs">{{ $message }}</span>
+        @enderror
+    </div>
 
-                    <div class="mb-4">
-                        <button type="submit" class="bg-gray-500 hover:bg-gray-600 text-white p-3 rounded w-full sm:w-auto text-sm sm:text-base">Submit Application</button>
-                    </div>
-                </form>
+    <div class="mb-4">
+        <button type="submit" class="bg-gray-500 hover:bg-gray-600 text-white p-3 rounded w-full sm:w-auto text-sm sm:text-base">Submit Application</button>
+    </div>
+</form>
             </div>
         </div>
     </div>

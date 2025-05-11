@@ -65,4 +65,60 @@ class SchoolController extends Controller
             return redirect('/registerschool')->with('error', 'An error occurred!');
         }
     }
+
+    public function manageUsers()
+    {
+        $schoolId = session('school_id');
+
+        $users = User::where('school_id', $schoolId)
+                    ->whereIn('role', ['TEACHER', 'CLERK', 'PRINCIPAL'])
+                    ->get();
+
+        return view('school.manageUsers', compact('users'));
+    }
+
+    public function managePrincipals()
+    {
+        $schoolId = session('school_id');
+
+        $principals = User::where('role', 'PRINCIPAL')
+                        ->where('school_id', $schoolId)
+                        ->get();
+
+        return view('school.managePrincipals', compact('principals'));
+    }
+
+    public function manageSectionals()
+    {
+        $schoolId = session('school_id');
+        $sectionals = User::where('role', 'SECTIONAL_HEAD')
+                          ->where('school_id', $schoolId)
+                          ->get();
+
+        return view('school.manageSectionals', compact('sectionals'));
+    }
+
+    public function manageTeachers()
+    {
+        // Fetch the currently logged-in school's ID from session
+        $schoolId = session('school_id');
+
+        // Get all teachers belonging to the current school
+        $teachers = User::where('role', 'TEACHER')
+                        ->where('school_id', $schoolId)
+                        ->get();
+
+        return view('school.manageTeachers', compact('teachers'));
+    }
+
+    public function manageClerks()
+    {
+        $schoolId = session('school_id');
+
+        $clerks = User::where('role', 'CLERK')
+                    ->where('school_id', $schoolId)
+                    ->get();
+
+        return view('school.manageClerks', compact('clerks'));
+    }
 }

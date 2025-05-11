@@ -277,24 +277,39 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/leave/history', [LeaveApplicationController::class, 'history'])->name('leave.history');
 });
 
+Route::get('/school/manage-teachers', [SchoolController::class, 'manageTeachers'])->name('school.manageTeachers');
+Route::get('/teachers/{id}/edit', [TeacherController::class, 'edit'])->name('teachers.edit');
+Route::put('/teachers/{id}/update', [TeacherController::class, 'update'])->name('teachers.update');
+Route::post('/teachers/{id}/status/{status}', [TeacherController::class, 'updateStatus'])->name('teachers.updateStatus');
+Route::put('/teachers/{id}/reactivate', [TeacherController::class, 'reactivate'])->name('teachers.reactivate');
+Route::get('/teacher_manage', [TeacherController::class, 'manage'])->name('teachers.manage');
 
+Route::get('/manageUsers', [SchoolController::class, 'manageUsers'])->name('users.manage');
 
+// Principal Management
+Route::get('/managePrincipals', [PrincipalController::class, 'managePrincipals'])->name('principals.manage');
+Route::get('/principals/{id}/edit', [PrincipalController::class, 'edit'])->name('principals.edit');
+Route::put('/principals/{id}/update', [PrincipalController::class, 'update'])->name('principals.update');
+Route::post('/principals/{id}/status/{status}', [PrincipalController::class, 'updateStatus'])->name('principals.updateStatus');
+Route::put('/principals/{id}/reactivate', [PrincipalController::class, 'reactivate'])->name('principals.reactivate');
 
-Route::get('/clerk/leave/create', [LeaveApplicationController::class, 'clerkCreate'])->name('clerk.leave.create');
-Route::post('/leave/store', [LeaveApplicationController::class, 'store'])->name('leave.store');
+// Clerk Management Routes
+Route::get('/manageClerks', [ClerkController::class, 'manageClerks'])->name('clerks.manage');
+Route::get('/clerks/{id}/edit', [ClerkController::class, 'edit'])->name('clerks.edit');
+Route::put('/clerks/{id}/update', [ClerkController::class, 'update'])->name('clerks.update');
+Route::post('/clerks/{id}/status/{status}', [ClerkController::class, 'updateStatus'])->name('clerks.updateStatus');
+Route::put('/clerks/{id}/reactivate', [ClerkController::class, 'reactivate'])->name('clerks.reactivate');
 
-Route::get('/sectional/approved-leaves', [SectionalController::class, 'approvedLeaves'])->name('sectional.approved_leaves');
-Route::get('/sectional/assign-relief/{leaveApplicationId}', [SectionalController::class, 'assignReliefForm'])->name('sectional.assign_relief');
-Route::post('/sectional/assign-relief/{leaveApplicationId}', [SectionalController::class, 'storeRelief'])->name('sectional.store_relief');
+Route::get('/manageSectionals', [SectionalController::class, 'manageSectionals'])->name('sectionals.manage');
+Route::get('/sectionals/{id}/edit', [SectionalController::class, 'edit'])->name('sectionals.edit');
+Route::put('/sectionals/{id}/update', [SectionalController::class, 'update'])->name('sectionals.update');
+Route::post('/sectionals/{id}/status/{status}', [SectionalController::class, 'updateStatus'])->name('sectionals.updateStatus');
+Route::put('/sectionals/{id}/reactivate', [SectionalController::class, 'reactivate'])->name('sectionals.reactivate');
 
-
+Route::post('/check-transfer-nic', [TeacherController::class, 'checkTransferNIC'])->name('teachers.checkNIC');
+Route::post('/check-transfer-nic-principal', [PrincipalController::class, 'checkTransferNIC'])->name('principals.checkNIC');
 
 Route::get('/teacher/notifications', [SectionalController::class, 'showNotifications'])->name('teacher.notifications');
-
 Route::get('/clerk/assign-duty-leave', [App\Http\Controllers\ClerkController::class, 'assignDutyLeave'])->name('clerk.assign.duty.leave');
 
-
-Route::get('/password/reset', [PasswordResetController::class, 'showRequestForm'])->name('password.request');
-Route::post('/password/email', [PasswordResetController::class, 'sendResetLinkEmail'])->name('password.email');
-Route::get('/password/reset/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
-Route::post('/password/reset', [PasswordResetController::class, 'reset'])->name('password.update');
+Route::get('/sectional/approved-leaves', [SectionalController::class, 'approvedLeaves'])->name('sectional.approved_leaves');
