@@ -309,7 +309,7 @@ Route::put('/sectionals/{id}/reactivate', [SectionalController::class, 'reactiva
 Route::post('/check-transfer-nic', [TeacherController::class, 'checkTransferNIC'])->name('teachers.checkNIC');
 Route::post('/check-transfer-nic-principal', [PrincipalController::class, 'checkTransferNIC'])->name('principals.checkNIC');
 
-Route::get('/teacher/notifications', [SectionalController::class, 'showNotifications'])->name('teacher.notifications');
+
 Route::get('/clerk/assign-duty-leave', [App\Http\Controllers\ClerkController::class, 'assignDutyLeave'])->name('clerk.assign.duty.leave');
 
 Route::get('/sectional/approved-leaves', [SectionalController::class, 'approvedLeaves'])->name('sectional.approved_leaves');
@@ -323,3 +323,10 @@ Route::post('/password/email', [PasswordResetController::class, 'sendResetLinkEm
 Route::get('/password/reset/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
 Route::post('/password/reset', [PasswordResetController::class, 'reset'])->name('password.update');
 
+Route::get('/sectional/approved-leaves', [SectionalController::class, 'approvedLeaves'])->name('sectional.approved_leaves');
+    Route::get('/sectional/assign-relief/{leaveApplicationId}', [SectionalController::class, 'assignReliefForm'])->name('sectional.assign_relief');
+    Route::post('/sectional/assign-relief/{leaveApplicationId}', [SectionalController::class, 'storeRelief'])->name('sectional.store_relief');
+   
+
+    
+    Route::get('/teacher/notifications', [SectionalController::class, 'showNotifications'])->name('teacher.notifications');
