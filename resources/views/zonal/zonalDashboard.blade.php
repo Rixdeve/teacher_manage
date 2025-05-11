@@ -9,9 +9,10 @@
 </head>
 
 <body class="bg-gray-300 flex items-center justify-center min-h-screen">
-    <div class="bg-white shadow-lg rounded-lg w-full h-screen flex">
+    <div class="bg-white shadow-lg rounded-lg w-full h-screen flex flex-col md:flex-row">
+        <!-- Sidebar -->
         <div
-            class="w-1/4 bg-gradient-to-b from-blue-100 to-gray-500 p-6 m-4 rounded-xl shadow-lg flex flex-col items-center">
+            class="w-full md:w-1/4 bg-gradient-to-b from-blue-100 to-gray-500 p-6 m-4 rounded-xl shadow-lg flex flex-col items-center">
             <img src="{{asset('storage/photos/boy.png')}}"
                 class="w-24 h-24 rounded-full border-4 border-white shadow-md mb-4" alt="Profile" />
 
@@ -31,14 +32,14 @@
             </ul>
         </div>
 
-        <div class="w-3/4 p-8 relative">
+        <!-- Main Content -->
+        <div class="w-full md:w-3/4 p-8 relative">
             <button onclick="history.back()"
                 class="absolute top-6 left-6 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg shadow-md flex items-center">
                 <img src="https://cdn-icons-png.flaticon.com/512/271/271220.png" class="w-5 h-5 mr-2" alt="Back" />
                 Back
             </button>
 
-            
             <div class="absolute top-6 right-6 flex items-center space-x-3">
                 <img src="{{ asset('storage/app/public/photos/woman.png') }}"
                     class="h-10 w-10 rounded-full border border-gray-400" />
@@ -64,7 +65,8 @@
 
             </div>
 
-            <div class="grid grid-cols-3 gap-6">
+            <!-- Grid for Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div class="bg-blue-100 p-6 rounded-lg text-center shadow-md hover:shadow-lg">
                     <a href="{{ url('/registerschool') }} ">
                         <p class="text-gray-700 font-semibold">Register School:</p>

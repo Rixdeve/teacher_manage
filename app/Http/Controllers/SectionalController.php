@@ -356,6 +356,22 @@ class SectionalController extends Controller
 
         return view('sectional_head.approved_leaves', compact('approvedLeaves'));
     }
+    public function approvedLeaves()
+    {
+        $sectionalHead = Auth::user();
+        $schoolId = $sectionalHead->school_id;
+
+        $approvedLeaves = LeaveApplication::whereHas('latestStatus', function ($query) {
+            $query->where('status', 'APPROVED');
+        })
+            ->whereHas('user', function ($query) use ($schoolId) {
+                $query->where('school_id', $schoolId)->where('role', 'TEACHER');
+            })
+            ->with(['user', 'latestStatus'])
+            ->get();
+
+        return view('sectional_head.approved_leaves', compact('approvedLeaves'));
+    }
 
     public function assignReliefForm($leaveApplicationId)
     {
