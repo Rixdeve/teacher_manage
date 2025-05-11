@@ -10,7 +10,7 @@
             theme: {
                 extend: {
                     screens: {
-                        'lg': '1000px', // Override lg breakpoint to 1000px
+                        'lg': '1000px',
                     }
                 }
             }
@@ -19,12 +19,12 @@
 </head>
 <body class="bg-white flex items-center justify-center min-h-screen">
     <div class="w-full h-screen flex flex-col lg:flex-row">
-        <!-- Hamburger Menu for Mobile/Tablet (<1000px) -->
+     
         <button id="hamburger" class="lg:hidden fixed top-4 left-4 z-50 p-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded-lg shadow-md flex items-center">
             <span class="text-2xl">☰</span>
         </button>
 
-        <!-- Sidebar (hidden by default on mobile, toggled by hamburger) -->
+      
         <div id="sidebar" class="hidden lg:flex w-full lg:w-1/4 bg-gradient-to-b from-blue-100 to-gray-500 p-4 lg:p-6 m-0 lg:m-4 rounded-none lg:rounded-xl shadow-none lg:shadow-lg flex-col items-center fixed lg:static top-0 left-0 h-full z-40 bg-opacity-95">
             <img src="{{ asset('storage/photos/boy.png') }}" class="w-20 lg:w-24 h-20 lg:h-24 rounded-full border-4 border-white shadow-md mb-4" alt="Profile" />
 

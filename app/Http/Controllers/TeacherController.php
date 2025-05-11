@@ -10,6 +10,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Models\Attendance;
+use App\Models\Notification;
 
 // use function Laravel\Prompts\alert;
 
@@ -123,4 +124,14 @@ class TeacherController extends Controller
 
         return response()->json(['message' => 'Already checked in and out today']);
     }
+
+//     public function showNotifications()
+// {
+//     $user = Auth::user();
+//     $notifications = Notification::where('user_id', $user->id)
+//         ->orderBy('created_at', 'desc')
+//         ->get();
+
+//     return view('teacher.notifications', compact('notifications'));
+// }
 }

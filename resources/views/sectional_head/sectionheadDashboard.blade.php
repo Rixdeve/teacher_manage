@@ -9,7 +9,7 @@
             theme: {
                 extend: {
                     screens: {
-                        'lg': '1000px', // Override lg breakpoint to 1000px
+                        'lg': '1000px',
                     }
                 }
             }
@@ -19,12 +19,10 @@
 </head>
 <body class="bg-white flex items-center justify-center min-h-screen">
     <div class="w-full h-screen flex flex-col lg:flex-row">
-        <!-- Hamburger Menu for Mobile/Tablet (<1000px) -->
         <button id="hamburger" class="lg:hidden fixed top-4 left-4 z-50 p-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded-lg shadow-md flex items-center">
             <span class="text-2xl">☰</span>
         </button>
 
-        <!-- Sidebar (hidden by default on mobile, toggled by hamburger) -->
         <div id="sidebar" class="hidden lg:flex w-full lg:w-1/4 bg-gradient-to-b from-blue-100 to-gray-500 p-4 lg:p-6 m-0 lg:m-4 rounded-none lg:rounded-xl shadow-none lg:shadow-lg flex-col items-center fixed lg:static top-0 left-0 h-full z-40 bg-opacity-95">
             <img src="{{ asset('storage/photos/boy.png') }}" class="w-20 lg:w-24 h-20 lg:h-24 rounded-full border-4 border-white shadow-md mb-4" alt="Profile" />
 
@@ -59,12 +57,13 @@
                         My Attendance
                     </a>
                 </li>
-                <li class="w-full lg:w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
-                    <a href="{{ url('') }}" class="flex items-center w-full">
-                        <img src="{{ asset('storage/photos/active.png') }}" class="w-6 lg:w-8 h-6 lg:h-8 mr-2" alt="Notifications" />
-                        Notifications
-                    </a>
-                </li>
+                <li class="w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
+    <a href="{{ route('sectional.approved_leaves') }}" class="flex items-center w-full">
+        <img src="https://cdn-icons-png.flaticon.com/256/14662/14662734.png" class="w-8 h-8 mr-2" alt="Approved Leaves">
+        Assign relife for approved leaves
+    </a>
+</li>
+
                 <li class="mt-8 lg:mt-12 w-full lg:w-48 py-2 flex items-center text-red-500 font-bold hover:text-red-700 cursor-pointer hover:bg-gray-300 rounded-lg p-2 mx-auto">
                     <a href="{{ url('/logout') }}" class="flex items-center w-full">
                         <img src="{{ asset('storage/photos/logout.png') }}" class="w-6 lg:w-8 h-6 lg:h-8 mr-2" alt="Logout" />
@@ -74,7 +73,7 @@
             </ul>
         </div>
 
-        <!-- Main Content -->
+       
         <div class="w-full lg:w-3/4 p-4 lg:p-8 relative">
             <div class="absolute top-12 lg:top-6 right-4 lg:right-6 flex items-center space-x-3">
                 <img src="{{ asset('storage/' . Auth::user()->profile_picture) }}" class="h-8 lg:h-10 w-8 lg:w-10 rounded-full border border-gray-400" alt="Profile" />
