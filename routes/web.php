@@ -331,3 +331,6 @@ Route::get('/sectional/assign-relief/{leaveApplicationId}', [SectionalController
 Route::post('/sectional/assign-relief/{leaveApplicationId}', [SectionalController::class, 'storeRelief'])->name('sectional.store_relief');
    
 Route::get('/teacher/notifications', [SectionalController::class, 'showNotifications'])->name('teacher.notifications');
+
+Route::post('/check-transfer-nic-sectional', [SectionalController::class, 'checkTransferNIC'])->name('sectionals.checkNIC');
+
