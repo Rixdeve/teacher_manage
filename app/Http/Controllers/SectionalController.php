@@ -29,6 +29,11 @@ class SectionalController extends Controller
         $schoolId = session('school_id');
         $selectedSubjects = $request->input('subjects');
 
+        // Check if the sectional head already exists (NIC or email)
+        $existingSectional = User::where('user_nic', $request->user_nic)
+            ->orWhere('user_email', $request->user_email)
+            ->first();
+
         $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
@@ -37,19 +42,60 @@ class SectionalController extends Controller
             'user_address_no' => 'required|string',
             'user_address_street' => 'required|string',
             'user_address_city' => 'required|string',
-            'user_nic' => 'required|string|unique:users,user_nic',
+            'user_nic' => 'required|string',
             'user_dob' => 'required|date',
-            'user_email' => 'required|email|unique:users,user_email',
-            'user_phone' => 'required|numeric|digits:10|unique:users,user_phone',
-            'profile_picture' => 'required|image|mimes:jpg,png,jpeg|max:2048',
-            'status' => 'required',
+            'user_email' => 'required|email',
+            'user_phone' => 'required|numeric|digits:10',
+            'profile_picture' => $existingSectional ? 'nullable|image|mimes:jpg,png,jpeg|max:2048' : 'required|image|mimes:jpg,png,jpeg|max:2048',
+            'status' => 'required|in:ACTIVE,INACTIVE,TRANSFERRED,RETIRED,ONLEAVE',
         ]);
 
-        if ($request->hasFile('profile_picture')) {
-            $imagePath = $request->file('profile_picture')->store('profile_pictures', 'public');
-        } else {
-            $imagePath = null;
+        if ($existingSectional) {
+            // Block registration if not marked as TRANSFERRED
+            if ($existingSectional && strtoupper($existingSectional->status) !== 'TRANSFERRED') {
+                return redirect('/registerSectionhead')->with('error', 'This sectional head already exists and is not marked as transferred from the previous school.');
+            }
+
+            // Proceed to update the transferred sectional head's record
+            if ($request->hasFile('profile_picture')) {
+                // Delete old photo if exists
+                if ($existingSectional->profile_picture && Storage::disk('public')->exists($existingSectional->profile_picture)) {
+                    Storage::disk('public')->delete($existingSectional->profile_picture);
+                }
+
+                $imagePath = $request->file('profile_picture')->store('profile_pictures', 'public');
+            } else {
+                $imagePath = $existingSectional->profile_picture; // retain old if not uploaded
+            }
+
+            // Update fields
+            if (strtoupper($existingSectional->status) === 'TRANSFERRED') {
+                $existingSectional->update([
+                    'school_id' => $schoolId,
+                    'role' => 'SECTIONAL_HEAD',
+                    'user_password' => Hash::make('Section@123'),
+                    'first_name' => $request->first_name,
+                    'last_name' => $request->last_name,
+                    'section' => trim($request->section),
+                    'subjects' => json_encode($selectedSubjects),
+                    'school_index' => $request->school_index,
+                    'user_address_no' => $request->user_address_no,
+                    'user_address_street' => $request->user_address_street,
+                    'user_address_city' => $request->user_address_city,
+                    'user_dob' => $request->user_dob,
+                    'user_email' => $request->user_email,
+                    'user_phone' => $request->user_phone,
+                    'profile_picture' => $imagePath,
+                    'status' => 'ACTIVE',
+                    'registered_date' => now(),
+                ]);
+
+                return redirect('/schoolDashboard')->with('success', 'Transferred sectional head registered successfully to your school!');
+            }
         }
+
+        // ✅ If sectional head doesn't exist, proceed with fresh registration
+        $imagePath = $request->file('profile_picture')->store('profile_pictures', 'public');
 
         try {
             User::create([
@@ -58,8 +104,8 @@ class SectionalController extends Controller
                 'user_password' => Hash::make('Section@123'),
                 'first_name' => $request->first_name,
                 'last_name' => $request->last_name,
-                'section' => (string) trim($request->section),
-                'subjects' => $selectedSubjects,
+                'section' => trim($request->section),
+                'subjects' => json_encode($selectedSubjects),
                 'school_index' => $request->school_index,
                 'user_address_no' => $request->user_address_no,
                 'user_address_street' => $request->user_address_street,
@@ -72,16 +118,51 @@ class SectionalController extends Controller
                 'status' => $request->status,
                 'registered_date' => now(),
             ]);
+
             return redirect('/schoolDashboard')->with('success', 'Sectional Head registered successfully!');
         } catch (QueryException $e) {
-            if ($e->errorInfo[1] == 1062) {
-                return redirect('/registerTeacher')->with('error', 'Sectional Head already exists!');
-            }
+            return redirect('/registerSectionhead')->with('error', 'Sectional Head already exists!');
         } catch (\Exception $e) {
-            return redirect('/registerTeacher')->with('error', 'An error occurred!');
+            return redirect('/registerSectionhead')->with('error', 'An error occurred while registering.');
         }
     }
 
+    public function checkTransferNIC(Request $request)
+    {
+        $nic = trim($request->input('nic'));
+
+        $sectional = User::where('user_nic', $nic)
+            ->whereRaw('UPPER(role) = ?', ['SECTIONAL_HEAD'])
+            ->first();
+
+        if (!$sectional) {
+            return response()->json(['status' => 'not_found'], 404);
+        }
+
+        if (strtoupper($sectional->status) !== 'TRANSFERRED') {
+            return response()->json(['status' => 'not_transferred'], 403);
+        }
+
+        return response()->json([
+            'status' => 'TRANSFERRED',
+            'sectional' => [
+                'id' => $sectional->id,
+                'first_name' => $sectional->first_name,
+                'last_name' => $sectional->last_name,
+                'user_email' => $sectional->user_email,
+                'user_phone' => $sectional->user_phone,
+                'user_nic' => $sectional->user_nic,
+                'user_dob' => \Carbon\Carbon::parse($sectional->user_dob)->format('Y-m-d'),
+                'school_index' => $sectional->school_index ?? '',                
+                'user_address_no' => $sectional->user_address_no,
+                'user_address_street' => $sectional->user_address_street,
+                'user_address_city' => $sectional->user_address_city,
+                'section' => $sectional->section,
+                'profile_picture' => $sectional->profile_picture,
+            ],
+        ]);
+    }
+    
     public function showQRCode($id)
     {
         $teacher = User::findOrFail($id);
