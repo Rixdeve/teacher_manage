@@ -3,14 +3,14 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Live Absentees</title>
+    <title>Live Absentees | TLMS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <meta http-equiv="refresh" content="15">
 
 </head>
 
 <body class="bg-gray-100 p-6">
-    
+
     <div class="max-w-6xl mx-auto bg-white shadow-lg rounded-lg p-6">
 
         <h2 class="text-2xl font-bold mb-4">

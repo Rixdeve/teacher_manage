@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <title>Teacher Dashboard - Leave Status</title>
+    <title>Teacher Dashboard - Leave Status | TLMS</title>
 </head>
+
 <body class="bg-white flex flex-col min-h-screen">
     <div class="w-full h-full flex flex-col sm:min-h-[600px]">
         <!-- Commented Sidebar -->
@@ -84,51 +86,52 @@
             <div class="overflow-y-auto max-h-[400px] sm:max-h-[360px]">
                 <h2 class="text-base sm:text-lg font-semibold mb-4">Your Leave History</h2>
                 @if ($pastApplications->isEmpty())
-                    <p class="text-gray-600 text-sm sm:text-base">No past leave applications found.</p>
+                <p class="text-gray-600 text-sm sm:text-base">No past leave applications found.</p>
                 @else
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse text-sm sm:text-base">
-                            <thead>
-                                <tr class="bg-gray-200">
-                                    <th class="p-2 sm:p-3 text-gray-700 font-semibold">Date Submitted</th>
-                                    <th class="p-2 sm:p-3 text-gray-700 font-semibold">From Date</th>
-                                    <th class="p-2 sm:p-3 text-gray-700 font-semibold">To Date</th>
-                                    <th class="p-2 sm:p-3 text-gray-700 font-semibold">Leave Type</th>
-                                    <th class="p-2 sm:p-3 text-gray-700 font-semibold">Reason</th>
-                                    <th class="p-2 sm:p-3 text-gray-700 font-semibold">Status</th>
-                                    <th class="p-2 sm:p-3 text-gray-700 font-semibold">Remarks</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($pastApplications as $application)
-                                    <tr class="border-b hover:bg-gray-50">
-                                        <td class="p-2 sm:p-3">{{ $application->created_at->format('Y-m-d') }}</td>
-                                        <td class="p-2 sm:p-3">{{ $application->commence_date }}</td>
-                                        <td class="p-2 sm:p-3">{{ $application->end_date }}</td>
-                                        <td class="p-2 sm:p-3">{{ $application->leave_type }}</td>
-                                        <td class="p-2 sm:p-3">{{ $application->reason ?? 'N/A' }}</td>
-                                        <td class="p-2 sm:p-3">
-                                            <span class="inline-block px-2 py-1 rounded text-xs sm:text-sm
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-sm sm:text-base">
+                        <thead>
+                            <tr class="bg-gray-200">
+                                <th class="p-2 sm:p-3 text-gray-700 font-semibold">Date Submitted</th>
+                                <th class="p-2 sm:p-3 text-gray-700 font-semibold">From Date</th>
+                                <th class="p-2 sm:p-3 text-gray-700 font-semibold">To Date</th>
+                                <th class="p-2 sm:p-3 text-gray-700 font-semibold">Leave Type</th>
+                                <th class="p-2 sm:p-3 text-gray-700 font-semibold">Reason</th>
+                                <th class="p-2 sm:p-3 text-gray-700 font-semibold">Status</th>
+                                <th class="p-2 sm:p-3 text-gray-700 font-semibold">Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($pastApplications as $application)
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="p-2 sm:p-3">{{ $application->created_at->format('Y-m-d') }}</td>
+                                <td class="p-2 sm:p-3">{{ $application->commence_date }}</td>
+                                <td class="p-2 sm:p-3">{{ $application->end_date }}</td>
+                                <td class="p-2 sm:p-3">{{ $application->leave_type }}</td>
+                                <td class="p-2 sm:p-3">{{ $application->reason ?? 'N/A' }}</td>
+                                <td class="p-2 sm:p-3">
+                                    <span class="inline-block px-2 py-1 rounded text-xs sm:text-sm
                                                 {{ $application->latestStatus->status === 'APPROVED' ? 'bg-green-100 text-green-700' : 
                                                    ($application->latestStatus->status === 'REJECTED' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700') }}">
-                                                {{ $application->latestStatus->status }}
-                                            </span>
-                                        </td>
-                                        <td class="p-2 sm:p-3">
-                                            @if ($application->latestStatus->status === 'PENDING')
-                                                <!-- No action for pending -->
-                                            @else
-                                                {{ $application->latestStatus->comment ?? 'N/A' }}
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+                                        {{ $application->latestStatus->status }}
+                                    </span>
+                                </td>
+                                <td class="p-2 sm:p-3">
+                                    @if ($application->latestStatus->status === 'PENDING')
+                                    <!-- No action for pending -->
+                                    @else
+                                    {{ $application->latestStatus->comment ?? 'N/A' }}
+                                    @endif
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
                 @endif
             </div>
         </div>
     </div>
 </body>
+
 </html>

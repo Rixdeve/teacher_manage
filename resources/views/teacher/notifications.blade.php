@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Notifications</title>
+    <title>Notifications | TLMS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script>
@@ -25,14 +26,15 @@
         }
     </script>
 </head>
+
 <body class="bg-white font-sans flex items-center justify-center min-h-screen antialiased">
     <div class="w-full min-h-screen flex flex-col lg:flex-row">
-        
+
         <button id="hamburger" class="lg:hidden fixed top-4 left-4 z-50 p-3 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-full shadow-md hover:shadow-custom-hover transition-shadow duration-300">
             <span class="text-2xl">☰</span>
         </button>
 
-      
+
         <div id="sidebar" class="hidden lg:flex w-full lg:w-1/4 bg-gradient-to-b from-blue-100 to-gray-500 p-6 m-0 lg:m-4 rounded-none lg:rounded-2xl shadow-none lg:shadow-custom flex-col items-center fixed lg:static top-0 left-0 h-[90vh] lg:h-auto max-h-[80vh] z-40 transition-transform duration-300 ease-in-out transform lg:transform-none bg-opacity-95 overflow-y-auto">
             <div class="relative group">
                 <img src="{{ asset('storage/photos/boy.png') }}" class="w-24 h-24 rounded-full border-4 border-white shadow-md mb-6 transition-transform duration-300 group-hover:scale-105" alt="Profile" />
@@ -79,9 +81,9 @@
             </ul>
         </div>
 
-       
+
         <div class="w-full lg:w-3/4 p-6 lg:p-8 relative">
-           
+
             <div class="absolute top-4 lg:top-6 right-4 lg:right-6 flex items-center space-x-4 group">
                 <img src="{{ asset('storage/' . Auth::user()->profile_picture) }}" class="h-10 w-10 rounded-full border-2 border-gray-400 shadow-md transition-transform duration-300 group-hover:scale-105" alt="Profile" />
                 <a href="{{ url('/show') }}" class="text-right">
@@ -90,7 +92,7 @@
                 </a>
             </div>
 
-           
+
             <div class="mb-4 lg:mb-6 mt-14 lg:mt-0">
                 <button onclick="history.back()" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-full shadow-md hover:shadow-custom-hover flex items-center transition-shadow duration-300" aria-label="Go back">
                     <img src="https://cdn-icons-png.flaticon.com/512/271/271220.png" class="w-5 h-5 mr-2" alt="Back" />
@@ -98,37 +100,37 @@
                 </button>
             </div>
 
-           
+
             <div class="bg-gradient-to-b from-blue-100 to-gray-500 p-6 rounded-2xl mb-8 shadow-custom hover:shadow-custom-hover transition-shadow duration-300">
                 <p class="text-gray-700 text-base">Welcome back!</p>
                 <h1 class="text-2xl lg:text-3xl font-bold text-gray-800">{{ Auth::user()->first_name }}</h1>
             </div>
 
-          
+
             <div>
                 <h2 class="text-2xl lg:text-3xl font-semibold text-gray-800 mb-6">Notifications</h2>
             </div>
 
             @if ($notifications->isEmpty())
-                <p class="text-gray-600 text-base">No notifications found.</p>
+            <p class="text-gray-600 text-base">No notifications found.</p>
             @else
-                <div class="max-h-[400px] overflow-y-auto border border-gray-200 rounded-2xl p-4">
-                    @foreach ($notifications as $notification)
-                        <div class="bg-white border border-gray-200 rounded-2xl p-4 mb-4 shadow-custom hover:shadow-custom-hover transition-shadow duration-300 {{ $notification->read ? 'opacity-75' : 'bg-blue-50' }}">
-                            <h3 class="text-lg font-semibold text-gray-800">{{ $notification->title }}</h3>
-                            <p class="text-gray-700 text-base">{{ $notification->message }}</p>
-                            <p class="text-sm text-gray-500 mt-2">{{ $notification->created_at->format('Y-m-d H:i:s') }}</p>
-                            @if (!$notification->read)
-                                <form action="{{ route('teacher.notifications') }}" method="POST" class="inline">
-                                    @csrf
-                                    @method('PATCH')
-                                    <input type="hidden" name="notification_id" value="{{ $notification->id }}">
-                                    <button type="submit" class="text-blue-500 hover:underline text-sm mt-2">Mark as Read</button>
-                                </form>
-                            @endif
-                        </div>
-                    @endforeach
+            <div class="max-h-[400px] overflow-y-auto border border-gray-200 rounded-2xl p-4">
+                @foreach ($notifications as $notification)
+                <div class="bg-white border border-gray-200 rounded-2xl p-4 mb-4 shadow-custom hover:shadow-custom-hover transition-shadow duration-300 {{ $notification->read ? 'opacity-75' : 'bg-blue-50' }}">
+                    <h3 class="text-lg font-semibold text-gray-800">{{ $notification->title }}</h3>
+                    <p class="text-gray-700 text-base">{{ $notification->message }}</p>
+                    <p class="text-sm text-gray-500 mt-2">{{ $notification->created_at->format('Y-m-d H:i:s') }}</p>
+                    @if (!$notification->read)
+                    <form action="{{ route('teacher.notifications') }}" method="POST" class="inline">
+                        @csrf
+                        @method('PATCH')
+                        <input type="hidden" name="notification_id" value="{{ $notification->id }}">
+                        <button type="submit" class="text-blue-500 hover:underline text-sm mt-2">Mark as Read</button>
+                    </form>
+                    @endif
                 </div>
+                @endforeach
+            </div>
             @endif
         </div>
     </div>
@@ -141,7 +143,7 @@
             sidebar.classList.toggle('-translate-x-full');
         });
 
-        
+
         document.addEventListener('click', function(event) {
             const sidebar = document.getElementById('sidebar');
             const hamburger = document.getElementById('hamburger');
@@ -152,7 +154,7 @@
             }
         });
 
-        
+
         document.querySelectorAll('#sidebar a').forEach(link => {
             link.addEventListener('click', function() {
                 document.getElementById('sidebar').classList.add('hidden');
@@ -162,4 +164,5 @@
         });
     </script>
 </body>
+
 </html>

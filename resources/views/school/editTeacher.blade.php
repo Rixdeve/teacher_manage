@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Edit Teacher</title>
+    <title>Edit Teacher | TLMS</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body class="bg-gray-300 flex items-center justify-center min-h-screen">
     <div class="bg-white shadow-lg rounded-lg w-full h-screen flex">
         {{-- Sidebar --}}
@@ -57,130 +59,131 @@
             <h2 class="text-2xl font-semibold mb-6 text-center">Edit Teacher Details</h2>
 
             @if(session('success'))
-                <div class="bg-green-200 text-green-800 p-3 rounded mb-4 text-center">
-                    {{ session('success') }}
-                </div>
+            <div class="bg-green-200 text-green-800 p-3 rounded mb-4 text-center">
+                {{ session('success') }}
+            </div>
             @endif
 
             <a href="{{ route('teachers.manage') }}" class="inline-block bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded shadow mb-6">
                 < Back
-            </a>
+                    </a>
 
-            @php
-                $selectedSubjects = is_array($teacher->subjects) ? $teacher->subjects : json_decode($teacher->subjects, true);
-            @endphp
+                    @php
+                    $selectedSubjects = is_array($teacher->subjects) ? $teacher->subjects : json_decode($teacher->subjects, true);
+                    @endphp
 
-            <form action="{{ route('teachers.update', $teacher->id) }}" method="POST" enctype="multipart/form-data" class="space-y-4">
-                @csrf
-                @method('PUT')
+                    <form action="{{ route('teachers.update', $teacher->id) }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+                        @csrf
+                        @method('PUT')
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block font-medium">First Name</label>
-                        <input type="text" name="first_name" value="{{ $teacher->first_name }}" class="w-full border rounded p-2" required>
-                    </div>
-                    <div>
-                        <label class="block font-medium">Last Name</label>
-                        <input type="text" name="last_name" value="{{ $teacher->last_name }}" class="w-full border rounded p-2" required>
-                    </div>
-                </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block font-medium">First Name</label>
+                                <input type="text" name="first_name" value="{{ $teacher->first_name }}" class="w-full border rounded p-2" required>
+                            </div>
+                            <div>
+                                <label class="block font-medium">Last Name</label>
+                                <input type="text" name="last_name" value="{{ $teacher->last_name }}" class="w-full border rounded p-2" required>
+                            </div>
+                        </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block font-medium">School Index</label>
-                        <input type="text" name="school_index" value="{{ $teacher->school_index }}" class="w-full border rounded p-2" required>
-                    </div>
-                    <div>
-                        <label class="block font-medium">Email</label>
-                        <input type="email" name="user_email" value="{{ $teacher->user_email }}" class="w-full border rounded p-2" required>
-                    </div>
-                </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block font-medium">School Index</label>
+                                <input type="text" name="school_index" value="{{ $teacher->school_index }}" class="w-full border rounded p-2" required>
+                            </div>
+                            <div>
+                                <label class="block font-medium">Email</label>
+                                <input type="email" name="user_email" value="{{ $teacher->user_email }}" class="w-full border rounded p-2" required>
+                            </div>
+                        </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block font-medium">Phone Number</label>
-                        <input type="text" name="user_phone" value="{{ $teacher->user_phone }}" class="w-full border rounded p-2" required>
-                    </div>
-                    <div>
-                        <label class="block font-medium">NIC</label>
-                        <input type="text" name="user_nic" value="{{ $teacher->user_nic }}" class="w-full border rounded p-2" required>
-                    </div>
-                </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block font-medium">Phone Number</label>
+                                <input type="text" name="user_phone" value="{{ $teacher->user_phone }}" class="w-full border rounded p-2" required>
+                            </div>
+                            <div>
+                                <label class="block font-medium">NIC</label>
+                                <input type="text" name="user_nic" value="{{ $teacher->user_nic }}" class="w-full border rounded p-2" required>
+                            </div>
+                        </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block font-medium">Address No</label>
-                        <input type="text" name="user_address_no" value="{{ $teacher->user_address_no }}" class="w-full border rounded p-2" required>
-                    </div>
-                    <div>
-                        <label class="block font-medium">Address Street</label>
-                        <input type="text" name="user_address_street" value="{{ $teacher->user_address_street }}" class="w-full border rounded p-2" required>
-                    </div>
-                </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block font-medium">Address No</label>
+                                <input type="text" name="user_address_no" value="{{ $teacher->user_address_no }}" class="w-full border rounded p-2" required>
+                            </div>
+                            <div>
+                                <label class="block font-medium">Address Street</label>
+                                <input type="text" name="user_address_street" value="{{ $teacher->user_address_street }}" class="w-full border rounded p-2" required>
+                            </div>
+                        </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block font-medium">Address City</label>
-                        <input type="text" name="user_address_city" value="{{ $teacher->user_address_city }}" class="w-full border rounded p-2" required>
-                    </div>
-                    <div>
-                        <label class="block font-medium">Date of Birth</label>
-                        <input type="date" name="user_dob" value="{{ \Carbon\Carbon::parse($teacher->user_dob)->format('Y-m-d') }}" class="w-full border rounded p-2" required>
-                    </div>
-                </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block font-medium">Address City</label>
+                                <input type="text" name="user_address_city" value="{{ $teacher->user_address_city }}" class="w-full border rounded p-2" required>
+                            </div>
+                            <div>
+                                <label class="block font-medium">Date of Birth</label>
+                                <input type="date" name="user_dob" value="{{ \Carbon\Carbon::parse($teacher->user_dob)->format('Y-m-d') }}" class="w-full border rounded p-2" required>
+                            </div>
+                        </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {{-- Existing profile picture preview --}}
-                    <div>
-                        <label class="block font-medium">Current Profile Picture</label>
-                        @if ($teacher->profile_picture)
-                            <img src="{{ asset('storage/' . $teacher->profile_picture) }}" alt="Profile Picture" class="h-24 w-24 mt-2 rounded-full border shadow">
-                        @else
-                            <p class="text-sm text-gray-500 mt-2">No profile picture uploaded.</p>
-                        @endif
-                    </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {{-- Existing profile picture preview --}}
+                            <div>
+                                <label class="block font-medium">Current Profile Picture</label>
+                                @if ($teacher->profile_picture)
+                                <img src="{{ asset('storage/' . $teacher->profile_picture) }}" alt="Profile Picture" class="h-24 w-24 mt-2 rounded-full border shadow">
+                                @else
+                                <p class="text-sm text-gray-500 mt-2">No profile picture uploaded.</p>
+                                @endif
+                            </div>
 
-                    {{-- New profile picture upload --}}
-                    <div>
-                        <label class="block font-medium">Upload New Picture</label>
-                        <input type="file" name="profile_picture" class="mt-2 w-full border rounded p-2">
-                    </div>
-                </div>
+                            {{-- New profile picture upload --}}
+                            <div>
+                                <label class="block font-medium">Upload New Picture</label>
+                                <input type="file" name="profile_picture" class="mt-2 w-full border rounded p-2">
+                            </div>
+                        </div>
 
-                <div>
-                    <label class="block font-medium">Section</label>
-                    <select name="section" class="w-full border rounded p-2" required>
-                        <option value="1-5" {{ $teacher->section == '1-5' ? 'selected' : '' }}>1-5</option>
-                        <option value="6-7" {{ $teacher->section == '6-7' ? 'selected' : '' }}>6-7</option>
-                        <option value="8-9" {{ $teacher->section == '8-9' ? 'selected' : '' }}>8-9</option>
-                        <option value="10-11" {{ $teacher->section == '10-11' ? 'selected' : '' }}>10-11</option>
-                        <option value="12-13" {{ $teacher->section == '12-13' ? 'selected' : '' }}>12-13</option>
-                    </select>
-                </div>
+                        <div>
+                            <label class="block font-medium">Section</label>
+                            <select name="section" class="w-full border rounded p-2" required>
+                                <option value="1-5" {{ $teacher->section == '1-5' ? 'selected' : '' }}>1-5</option>
+                                <option value="6-7" {{ $teacher->section == '6-7' ? 'selected' : '' }}>6-7</option>
+                                <option value="8-9" {{ $teacher->section == '8-9' ? 'selected' : '' }}>8-9</option>
+                                <option value="10-11" {{ $teacher->section == '10-11' ? 'selected' : '' }}>10-11</option>
+                                <option value="12-13" {{ $teacher->section == '12-13' ? 'selected' : '' }}>12-13</option>
+                            </select>
+                        </div>
 
-                <div>
-                    <label class="block font-medium">Subjects</label>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                        @foreach([
-                            'English Language', 'Mathematics', 'Religion', 'Science', 'History',
-                            'Business and Accounting Studies', 'ICT', 'Geography', 'Civic Education',
-                            'Sinhala Literature', 'English Literature', 'Physics', 'Chemistry',
-                            'Biology', 'Economics', 'Aesthetic Studies', 'Agriculture'
-                        ] as $subject)
-                            <label class="flex items-center">
-                                <input type="checkbox" name="subjects[]" value="{{ $subject }}" class="mr-2"
-                                    {{ in_array($subject, $selectedSubjects ?? []) ? 'checked' : '' }}>
-                                {{ $subject }}
-                            </label>
-                        @endforeach
-                    </div>
-                </div>
+                        <div>
+                            <label class="block font-medium">Subjects</label>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                @foreach([
+                                'English Language', 'Mathematics', 'Religion', 'Science', 'History',
+                                'Business and Accounting Studies', 'ICT', 'Geography', 'Civic Education',
+                                'Sinhala Literature', 'English Literature', 'Physics', 'Chemistry',
+                                'Biology', 'Economics', 'Aesthetic Studies', 'Agriculture'
+                                ] as $subject)
+                                <label class="flex items-center">
+                                    <input type="checkbox" name="subjects[]" value="{{ $subject }}" class="mr-2"
+                                        {{ in_array($subject, $selectedSubjects ?? []) ? 'checked' : '' }}>
+                                    {{ $subject }}
+                                </label>
+                                @endforeach
+                            </div>
+                        </div>
 
-                <div class="flex justify-center mt-6">
-                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded">Update</button>
-                </div>
-            </form>
+                        <div class="flex justify-center mt-6">
+                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded">Update</button>
+                        </div>
+                    </form>
         </div>
     </div>
 </body>
+
 </html>

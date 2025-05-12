@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <title>Register School</title>
+    <title>Register School | TLMS</title>
     <style>
         body {
             background: url("https://allonehealth.com/wp-content/uploads/2022/07/iStock-1358014313-scaled-1.jpg") no-repeat center center/cover;

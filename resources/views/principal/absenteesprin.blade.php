@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Live Absentees</title>
+    <title>Live Absentees | TLMS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -17,6 +18,7 @@
     </script>
     <meta http-equiv="refresh" content="15">
 </head>
+
 <body class="bg-gray-100 p-4 lg:p-6">
     <div class="relative w-full max-w-full lg:max-w-6xl mx-auto bg-white shadow-lg rounded-lg p-4 lg:p-6">
         <button onclick="history.back()" class="absolute top-4 left-4 lg:top-6 lg:left-6 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-1.5 px-3 lg:py-2 lg:px-4 rounded-lg shadow-md flex items-center z-50">
@@ -75,4 +77,5 @@
         </div>
     </div>
 </body>
+
 </html>

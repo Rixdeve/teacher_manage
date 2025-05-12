@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -15,8 +16,9 @@
             }
         }
     </script>
-    <title>Apply for Leave - Principal</title>
+    <title>Apply for Leave - Principal | TLMS</title>
 </head>
+
 <body class="bg-gray-300 flex items-center justify-center min-h-screen">
     <!-- Hamburger Menu for Mobile/Tablet (<1000px) -->
     <button id="hamburger" class="lg:hidden fixed top-4 left-4 z-50 p-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded-lg shadow-md flex items-center">
@@ -112,15 +114,15 @@
                 <h1 class="text-xl lg:text-2xl font-bold mb-4 lg:mb-6">Apply for Leave</h1>
 
                 @if (session('success'))
-                    <div class="bg-green-100 text-green-700 p-3 lg:p-4 rounded mb-3 lg:mb-4">
-                        {{ session('success') }}
-                    </div>
+                <div class="bg-green-100 text-green-700 p-3 lg:p-4 rounded mb-3 lg:mb-4">
+                    {{ session('success') }}
+                </div>
                 @endif
 
                 @if (session('error'))
-                    <div class="bg-red-100 text-red-700 p-3 lg:p-4 rounded mb-3 lg:mb-4">
-                        {{ session('error') }}
-                    </div>
+                <div class="bg-red-100 text-red-700 p-3 lg:p-4 rounded mb-3 lg:mb-4">
+                    {{ session('error') }}
+                </div>
                 @endif
 
                 <div class="bg-gray-100 p-3 lg:p-4 rounded mb-4 lg:mb-6">
@@ -137,7 +139,7 @@
                         <label for="commence_date" class="block text-xs lg:text-sm font-medium text-gray-700">Commence Date</label>
                         <input type="date" name="commence_date" id="commence_date" value="{{ old('commence_date') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xs lg:text-sm">
                         @error('commence_date')
-                            <span class="text-red-500 text-xs">{{ $message }}</span>
+                        <span class="text-red-500 text-xs">{{ $message }}</span>
                         @enderror
                     </div>
 
@@ -145,7 +147,7 @@
                         <label for="end_date" class="block text-xs lg:text-sm font-medium text-gray-700">End Date</label>
                         <input type="date" name="end_date" id="end_date" value="{{ old('end_date') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xs lg:text-sm">
                         @error('end_date')
-                            <span class="text-red-500 text-xs">{{ $message }}</span>
+                        <span class="text-red-500 text-xs">{{ $message }}</span>
                         @enderror
                     </div>
 
@@ -157,7 +159,7 @@
                             <option value="SHORT" {{ old('leave_type') == 'SHORT' ? 'selected' : '' }}>Short</option>
                         </select>
                         @error('leave_type')
-                            <span class="text-red-500 text-xs">{{ $message }}</span>
+                        <span class="text-red-500 text-xs">{{ $message }}</span>
                         @enderror
                     </div>
 
@@ -165,7 +167,7 @@
                         <label for="reason" class="block text-xs lg:text-sm font-medium text-gray-700">Reason (Optional)</label>
                         <textarea name="reason" id="reason" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xs lg:text-sm">{{ old('reason') }}</textarea>
                         @error('reason')
-                            <span class="text-red-500 text-xs">{{ $message }}</span>
+                        <span class="text-red-500 text-xs">{{ $message }}</span>
                         @enderror
                     </div>
 
@@ -173,7 +175,7 @@
                         <label for="attachments" class="block text-xs lg:text-sm font-medium text-gray-700">Attachments (Up to 3, Optional)</label>
                         <input type="file" name="attachments[]" id="attachments" multiple class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xs lg:text-sm" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
                         @error('attachments')
-                            <span class="text-red-500 text-xs">{{ $message }}</span>
+                        <span class="text-red-500 text-xs">{{ $message }}</span>
                         @enderror
                     </div>
 
@@ -197,4 +199,5 @@
         });
     </script>
 </body>
+
 </html>

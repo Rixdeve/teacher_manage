@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Live Absentees</title>
+    <title>Live Absentees | TLMS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <meta http-equiv="refresh" content="15">
 

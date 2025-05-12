@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Scan QR</title>
+    <title>Scan QR | TLMS</title>
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>

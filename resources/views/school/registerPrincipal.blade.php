@@ -5,6 +5,7 @@ if (!session()->has('school_id')) {
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -28,8 +29,9 @@ if (!session()->has('school_id')) {
             }
         }
     </script>
-    <title>Assign Principal</title>
+    <title>Assign Principal | TLMS</title>
 </head>
+
 <body class="bg-gray-100 font-sans flex items-center justify-center min-h-screen antialiased">
     <div class="w-full h-screen flex flex-col lg:flex-row">
         <!-- Hamburger Menu for Mobile/Tablet (<1000px) -->
@@ -247,51 +249,53 @@ if (!session()->has('school_id')) {
             const nic = document.getElementById('check_nic').value;
 
             fetch('{{ route("principals.checkNIC") }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({ nic })
-            })
-            .then(response => {
-                if (!response.ok) throw new Error('Network error');
-                return response.json();
-            })
-            .then(data => {
-                if (data.status === 'TRANSFERRED') {
-                    const principal = data.principal;
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        nic
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Network error');
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.status === 'TRANSFERRED') {
+                        const principal = data.principal;
 
-                    document.getElementById('first_name').value = principal.first_name;
-                    document.getElementById('last_name').value = principal.last_name;
-                    document.getElementById('user_email').value = principal.user_email;
-                    document.getElementById('user_phone').value = principal.user_phone;
-                    document.getElementById('user_nic').value = principal.user_nic;
-                    document.getElementById('user_dob').value = principal.user_dob;
-                    document.getElementById('user_address_no').value = principal.user_address_no;
-                    document.getElementById('user_address_street').value = principal.user_address_street;
-                    document.getElementById('user_address_city').value = principal.user_address_city;
-                    document.getElementById('school_index').value = '';
+                        document.getElementById('first_name').value = principal.first_name;
+                        document.getElementById('last_name').value = principal.last_name;
+                        document.getElementById('user_email').value = principal.user_email;
+                        document.getElementById('user_phone').value = principal.user_phone;
+                        document.getElementById('user_nic').value = principal.user_nic;
+                        document.getElementById('user_dob').value = principal.user_dob;
+                        document.getElementById('user_address_no').value = principal.user_address_no;
+                        document.getElementById('user_address_street').value = principal.user_address_street;
+                        document.getElementById('user_address_city').value = principal.user_address_city;
+                        document.getElementById('school_index').value = '';
 
-                    if (principal.profile_picture) {
-                        const profileImage = document.getElementById('current-profile-pic');
-                        profileImage.src = '/storage/' + principal.profile_picture;
-                        document.getElementById('current-photo-preview').classList.remove('hidden');
+                        if (principal.profile_picture) {
+                            const profileImage = document.getElementById('current-profile-pic');
+                            profileImage.src = '/storage/' + principal.profile_picture;
+                            document.getElementById('current-photo-preview').classList.remove('hidden');
+                        }
+
+                        document.getElementById('user_nic').readOnly = true;
+                        document.getElementById('check_nic').readOnly = true;
+                        document.querySelector('button[onclick="checkPrincipalNIC()"]').style.display = 'none';
+                    } else if (data.status === 'not_transferred') {
+                        alert('This principal is not marked as transferred.');
+                    } else {
+                        alert('NIC not found.');
                     }
-
-                    document.getElementById('user_nic').readOnly = true;
-                    document.getElementById('check_nic').readOnly = true;
-                    document.querySelector('button[onclick="checkPrincipalNIC()"]').style.display = 'none';
-                } else if (data.status === 'not_transferred') {
-                    alert('This principal is not marked as transferred.');
-                } else {
-                    alert('NIC not found.');
-                }
-            })
-            .catch(error => {
-                console.error(error);
-                alert('Something went wrong while checking NIC.');
-            });
+                })
+                .catch(error => {
+                    console.error(error);
+                    alert('Something went wrong while checking NIC.');
+                });
         }
 
         function resetNIC() {
@@ -304,4 +308,5 @@ if (!session()->has('school_id')) {
         }
     </script>
 </body>
+
 </html>
