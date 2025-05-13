@@ -15,6 +15,8 @@ use App\Models\Attendance;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ZonalController;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Auth;
+
 
 
 
@@ -334,3 +336,16 @@ Route::get('/teacher/notifications', [SectionalController::class, 'showNotificat
 
 Route::post('/check-transfer-nic-sectional', [SectionalController::class, 'checkTransferNIC'])->name('sectionals.checkNIC');
 
+Route::post('/toggle-theme', function (\Illuminate\Http\Request $request) {
+    /** @var \App\Models\User $user */
+    $user = Auth::user();
+    $theme = $request->input('theme');
+
+    if ($user && in_array($theme, ['light', 'dark'])) {
+        $user->theme = $theme;
+        $user->save();
+        return response()->json(['success' => true]);
+    }
+
+    return response()->json(['success' => false], 400);
+})->middleware('auth');

@@ -4,10 +4,12 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    @include('partials.theme')
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     screens: {
@@ -27,7 +29,7 @@
     <title>Clerk Dashboard | TLMS</title>
 </head>
 
-<body class="bg-white font-sans flex items-center justify-center min-h-screen antialiased">
+<body class="bg-white text-black dark:bg-gray-900 dark:text-white font-sans flex items-center justify-center min-h-screen antialiased">
     <div class="w-full h-screen flex flex-col lg:flex-row">
         <!-- Hamburger Menu for Mobile/Tablet (<1000px) -->
         <button id="hamburger" class="lg:hidden fixed top-4 left-4 z-50 p-3 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-full shadow-md hover:shadow-custom-hover transition-shadow duration-300">
