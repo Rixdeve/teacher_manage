@@ -182,7 +182,7 @@ Route::post('/change-password', [ProfileController::class, 'changePassword'])->n
 // Route::get('/leave/create', [LeaveApplicationController::class, 'create'])->name('leave.create');
 // Route::post('/leave/store', [LeaveApplicationController::class, 'store'])->name('leave.store');
 // Route::get('/leave/index', [LeaveApplicationController::class, 'index'])->name('leave.index');
-Route::patch('/leave/{leaveId}/status', [LeaveApplicationController::class, 'updateStatus'])->name('leave.updateStatus');
+Route::patch('/leave/{leaveId}/status', [LeaveApplicationController::class, 'updateStatus'])->name('principal.leave.updateStatus');
 
 
 Route::get('/leave/attachment/{id}/{index}', [LeaveApplicationController::class, 'serveAttachment'])
@@ -196,7 +196,7 @@ Route::get('/leave/attachment/{id}/{index}', [LeaveApplicationController::class,
 
 // Principal routes
 Route::get('/principal/dashboard', [PrincipalController::class, 'dashboard'])->name('principal.dashboard');
-Route::patch('/leave/{id}/status', [PrincipalController::class, 'updateLeaveStatus'])->name('leave.updateStatus');
+// Route::patch('/leave/{id}/status', [PrincipalController::class, 'updateLeaveStatus'])->name('leave.updateStatus');
 
 // Other Principal routes
 Route::get('/registerPrincipal', [PrincipalController::class, 'index'])->name('principal.register');
@@ -241,7 +241,7 @@ Route::get('/run-schedule', function () {
 // Route::get('/leave', [LeaveApplicationController::class, 'index'])->name('leave.index');
 // Route::get('/leave/record', [LeaveApplicationController::class, 'record'])->name('leave.record');
 // Route::get('/leave/history', [LeaveApplicationController::class, 'history'])->name('leave.history');
-Route::post('/leave/{leaveId}/status', [LeaveApplicationController::class, 'updateStatus'])->name('leave.updateStatus');
+// Route::post('/leave/{leaveId}/status', [LeaveApplicationController::class, 'updateStatus'])->name('leave.updateStatus');
 
 
 
@@ -250,7 +250,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/leave/create', [LeaveApplicationController::class, 'create'])->name('leave.create');
     Route::post('/leave', [LeaveApplicationController::class, 'store'])->name('leave.store');
     Route::get('/leave', [LeaveApplicationController::class, 'index'])->name('leave.index');
-    Route::post('/leave/{leaveId}/status', [LeaveApplicationController::class, 'updateStatus'])->name('leave.updateStatus');
+    // Route::post('/leave/{leaveId}/status', [LeaveApplicationController::class, 'updateStatus'])->name('leave.updateStatus');
     Route::get('/leave/history', [LeaveApplicationController::class, 'history'])->name('leave.history');
     Route::get('/leave/record', [LeaveApplicationController::class, 'record'])->name('leave.record');
 
