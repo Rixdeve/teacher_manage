@@ -328,6 +328,7 @@ Route::post('/password/reset', [PasswordResetController::class, 'reset'])->name(
 
 
 Route::get('/teacher/notifications', [SectionalController::class, 'showNotifications'])->name('teacher.notifications');
+
 Route::get('/sectional/absentees/export-pdf', [SectionalController::class, 'exportAbsenteesPdf'])->name('sectional.absentees.pdf');
 
 
