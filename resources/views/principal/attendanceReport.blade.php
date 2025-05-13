@@ -25,7 +25,6 @@
                     }
                 }
             }
-        }
     </script>
     <title>Principal Dashboard | TLMS</title>
 </head>
