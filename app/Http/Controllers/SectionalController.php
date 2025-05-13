@@ -13,9 +13,13 @@ use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Database\QueryException;
+use Barryvdh\DomPDF\Facade\Pdf;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Models\Attendance;
+use App\Mail\ReliefAssignmentMail;
+use Illuminate\Support\Facades\Mail;
 
 class SectionalController extends Controller
 {
@@ -153,7 +157,7 @@ class SectionalController extends Controller
                 'user_phone' => $sectional->user_phone,
                 'user_nic' => $sectional->user_nic,
                 'user_dob' => \Carbon\Carbon::parse($sectional->user_dob)->format('Y-m-d'),
-                'school_index' => $sectional->school_index ?? '',                
+                'school_index' => $sectional->school_index ?? '',
                 'user_address_no' => $sectional->user_address_no,
                 'user_address_street' => $sectional->user_address_street,
                 'user_address_city' => $sectional->user_address_city,
@@ -162,7 +166,7 @@ class SectionalController extends Controller
             ],
         ]);
     }
-    
+
     public function showQRCode($id)
     {
         $teacher = User::findOrFail($id);
@@ -224,6 +228,25 @@ class SectionalController extends Controller
         return view('sectional_head.liveAttendance', compact('attendances'));
     }
 
+    // public function liveAbsentees()
+    // {
+    //     $sectionalHead = Auth::user();
+    //     $schoolId = $sectionalHead->school_id;
+    //     $section = $sectionalHead->section;
+    //     $today = now()->toDateString();
+
+    //     $absentees = User::where('school_id', $schoolId)
+    //         ->where('section', $section)
+    //         ->whereIn('role', ['TEACHER'])
+    //         ->whereDoesntHave('attendances', function ($query) use ($today) {
+    //             $query->where('date', $today)
+    //                 ->where('status', 'PRESENT');
+    //         })
+    //         ->get();
+
+    //     return view('sectional_head.absenteessection', compact('absentees'));
+    // }
+    
     public function liveAbsentees()
     {
         $sectionalHead = Auth::user();
@@ -243,6 +266,40 @@ class SectionalController extends Controller
         return view('sectional_head.absenteessection', compact('absentees'));
     }
 
+    public function exportAbsenteesPdf()
+    {
+        $sectionalHead = Auth::user();
+        $schoolId = $sectionalHead->school_id;
+        $section = $sectionalHead->section;
+        $today = now()->toDateString();
+
+        $absentees = User::where('school_id', $schoolId)
+            ->where('section', $section)
+            ->whereIn('role', ['TEACHER'])
+            ->whereDoesntHave('attendances', function ($query) use ($today) {
+                $query->where('date', $today)
+                    ->where('status', 'PRESENT');
+            })
+            ->get();
+
+        $data = [
+            'absentees' => $absentees,
+            'today' => $today,
+            'schoolName' => $schoolId, // Replace with actual school name if available
+            'sectionName' => $section,
+        ];
+
+        Log::info('Generating PDF with DomPDF for absentees on ' . $today);
+
+        try {
+            $pdf = Pdf::loadView('sectional_head.absentee_pdf', $data);
+            return $pdf->download("Absentee_Report_{$today}.pdf");
+        } catch (\Exception $e) {
+            Log::error('DomPDF generation failed: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to generate PDF: ' . $e->getMessage());
+        }
+    }
+ 
     public function dashboard()
     {
         $sectionalHead = Auth::user();
@@ -512,6 +569,8 @@ class SectionalController extends Controller
         ]);
 
         $reliefTeacher = User::findOrFail($request->relief_teacher_id);
+
+
         if ($reliefTeacher->school_id !== $sectionalHead->school_id || $reliefTeacher->role !== 'TEACHER' || $reliefTeacher->section !== $sectionalHead->section) {
             return redirect()->back()->with('error', 'Invalid relief teacher selected.');
         }
@@ -538,13 +597,21 @@ class SectionalController extends Controller
             'time_slot' => $request->time_slot,
             'class' => $request->class,
         ]);
-
+        $relief_teacher_email = $reliefTeacher->user_email;
+        $relief_teacher_name = $reliefTeacher->name;
+        $relief_teacher_subject = "Assigned as a relief teacher";
+        $relief_teacher_class = $reliefAssignment->class;
+        $relief_teacher_subjects = $reliefAssignment->subjects;
+        $relief_teacher_time_slot = $reliefAssignment->time_slot;
+        $relief_teacher_date = $reliefAssignment->date;
+        $leave_applied_teacher = $leaveApplication->user->name;
         Notification::create([
             'user_id' => $reliefTeacher->id,
             'title' => 'Relief Assignment',
             'message' => "You have been assigned as a relief teacher for {$leaveApplication->user->first_name} {$leaveApplication->user->last_name} on {$request->date} during {$request->time_slot} for class {$request->class}, teaching {$request->subjects}.",
             'read' => false,
         ]);
+        Mail::to($relief_teacher_email)->send(new ReliefAssignmentMail($relief_teacher_name, $relief_teacher_subject, $leave_applied_teacher, $relief_teacher_date, $relief_teacher_time_slot, $relief_teacher_class, $relief_teacher_subjects));
 
         return redirect()->route('sectional.approved_leaves')->with('success', 'Relief teacher assigned successfully, and notification sent.');
     }

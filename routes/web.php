@@ -9,6 +9,7 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\PrincipalController;
 use App\Http\Controllers\ClerkController;
 use App\Http\Controllers\PasswordResetController;
+use App\Http\Controllers\LeaveApplicationController;
 
 use App\Http\Controllers\SectionalController;
 use App\Models\Attendance;
@@ -177,7 +178,6 @@ Route::post('/change-password', [ProfileController::class, 'changePassword'])->n
 
 
 
-use App\Http\Controllers\LeaveApplicationController;
 
 // Route::get('/leave/create', [LeaveApplicationController::class, 'create'])->name('leave.create');
 // Route::post('/leave/store', [LeaveApplicationController::class, 'store'])->name('leave.store');
@@ -314,12 +314,13 @@ Route::post('/check-transfer-nic-principal', [PrincipalController::class, 'check
 Route::post('/check-transfer-nic-clerk', [ClerkController::class, 'checkTransferNIC'])->name('clerks.checkNIC');
 
 
-Route::get('/teacher/notifications', [SectionalController::class, 'showNotifications'])->name('teacher.notifications');
+
 Route::get('/clerk/assign-duty-leave', [App\Http\Controllers\ClerkController::class, 'assignDutyLeave'])->name('clerk.assign.duty.leave');
 
 Route::get('/sectional/approved-leaves', [SectionalController::class, 'approvedLeaves'])->name('sectional.approved_leaves');
 
-Route::get('/assign-relief', [SectionalController::class, 'assignRelief'])->name('sectional.assign_relief');
+Route::get('/assign-relief/{leaveApplicationId}', [SectionalController::class, 'assignReliefForm'])->name('sectional.assign_relief');
+Route::post('/sectional/relief/{leaveApplicationId}', [SectionalController::class, 'storeRelief'])->name('sectional.store_relief');
 
 
 
@@ -328,13 +329,9 @@ Route::post('/password/email', [PasswordResetController::class, 'sendResetLinkEm
 Route::get('/password/reset/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
 Route::post('/password/reset', [PasswordResetController::class, 'reset'])->name('password.update');
 
-Route::get('/sectional/approved-leaves', [SectionalController::class, 'approvedLeaves'])->name('sectional.approved_leaves');
-Route::get('/sectional/assign-relief/{leaveApplicationId}', [SectionalController::class, 'assignReliefForm'])->name('sectional.assign_relief');
-Route::post('/sectional/assign-relief/{leaveApplicationId}', [SectionalController::class, 'storeRelief'])->name('sectional.store_relief');
 
 Route::get('/teacher/notifications', [SectionalController::class, 'showNotifications'])->name('teacher.notifications');
 
-Route::post('/check-transfer-nic-sectional', [SectionalController::class, 'checkTransferNIC'])->name('sectionals.checkNIC');
 
 Route::post('/toggle-theme', function (\Illuminate\Http\Request $request) {
     /** @var \App\Models\User $user */
@@ -349,3 +346,21 @@ Route::post('/toggle-theme', function (\Illuminate\Http\Request $request) {
 
     return response()->json(['success' => false], 400);
 })->middleware('auth');
+Route::get('/sectional/absentees/export-pdf', [SectionalController::class, 'exportAbsenteesPdf'])->name('sectional.absentees.pdf');
+Route::post('/sectionals/check-nic', [SectionalController::class, 'checkTransferNIC'])->name('sectionals.checkNIC');
+
+Route::post('/toggle-theme', function (\Illuminate\Http\Request $request) {
+    /** @var \App\Models\User $user */
+    $user = Auth::user();
+    $theme = $request->input('theme');
+
+    if ($user && in_array($theme, ['light', 'dark'])) {
+        $user->theme = $theme;
+        $user->save();
+        return response()->json(['success' => true]);
+    }
+
+    return response()->json(['success' => false], 400);
+})->middleware('auth');
+
+Route::get('/attendanceReport/pdf', [PrincipalController::class, 'downloadPdf'])->name('attendanceReport.pdf');

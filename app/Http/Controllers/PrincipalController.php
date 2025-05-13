@@ -456,6 +456,7 @@ use Illuminate\Support\Facades\Auth;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Models\Attendance;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PrincipalController extends Controller
 {
@@ -701,21 +702,93 @@ class PrincipalController extends Controller
     }
 
 
-    public function showAttendanceTable()
+    // public function showAttendanceTable()
+    // {
+    //     $schoolId = Auth::user()->school_id;
+
+    //     $attendanceRecords = Attendance::with('user')
+    //         ->whereHas('user', function ($query) use ($schoolId) {
+    //             $query->where('school_id', $schoolId)
+    //                 ->whereIn('role', ['TEACHER', 'PRINCIPAL', 'SECTIONAL_HEAD']);
+    //         })
+    //         ->orderByDesc('date')
+    //         ->get();
+
+    //     return view('principal.attendanceReport', compact('attendanceRecords'));
+    // }
+    public function showAttendanceTable(Request $request)
     {
         $schoolId = Auth::user()->school_id;
 
-        $attendanceRecords = Attendance::with('user')
+        $query = Attendance::with('user')
             ->whereHas('user', function ($query) use ($schoolId) {
                 $query->where('school_id', $schoolId)
                     ->whereIn('role', ['TEACHER', 'PRINCIPAL', 'SECTIONAL_HEAD']);
-            })
-            ->orderByDesc('date')
-            ->get();
+            });
 
-        return view('principal.attendanceReport', compact('attendanceRecords'));
+        // Filter by single date
+        if ($request->filled('date')) {
+            $query->where('date', $request->date);
+        }
+
+        // Role filter
+        if ($request->filled('role')) {
+            $query->whereHas('user', function ($query) use ($request) {
+                $query->where('role', $request->role);
+            });
+        }
+
+        // User filter
+        if ($request->filled('user_id')) {
+            $query->where('user_id', $request->user_id);
+        }
+
+        // Get all filtered records (no pagination)
+        $attendanceRecords = $query->orderByDesc('date')->get();
+
+        // Fetch users for dropdown
+        $users = User::where('school_id', $schoolId)
+            ->whereIn('role', ['TEACHER', 'PRINCIPAL', 'SECTIONAL_HEAD'])
+            ->get(['id', 'first_name', 'last_name']);
+
+        return view('principal.attendanceReport', compact('attendanceRecords', 'users'));
     }
 
+    public function downloadPdf(Request $request)
+    {
+        $schoolId = Auth::user()->school_id;
+
+        $query = Attendance::with('user')
+            ->whereHas('user', function ($query) use ($schoolId) {
+                $query->where('school_id', $schoolId)
+                    ->whereIn('role', ['TEACHER', 'PRINCIPAL', 'SECTIONAL_HEAD']);
+            });
+
+        // Apply the same filters as the table
+        if ($request->filled('date')) {
+            $query->where('date', $request->date);
+        }
+
+        if ($request->filled('role')) {
+            $query->whereHas('user', function ($query) use ($request) {
+                $query->where('role', $request->role);
+            });
+        }
+
+        if ($request->filled('user_id')) {
+            $query->where('user_id', $request->user_id);
+        }
+
+        // Get all filtered records
+        $attendanceRecords = $query->orderByDesc('date')->get();
+
+        // Load the PDF view with the filtered records
+        $pdf = Pdf::loadView('principal.attendanceReportPdf', compact('attendanceRecords'));
+
+        // Download the PDF with a dynamic filename
+        $date = $request->date ?? 'all_dates';
+        return $pdf->download("attendance_report_{$date}.pdf");
+    }
     public function liveAbsentees()
     {
         $schoolId = Auth::user()->school_id;
