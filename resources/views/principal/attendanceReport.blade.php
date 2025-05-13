@@ -10,7 +10,7 @@
             theme: {
                 extend: {
                     screens: {
-                        'lg': '1000px', // Override lg breakpoint to 1000px
+                        'lg': '1000px',
                     }
                 }
             }
@@ -18,7 +18,6 @@
     </script>
     <title>Principal Dashboard | TLMS</title>
 </head>
-
 <body class="bg-gray-300 flex items-center justify-center min-h-screen">
     <!-- Hamburger Menu for Mobile/Tablet (<1000px) -->
     <button id="hamburger" class="lg:hidden fixed top-4 left-4 z-50 p-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded-lg shadow-md flex items-center">
@@ -26,7 +25,7 @@
     </button>
 
     <div class="bg-white shadow-lg rounded-lg w-full h-screen flex">
-        <!-- Sidebar (hidden by default on mobile, unchanged on desktop) -->
+        <!-- Sidebar (unchanged) -->
         <div id="sidebar" class="hidden lg:flex w-full lg:w-1/4 bg-gradient-to-b from-blue-100 to-gray-500 p-4 lg:p-6 m-0 lg:m-4 rounded-none lg:rounded-xl shadow-none lg:shadow-lg flex-col items-center fixed lg:static top-0 left-0 h-[90vh] lg:h-auto z-40 bg-opacity-95">
             <img src="{{ asset('storage/photos/boss.png') }}" class="w-20 lg:w-24 h-20 lg:h-24 rounded-full border-4 border-white shadow-md mb-4" alt="Profile" />
 
@@ -87,6 +86,7 @@
                 </li>
             </ul>
         </div>
+
         <!-- Main Content -->
         <div class="w-full lg:w-3/4 p-4 lg:p-8 relative">
             <button onclick="history.back()" class="absolute top-24 lg:top-6 left-4 lg:left-6 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-1.5 px-3 lg:py-2 lg:px-4 rounded-lg shadow-md flex items-center">
@@ -105,40 +105,84 @@
             </div>
 
             <div class="mt-32 lg:mt-8">
-                <h2 class="text-xl lg:text-2xl mb-3 lg:mb-4 font-semibold">All Attendance Records</h2>
-                <div class="overflow-y-auto max-h-96 lg:max-h-[500px] border border-gray-300 rounded-lg">
+                <h2 class="text-xl lg:text-2xl mb-3 lg:mb-4 font-semibold">Attendance Report</h2>
+
+                <!-- Filter Form -->
+                <form id="filter-form" method="GET" action="{{ url('/attendanceReport') }}" class="mb-6 bg-gray-200 p-4 rounded-lg shadow-md">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                        <!-- Date Filter -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Date</label>
+                            <input type="date" name="date" value="{{ request('date') }}" class="mt-1 block w-full rounded-md border-gray-300 bg-white text-gray-900 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                        <!-- Role Filter -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Role</label>
+                            <select name="role" class="mt-1 block w-full rounded-md border-gray-300 bg-white text-gray-900 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                <option value="">All Roles</option>
+                                <option value="TEACHER" {{ request('role') == 'TEACHER' ? 'selected' : '' }}>Teacher</option>
+                                <option value="PRINCIPAL" {{ request('role') == 'PRINCIPAL' ? 'selected' : '' }}>Principal</option>
+                                <option value="SECTIONAL_HEAD" {{ request('role') == 'SECTIONAL_HEAD' ? 'selected' : '' }}>Sectional Head</option>
+                            </select>
+                        </div>
+                        <!-- User Filter -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">User</label>
+                            <select name="user_id" class="mt-1 block w-full rounded-md border-gray-300 bg-white text-gray-900 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                <option value="">All Users</option>
+                                @foreach($users as $user)
+                                    <option value="{{ $user->id }}" {{ request('user_id') == $user->id ? 'selected' : '' }}>
+                                        {{ $user->first_name }} {{ $user->last_name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex space-x-2">
+                        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg">Apply Filters</button>
+                        <a href="{{ url('/attendanceReport') }}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-lg">Clear Filters</a>
+                        <a href="#" id="download-pdf" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg">Download PDF</a>
+                    </div>
+                </form>
+
+                <!-- Compact Attendance Table -->
+                <div class="overflow-y-auto max-h-64 lg:max-h-80 border border-gray-300 rounded-lg">
                     <table class="min-w-full table-auto border-collapse">
                         <thead class="bg-gray-200 sticky top-0">
                             <tr>
-                                <th class="px-3 lg:px-4 py-2 lg:py-2 text-left border border-gray-300 text-sm lg:text-base">ID</th>
-                                <th class="px-3 lg:px-4 py-2 lg:py-2 text-left border border-gray-300 text-sm lg:text-base">Method</th>
-                                <th class="px-3 lg:px-4 py-2 lg:py-2 text-left border border-gray-300 text-sm lg:text-base">User ID</th>
-                                <th class="px-3 lg:px-4 py-2 lg:py-2 text-left border border-gray-300 text-sm lg:text-base">First Name</th>
-                                <th class="px-3 lg:px-4 py-2 lg:py-2 text-left border border-gray-300 text-sm lg:text-base">Last Name</th>
-                                <th class="px-3 lg:px-4 py-2 lg:py-2 text-left border border-gray-300 text-sm lg:text-base">Status</th>
-                                <th class="px-3 lg:px-4 py-2 lg:py-2 text-left border border-gray-300 text-sm lg:text-base">Date</th>
-                                <th class="px-3 lg:px-4 py-2 lg:py-2 text-left border border-gray-300 text-sm lg:text-base">Check-in Time</th>
-                                <th class="px-3 lg:px-4 py-2 lg:py-2 text-left border border-gray-300 text-sm lg:text-base">Check-out Time</th>
+                                <th class="px-2 lg:px-3 py-1 lg:py-1.5 text-left border border-gray-300 text-xs lg:text-sm">ID</th>
+                                <th class="px-2 lg:px-3 py-1 lg:py-1.5 text-left border border-gray-300 text-xs lg:text-sm">First Name</th>
+                                <th class="px-2 lg:px-3 py-1 lg:py-1.5 text-left border border-gray-300 text-xs lg:text-sm">Last Name</th>
+                                <th class="px-2 lg:px-3 py-1 lg:py-1.5 text-left border border-gray-300 text-xs lg:text-sm">Status</th>
+                                <th class="px-2 lg:px-3 py-1 lg:py-1.5 text-left border border-gray-300 text-xs lg:text-sm">Date</th>
+                                <th class="px-2 lg:px-3 py-1 lg:py-1.5 text-left border border-gray-300 text-xs lg:text-sm">Check-in</th>
+                                <th class="px-2 lg:px-3 py-1 lg:py-1.5 text-left border border-gray-300 text-xs lg:text-sm">Check-out</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-300">
-                            @foreach($attendanceRecords as $record)
-                            <tr>
-                                <td class="px-3 lg:px-4 py-2 lg:py-2 border border-gray-300 text-sm lg:text-base">{{ $record->id }}</td>
-                                <td class="px-3 lg:px-4 py-2 lg:py-2 border border-gray-300 text-sm lg:text-base">{{ $record->method }}</td>
-                                <td class="px-3 lg:px-4 py-2 lg:py-2 border border-gray-300 text-sm lg:text-base">{{ $record->user_id }}</td>
-                                <td class="px-3 lg:px-4 py-2 lg:py-2 border border-gray-300 text-sm lg:text-base">{{ $record->user->first_name }}</td>
-                                <td class="px-3 lg:px-4 py-2 lg:py-2 border border-gray-300 text-sm lg:text-base">{{ $record->user->last_name }}</td>
-                                <td class="px-3 lg:px-4 py-2 lg:py-2 border border-gray-300 text-sm lg:text-base">{{ $record->status }}</td>
-                                <td class="px-3 lg:px-4 py-2 lg:py-2 border border-gray-300 text-sm lg:text-base">{{ $record->date }}</td>
-                                <td class="px-3 lg:px-4 py-2 lg:py-2 border border-gray-300 text-sm lg:text-base">
-                                    {{ $record->check_in_time ? \Carbon\Carbon::parse($record->check_in_time)->format('h:i A') : '' }}
-                                </td>
-                                <td class="px-3 lg:px-4 py-2 lg:py-2 border border-gray-300 text-sm lg:text-base">
-                                    {{ $record->check_out_time ? \Carbon\Carbon::parse($record->check_out_time)->format('h:i A') : '' }}
-                                </td>
-                            </tr>
-                            @endforeach
+                            @if($attendanceRecords->isEmpty())
+                                <tr>
+                                    <td colspan="7" class="px-2 lg:px-3 py-1 lg:py-1.5 text-center text-xs lg:text-sm text-gray-600">
+                                        No attendance records found. Please apply filters to view records.
+                                    </td>
+                                </tr>
+                            @else
+                                @foreach($attendanceRecords as $record)
+                                    <tr class="bg-white">
+                                        <td class="px-2 lg:px-3 py-1 lg:py-1.5 border border-gray-300 text-xs lg:text-sm">{{ $record->id }}</td>
+                                        <td class="px-2 lg:px-3 py-1 lg:py-1.5 border border-gray-300 text-xs lg:text-sm">{{ $record->user->first_name }}</td>
+                                        <td class="px-2 lg:px-3 py-1 lg:py-1.5 border border-gray-300 text-xs lg:text-sm">{{ $record->user->last_name }}</td>
+                                        <td class="px-2 lg:px-3 py-1 lg:py-1.5 border border-gray-300 text-xs lg:text-sm">{{ $record->status }}</td>
+                                        <td class="px-2 lg:px-3 py-1 lg:py-1.5 border border-gray-300 text-xs lg:text-sm">{{ $record->date }}</td>
+                                        <td class="px-2 lg:px-3 py-1 lg:py-1.5 border border-gray-300 text-xs lg:text-sm">
+                                            {{ $record->check_in_time ? \Carbon\Carbon::parse($record->check_in_time)->format('h:i A') : '' }}
+                                        </td>
+                                        <td class="px-2 lg:px-3 py-1 lg:py-1.5 border border-gray-300 text-xs lg:text-sm">
+                                            {{ $record->check_out_time ? \Carbon\Carbon::parse($record->check_out_time)->format('h:i A') : '' }}
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @endif
                         </tbody>
                     </table>
                 </div>
@@ -147,6 +191,7 @@
     </div>
 
     <script>
+        // Sidebar toggle
         document.getElementById('hamburger').addEventListener('click', function() {
             const sidebar = document.getElementById('sidebar');
             sidebar.classList.toggle('hidden');
@@ -155,6 +200,15 @@
             link.addEventListener('click', function() {
                 document.getElementById('sidebar').classList.add('hidden');
             });
+        });
+
+        // PDF Download
+        document.getElementById('download-pdf').addEventListener('click', function(e) {
+            e.preventDefault();
+            const form = document.getElementById('filter-form');
+            const formData = new FormData(form);
+            const queryString = new URLSearchParams(formData).toString();
+            window.location.href = '{{ url("/attendanceReport/pdf") }}?' + queryString;
         });
     </script>
 </body>

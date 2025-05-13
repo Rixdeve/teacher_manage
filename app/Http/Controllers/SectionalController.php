@@ -13,7 +13,9 @@ use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Database\QueryException;
+use Barryvdh\DomPDF\Facade\Pdf;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Models\Attendance;
 use App\Mail\ReliefAssignmentMail;
@@ -226,6 +228,25 @@ class SectionalController extends Controller
         return view('sectional_head.liveAttendance', compact('attendances'));
     }
 
+    // public function liveAbsentees()
+    // {
+    //     $sectionalHead = Auth::user();
+    //     $schoolId = $sectionalHead->school_id;
+    //     $section = $sectionalHead->section;
+    //     $today = now()->toDateString();
+
+    //     $absentees = User::where('school_id', $schoolId)
+    //         ->where('section', $section)
+    //         ->whereIn('role', ['TEACHER'])
+    //         ->whereDoesntHave('attendances', function ($query) use ($today) {
+    //             $query->where('date', $today)
+    //                 ->where('status', 'PRESENT');
+    //         })
+    //         ->get();
+
+    //     return view('sectional_head.absenteessection', compact('absentees'));
+    // }
+    
     public function liveAbsentees()
     {
         $sectionalHead = Auth::user();
@@ -245,6 +266,40 @@ class SectionalController extends Controller
         return view('sectional_head.absenteessection', compact('absentees'));
     }
 
+    public function exportAbsenteesPdf()
+    {
+        $sectionalHead = Auth::user();
+        $schoolId = $sectionalHead->school_id;
+        $section = $sectionalHead->section;
+        $today = now()->toDateString();
+
+        $absentees = User::where('school_id', $schoolId)
+            ->where('section', $section)
+            ->whereIn('role', ['TEACHER'])
+            ->whereDoesntHave('attendances', function ($query) use ($today) {
+                $query->where('date', $today)
+                    ->where('status', 'PRESENT');
+            })
+            ->get();
+
+        $data = [
+            'absentees' => $absentees,
+            'today' => $today,
+            'schoolName' => $schoolId, // Replace with actual school name if available
+            'sectionName' => $section,
+        ];
+
+        Log::info('Generating PDF with DomPDF for absentees on ' . $today);
+
+        try {
+            $pdf = Pdf::loadView('sectional_head.absentee_pdf', $data);
+            return $pdf->download("Absentee_Report_{$today}.pdf");
+        } catch (\Exception $e) {
+            Log::error('DomPDF generation failed: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to generate PDF: ' . $e->getMessage());
+        }
+    }
+ 
     public function dashboard()
     {
         $sectionalHead = Auth::user();
