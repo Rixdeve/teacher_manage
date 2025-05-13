@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Live Attendance</title>
+    <title>Live Attendance | TLMS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <meta http-equiv="refresh" content="10">
     <script>
@@ -17,6 +18,7 @@
         }
     </script>
 </head>
+
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
     <!-- Hamburger Menu for Mobile/Tablet (<1000px) -->
     <button id="hamburger" class="lg:hidden fixed top-4 left-4 z-50 p-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded-lg shadow-md flex items-center">
@@ -159,4 +161,5 @@
         });
     </script>
 </body>
+
 </html>

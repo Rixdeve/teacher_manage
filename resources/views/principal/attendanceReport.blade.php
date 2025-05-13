@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -15,10 +16,10 @@
             }
         }
     </script>
-    <title>Principal Dashboard</title>
+    <title>Principal Dashboard | TLMS</title>
 </head>
-<body class="bg-gray-100 text-gray-900 flex items-center justify-center min-h-screen">
-    <!-- Hamburger Menu -->
+<body class="bg-gray-300 flex items-center justify-center min-h-screen">
+    <!-- Hamburger Menu for Mobile/Tablet (<1000px) -->
     <button id="hamburger" class="lg:hidden fixed top-4 left-4 z-50 p-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded-lg shadow-md flex items-center">
         <span class="text-2xl">☰</span>
     </button>
@@ -211,4 +212,5 @@
         });
     </script>
 </body>
+
 </html>

@@ -164,8 +164,8 @@ Route::get('/show', [ProfileController::class, 'show'])->name('profile.show');
 Route::get('/change-password', function () {
     return view('profile.change-password');
 })->name('password.change');
+Route::post('/change-password', [ProfileController::class, 'changePassword'])->name('profile.password.update');
 
-Route::post('/change-password', [ProfileController::class, 'changePassword'])->name('password.update');
 
 // Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
 // Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
@@ -309,6 +309,9 @@ Route::put('/sectionals/{id}/reactivate', [SectionalController::class, 'reactiva
 Route::post('/check-transfer-nic', [TeacherController::class, 'checkTransferNIC'])->name('teachers.checkNIC');
 Route::post('/check-transfer-nic-principal', [PrincipalController::class, 'checkTransferNIC'])->name('principals.checkNIC');
 
+Route::post('/check-transfer-nic-clerk', [ClerkController::class, 'checkTransferNIC'])->name('clerks.checkNIC');
+
+
 
 Route::get('/clerk/assign-duty-leave', [App\Http\Controllers\ClerkController::class, 'assignDutyLeave'])->name('clerk.assign.duty.leave');
 
@@ -322,11 +325,6 @@ Route::get('/password/reset', [PasswordResetController::class, 'showRequestForm'
 Route::post('/password/email', [PasswordResetController::class, 'sendResetLinkEmail'])->name('password.email');
 Route::get('/password/reset/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
 Route::post('/password/reset', [PasswordResetController::class, 'reset'])->name('password.update');
-
-Route::get('/sectional/approved-leaves', [SectionalController::class, 'approvedLeaves'])->name('sectional.approved_leaves');
-    Route::get('/sectional/assign-relief/{leaveApplicationId}', [SectionalController::class, 'assignReliefForm'])->name('sectional.assign_relief');
-    Route::post('/sectional/assign-relief/{leaveApplicationId}', [SectionalController::class, 'storeRelief'])->name('sectional.store_relief');
-   
 
     
     Route::get('/teacher/notifications', [SectionalController::class, 'showNotifications'])->name('teacher.notifications');

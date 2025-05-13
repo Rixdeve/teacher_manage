@@ -5,11 +5,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <title>Apply for Leave - Sectional Head</title>
+    <title>Apply for Leave - Sectional Head | TLMS</title>
 </head>
 
 <body class="bg-gray-300 flex items-center justify-center min-h-screen">
-<div class="bg-white shadow-lg rounded-lg w-full h-screen flex">
+    <div class="bg-white shadow-lg rounded-lg w-full h-screen flex">
         <div
             class="w-1/4 bg-gradient-to-b from-blue-100 to-gray-500 p-6 m-4 rounded-xl shadow-lg flex flex-col items-center">
             <img src="{{asset('storage/photos/boy.png')}}"
@@ -54,7 +54,7 @@
                         <img src="{{asset('storage/photos/active.png')}}" class="w-8 h-8 mr-2" alt="Notifications" />
                         Notifications</a>
                 </li>
-                
+
                 <li
                     class="mt-12 w-48 py-2 flex items-center text-red-500 font-bold hover:text-red-700 cursor-pointer hover:bg-gray-300 rounded-lg p-2 mx-auto">
                     <a href="{{ url('/logout') }}" class="flex items-center w-full">
@@ -64,9 +64,9 @@
             </ul>
         </div>
 
-        
+
         <div class="w-3/4 p-8 relative">
-            
+
             <div class="absolute top-6 right-6 flex items-center space-x-3">
                 <img src="{{ asset('storage/' . Auth::user()->profile_picture) }}" class="h-10 w-10 rounded-full border border-gray-400" />
                 <div>
@@ -89,21 +89,21 @@
 
             <h1 class="text-2xl font-bold mb-6">Apply for Leave</h1>
 
-           
+
             @if (session('success'))
-                <div class="bg-green-100 text-green-700 p-4 rounded mb-4">
-                    {{ session('success') }}
-                </div>
+            <div class="bg-green-100 text-green-700 p-4 rounded mb-4">
+                {{ session('success') }}
+            </div>
             @endif
 
-          
+
             @if (session('error'))
-                <div class="bg-red-100 text-red-700 p-4 rounded mb-4">
-                    {{ session('error') }}
-                </div>
+            <div class="bg-red-100 text-red-700 p-4 rounded mb-4">
+                {{ session('error') }}
+            </div>
             @endif
 
-          
+
             <div class="bg-gray-100 p-4 rounded mb-6">
                 <h2 class="text-lg font-semibold mb-2">Your Leave Balance</h2>
                 <p><strong>Casual Leave Remaining:</strong> {{ $leaveCounter->total_casual }}</p>
@@ -112,66 +112,66 @@
                 <p><strong>Total CASUAL or MEDICAL Leave Remaining for {{ now()->year }}:</strong> {{ $remainingAnnualLeaveDays }} day(s)</p>
             </div>
 
-           
+
             <form action="{{ route('leave.store') }}" method="POST" enctype="multipart/form-data">
-    @csrf
+                @csrf
 
-    <div class="mb-4">
-        <label for="commence_date" class="block text-gray-700 text-sm sm:text-base">From Date</label>
-        <input type="date" name="commence_date" id="commence_date" class="w-full p-3 mt-2 border rounded text-sm sm:text-base" required>
-        @error('commence_date')
-            <span class="text-red-500 text-xs">{{ $message }}</span>
-        @enderror
-    </div>
+                <div class="mb-4">
+                    <label for="commence_date" class="block text-gray-700 text-sm sm:text-base">From Date</label>
+                    <input type="date" name="commence_date" id="commence_date" class="w-full p-3 mt-2 border rounded text-sm sm:text-base" required>
+                    @error('commence_date')
+                    <span class="text-red-500 text-xs">{{ $message }}</span>
+                    @enderror
+                </div>
 
-    <div class="mb-4">
-        <label for="end_date" class="block text-gray-700 text-sm sm:text-base">To Date</label>
-        <input type="date" name="end_date" id="end_date" class="w-full p-3 mt-2 border rounded text-sm sm:text-base" required>
-        @error('end_date')
-            <span class="text-red-500 text-xs">{{ $message }}</span>
-        @enderror
-    </div>
+                <div class="mb-4">
+                    <label for="end_date" class="block text-gray-700 text-sm sm:text-base">To Date</label>
+                    <input type="date" name="end_date" id="end_date" class="w-full p-3 mt-2 border rounded text-sm sm:text-base" required>
+                    @error('end_date')
+                    <span class="text-red-500 text-xs">{{ $message }}</span>
+                    @enderror
+                </div>
 
-    <div class="mb-4">
-        <label for="leave_type" class="block text-gray-700 text-sm sm:text-base">Leave Type</label>
-        <select name="leave_type" id="leave_type" class="w-full p-3 mt-2 border rounded text-sm sm:text-base" required>
-            <option value="CASUAL">Casual Leave</option>
-            <option value="MEDICAL">Medical Leave</option>
-            <option value="SHORT">Short Leave</option>
-        </select>
-        @error('leave_type')
-            <span class="text-red-500 text-xs">{{ $message }}</span>
-        @enderror
-    </div>
+                <div class="mb-4">
+                    <label for="leave_type" class="block text-gray-700 text-sm sm:text-base">Leave Type</label>
+                    <select name="leave_type" id="leave_type" class="w-full p-3 mt-2 border rounded text-sm sm:text-base" required>
+                        <option value="CASUAL">Casual Leave</option>
+                        <option value="MEDICAL">Medical Leave</option>
+                        <option value="SHORT">Short Leave</option>
+                    </select>
+                    @error('leave_type')
+                    <span class="text-red-500 text-xs">{{ $message }}</span>
+                    @enderror
+                </div>
 
-    <div class="mb-4">
-        <label for="reason" class="block text-gray-700 text-sm sm:text-base">Reason</label>
-        <textarea name="reason" id="reason" rows="4" class="w-full p-3 mt-2 border rounded text-sm sm:text-base"></textarea>
-        @error('reason')
-            <span class="text-red-500 text-xs">{{ $message }}</span>
-        @enderror
-    </div>
+                <div class="mb-4">
+                    <label for="reason" class="block text-gray-700 text-sm sm:text-base">Reason</label>
+                    <textarea name="reason" id="reason" rows="4" class="w-full p-3 mt-2 border rounded text-sm sm:text-base"></textarea>
+                    @error('reason')
+                    <span class="text-red-500 text-xs">{{ $message }}</span>
+                    @enderror
+                </div>
 
-    <div class="mb-4">
-        <label for="attachments" class="block text-gray-700 text-sm sm:text-base">Attachments (Up to 3, Optional, PDF/JPG/PNG, Max 2MB each)</label>
-        <input type="file" name="attachments[]" id="attachments" class="w-full p-3 mt-2 border rounded text-sm sm:text-base" accept=".pdf,.jpg,.jpeg,.png" multiple onchange="limitFiles(this)">
-        <script>
-            function limitFiles(input) {
-                if (input.files.length > 3) {
-                    alert('You can only upload a maximum of 3 files.');
-                    input.value = '';
-                }
-            }
-        </script>
-        @error('attachments.*')
-            <span class="text-red-500 text-xs">{{ $message }}</span>
-        @enderror
-    </div>
+                <div class="mb-4">
+                    <label for="attachments" class="block text-gray-700 text-sm sm:text-base">Attachments (Up to 3, Optional, PDF/JPG/PNG, Max 2MB each)</label>
+                    <input type="file" name="attachments[]" id="attachments" class="w-full p-3 mt-2 border rounded text-sm sm:text-base" accept=".pdf,.jpg,.jpeg,.png" multiple onchange="limitFiles(this)">
+                    <script>
+                        function limitFiles(input) {
+                            if (input.files.length > 3) {
+                                alert('You can only upload a maximum of 3 files.');
+                                input.value = '';
+                            }
+                        }
+                    </script>
+                    @error('attachments.*')
+                    <span class="text-red-500 text-xs">{{ $message }}</span>
+                    @enderror
+                </div>
 
-    <div class="mb-4">
-        <button type="submit" class="bg-gray-500 hover:bg-gray-600 text-white p-3 rounded w-full sm:w-auto text-sm sm:text-base">Submit Application</button>
-    </div>
-</form>
+                <div class="mb-4">
+                    <button type="submit" class="bg-gray-500 hover:bg-gray-600 text-white p-3 rounded w-full sm:w-auto text-sm sm:text-base">Submit Application</button>
+                </div>
+            </form>
         </div>
     </div>
 </body>

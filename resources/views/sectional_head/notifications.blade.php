@@ -1,19 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
-    <title>Notifications</title>
+    <title>Notifications | TLMS</title>
 </head>
+
 <body class="bg-white flex items-center justify-center min-h-screen">
-<div class="w-full h-screen flex flex-col lg:flex-row">
-       
+    <div class="w-full h-screen flex flex-col lg:flex-row">
+
         <button id="hamburger" class="lg:hidden fixed top-4 left-4 z-50 p-3 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-full shadow-md hover:shadow-custom-hover transition-shadow duration-300">
             <span class="text-2xl">☰</span>
         </button>
 
-     
+
         <div id="sidebar" class="hidden lg:flex w-full lg:w-1/4 bg-gradient-to-b from-blue-100 to-gray-500 p-6 m-0 lg:m-4 rounded-none lg:rounded-2xl shadow-none lg:shadow-custom flex-col items-center fixed lg:static top-0 left-0 h-[100vh] lg:h-[100vh] max-h-[95vh] z-40 transition-transform duration-300 ease-in-out transform lg:transform-none bg-opacity-95 overflow-y-auto">
             <div class="relative group">
                 <img src="{{ asset('storage/photos/boy.png') }}" class="w-24 h-24 rounded-full border-4 border-white shadow-md mb-6 transition-transform duration-300 group-hover:scale-105" alt="Profile" />
@@ -25,7 +27,7 @@
                     <a href="{{ url('/teacherDashboard') }}" class="flex items-center w-full">
                         <img src="{{ asset('storage/photos/dashboard.png') }}" class="w-8 h-8 mr-3" alt="Dashboard" />
                         Dashboard
-    </a>
+                    </a>
                 </li>
                 <li class="w-full py-3 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-3 mx-auto transition-colors duration-200">
                     <a href="{{ route('leave.create') }}" class="flex items-center w-full">
@@ -80,20 +82,21 @@
             </div>
             <h1 class="text-2xl font-bold mb-6">Notifications</h1>
             @if ($notifications->isEmpty())
-                <p class="text-gray-600">No notifications found.</p>
+            <p class="text-gray-600">No notifications found.</p>
             @else
-                <div class="space-y-4 max-h-[calc(100vh-250px)] overflow-y-auto">
-                    @foreach ($notifications as $notification)
-                        <div class="bg-white border rounded-lg p-4 shadow-sm {{ $notification->read ? 'opacity-75' : 'bg-blue-50' }}">
-                            <h3 class="text-lg font-semibold">{{ $notification->title }}</h3>
-                            <p class="text-gray-700">{{ $notification->message }}</p>
-                            <p 
-                            class="text-sm text-gray-500">{{ $notification->created_at->format('Y-m-d H:i:s') }}</p>
-                        </div>
-                    @endforeach
+            <div class="space-y-4 max-h-[calc(100vh-250px)] overflow-y-auto">
+                @foreach ($notifications as $notification)
+                <div class="bg-white border rounded-lg p-4 shadow-sm {{ $notification->read ? 'opacity-75' : 'bg-blue-50' }}">
+                    <h3 class="text-lg font-semibold">{{ $notification->title }}</h3>
+                    <p class="text-gray-700">{{ $notification->message }}</p>
+                    <p
+                        class="text-sm text-gray-500">{{ $notification->created_at->format('Y-m-d H:i:s') }}</p>
                 </div>
+                @endforeach
+            </div>
             @endif
         </div>
     </div>
 </body>
+
 </html>

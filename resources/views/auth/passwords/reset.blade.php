@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Reset Password - TLMS</title>
+    <title>Reset Password | TLMS</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 

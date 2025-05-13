@@ -5,6 +5,7 @@ if (!session()->has('school_id')) {
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -20,8 +21,9 @@ if (!session()->has('school_id')) {
             }
         }
     </script>
-    <title>Register Sectional Head</title>
+    <title>Register Sectional Head | TLMS</title>
 </head>
+
 <body class="bg-white flex items-center justify-center min-h-screen">
     <div class="w-full h-screen flex flex-col lg:flex-row">
         <!-- Hamburger Menu for Mobile/Tablet (<1000px) -->
@@ -105,7 +107,15 @@ if (!session()->has('school_id')) {
                         @if(session('error'))
                         <p style="color: red;">{{ session('error') }}</p>
                         @endif
-                        <div class="space-y-4">
+                            <div class="mb-6">
+                                <label for="check_nic" class="block text-lg font-medium text-gray-800">Enter NIC to Check Transfer Status</label>
+                                <div class="flex space-x-2 mt-2">
+                                    <input type="text" id="check_nic" class="p-3 border border-gray-300 rounded-lg w-full" placeholder="Enter NIC...">
+                                    <button type="button" onclick="checkSectionalNIC()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">Check</button>
+                                    <button type="button" onclick="resetNIC()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg">Reset</button>
+                                </div>
+                            </div>
+
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label for="first_name" class="block text-sm lg:text-lg font-medium text-gray-800">First Name</label>
@@ -161,6 +171,11 @@ if (!session()->has('school_id')) {
                             </div>
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div id="current-photo-preview" class="mt-4 hidden">
+                                    <label class="block text-sm text-gray-700">Current Photo:</label>
+                                    <img id="current-profile-pic" src="" alt="Profile Picture"
+                                        class="w-24 h-24 rounded-lg border mt-2">
+                                </div>
                                 <div>
                                     <label for="profile_photo" class="block text-sm lg:text-lg font-medium text-gray-800">Profile Photo</label>
                                     <input type="file" id="profile_picture" name="profile_picture" class="mt-2 p-2 lg:p-3 border border-gray-300 rounded-lg w-full" />
@@ -275,5 +290,68 @@ if (!session()->has('school_id')) {
             });
         });
     </script>
+    <script>
+        function checkSectionalNIC() {
+            const nic = document.getElementById('check_nic').value;
+
+            fetch("{{ route('sectionals.checkNIC') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ nic: nic })
+            })
+            .then(async response => {
+                const data = await response.json();
+
+                // Allow processing even if response status isn't 2xx, as long as it contains valid data
+                if (!response.ok && data.status !== 'TRANSFERRED') {
+                    throw new Error(data.status);
+                }
+
+                if (data.status === 'TRANSFERRED') {
+                    // Autofill fields
+                    document.getElementById('first_name').value = data.sectional.first_name;
+                    document.getElementById('last_name').value = data.sectional.last_name;
+                    document.getElementById('user_email').value = data.sectional.user_email;
+                    document.getElementById('user_phone').value = data.sectional.user_phone;
+                    document.getElementById('user_nic').value = data.sectional.user_nic;
+                    document.getElementById('user_dob').value = data.sectional.user_dob;
+                    document.getElementById('user_address_no').value = data.sectional.user_address_no;
+                    document.getElementById('user_address_street').value = data.sectional.user_address_street;
+                    document.getElementById('user_address_city').value = data.sectional.user_address_city;
+                    document.getElementById('section').value = data.sectional.section;
+                    document.getElementById('currentProfileImage').src = '/storage/' + data.sectional.profile_picture;
+                    document.getElementById('currentProfileWrapper').classList.remove('hidden');
+
+                    // Lock NIC
+                    document.getElementById('user_nic').readOnly = true;
+                    document.getElementById('check_nic').readOnly = true;
+
+                    // Hide Check button
+                    document.querySelector('button[onclick="checkSectionalNIC()"]').style.display = 'none';
+                } else {
+                    alert('This sectional head is not marked as transferred.');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                // Only show alert if autofill didn't happen
+                if (!document.getElementById('user_nic').value) {
+                    alert('NIC not found or error occurred.');
+                }
+            });
+        }
+
+        function resetNIC() {
+            document.getElementById('check_nic').value = '';
+            document.getElementById('user_nic').value = '';
+            document.getElementById('user_nic').readOnly = false;
+            document.getElementById('check_nic').readOnly = false;
+            document.querySelector('button[onclick="checkSectionalNIC()"]').style.display = 'inline-block';
+        }
+    </script>
 </body>
+
 </html>

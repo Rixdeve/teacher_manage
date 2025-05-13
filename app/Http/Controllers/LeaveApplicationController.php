@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\File;
 use App\Mail\LeaveRequestMail;
+use App\Mail\DutyLeaveAssign;
+use App\Mail\DutyLeaveAssignPrincipal;
 use Illuminate\Support\Facades\Mail;
 use Exception;
 
@@ -169,133 +171,141 @@ class LeaveApplicationController extends Controller
     //         ->with('success', 'Leave application submitted successfully.');
     // }
     public function store(Request $request)
-{
-    $request->validate([
-        'user_id' => 'sometimes|exists:users,id',
-        'commence_date' => 'required|date',
-        'end_date' => 'required|date|after_or_equal:commence_date',
-        'leave_type' => 'required|in:CASUAL,MEDICAL,SHORT,DUTY',
-        'reason' => 'nullable|string',
-        'attachments.*' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
-    ]);
-
-    $subject = 'Leave Request Submitted';
-    $name = Auth::user()->name;
-    $user_email = Auth::user()->user_email;
-    $leave_type = strtoupper($request->leave_type);
-    $start_date = $request->commence_date;
-    $end_date = $request->end_date;
-    $reason = $request->reason;
-    $user = Auth::user();
-    $principal = $user->school?->principal;
-    $leaveType = strtoupper($request->leave_type);
-    $principal_email = $principal->user_email ?? null;
-    $principal_name = $principal->name ?? null;
-    $principal_subject = 'Leave Request Received From ' . $user->name;
-    $targetUserId = $request->input('user_id', Auth::id());
-
-    if ($user->role === 'CLERK' && $request->has('user_id')) {
-        $targetUser = User::findOrFail($targetUserId);
-        if ($targetUser->school_id !== $user->school_id) {
-            return redirect()->route('clerk.leave.create')->with('error', 'You can only submit leave applications for users in your school.');
-        }
-    }
-
-    $leaveApplication = new LeaveApplication();
-    $leaveApplication->user_id = $targetUserId;
-    $leaveApplication->submitted_by = Auth::id();
-    $leaveApplication->commence_date = $request->commence_date;
-    $leaveApplication->end_date = $request->end_date;
-    $leaveApplication->leave_type = $leaveType;
-    $leaveApplication->reason = $request->reason;
-
-    Log::info('Leave Application Dates', [
-        'commence_date' => $request->commence_date,
-        'end_date' => $request->end_date,
-        'leave_days' => $leaveApplication->leave_days,
-    ]);
-
-    $leaveDaysByYear = $leaveApplication->leave_days_by_year;
-
-    if (in_array($leaveType, ['CASUAL', 'MEDICAL'])) {
-        foreach ($leaveDaysByYear as $year => $days) {
-            $leaveCounter = LeaveCounter::getOrCreateForUser($targetUserId, $year);
-
-            if ($leaveType === 'CASUAL') {
-                $remainingCasual = $leaveCounter->total_casual;
-                if ($remainingCasual < $days) {
-                    return redirect()->route($user->role === 'CLERK' ? 'clerk.leave.create' : 'leave.create')
-                        ->with('error', "User only has {$remainingCasual} casual leave days remaining for {$year}.");
-                }
-            } elseif ($leaveType === 'MEDICAL') {
-                $remainingMedical = $leaveCounter->total_medical;
-                if ($remainingMedical < $days) {
-                    return redirect()->route($user->role === 'CLERK' ? 'clerk.leave.create' : 'leave.create')
-                        ->with('error', "User only has {$remainingMedical} medical leave days remaining for {$year}.");
-                }
-            }
-        }
-    } elseif ($leaveType === 'SHORT') {
-        $year = Carbon::parse($request->commence_date)->year;
-        $leaveCounter = LeaveCounter::getOrCreateForUser($targetUserId, $year);
-        if ($leaveCounter->total_short < 1) {
-            return redirect()->route($user->role === 'CLERK' ? 'clerk.leave.create' : 'leave.create')
-                ->with('error', 'User has exhausted their short leave balance.');
-        }
-    }
-
-    // Handle multiple attachments from a single input
-    if ($request->hasFile('attachments')) {
-        // Filter valid files (non-empty and valid)
-        $attachments = array_filter($request->file('attachments'), function ($file) {
-            return $file->isValid() && $file->getSize() > 0;
-        });
-
-        $attachmentCount = count($attachments);
-
-        if ($attachmentCount > 3) {
-            return redirect()->route($user->role === 'CLERK' ? 'clerk.leave.create' : 'leave.create')
-                ->with('error', 'You can upload a maximum of 3 attachments.');
-        }
-
-        foreach ($attachments as $index => $attachment) {
-            if ($index < 3) {
-                $field = 'attachment_url_' . ($index + 1);
-                $path = $attachment->store('', 'private_leave_attachments');
-                $leaveApplication->$field = $path;
-                Log::info('Attachment stored', [
-                    'field' => $field,
-                    'path' => $path,
-                    'exists' => Storage::disk('private_leave_attachments')->exists($path),
-                ]);
-            }
-        }
-    }
-
-    $leaveApplication->save();
-
-    $status = $leaveType === 'DUTY' ? 'APPROVED' : 'PENDING';
-    LeaveStatus::create([
-        'leave_id' => $leaveApplication->id,
-        'user_id' => $targetUserId,
-        'status' => $status,
-    ]);
-
-    if ($leaveType === 'DUTY') {
-        Notification::create([
-            'user_id' => $targetUserId,
-            'title' => 'Duty Leave Assigned',
-            'message' => "You have been assigned a duty leave from {$start_date} to {$end_date}. Reason: {$reason}",
-            'read' => false,
+    {
+        $request->validate([
+            'user_id' => 'sometimes|exists:users,id',
+            'commence_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:commence_date',
+            'leave_type' => 'required|in:CASUAL,MEDICAL,SHORT,DUTY',
+            'reason' => 'nullable|string',
+            'attachments.*' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
         ]);
-    } else {
-        Mail::to($user_email)->send(new LeaveRequestMail($name, $subject, $leaveType, $start_date, $end_date, $reason));
-        Mail::to($principal_email)->send(new LeaveReqestRecivedMail($principal_name, $principal_email, $name, $principal_subject, $leave_type, $start_date, $end_date, $reason));
-    }
 
-    return redirect()->route($user->role === 'CLERK' ? 'clerk.leave.create' : 'leave.create')
-        ->with('success', 'Leave application submitted successfully.');
-}
+        $subject = 'Leave Request Submitted';
+        $name = Auth::user()->name;
+        $user_email = Auth::user()->user_email;
+        $leave_type = strtoupper($request->leave_type);
+        $start_date = $request->commence_date;
+        $end_date = $request->end_date;
+        $reason = $request->reason;
+        $user = Auth::user();
+        $principal = $user->school?->principal;
+        $leaveType = strtoupper($request->leave_type);
+        $principal_email = $principal->user_email ?? null;
+        $principal_name = $principal->name ?? null;
+        $principal_subject = 'Leave Request Received From ' . $user->name;
+        $targetUserId = $request->input('user_id', Auth::id());
+        $targetUserEmail = User::findOrFail($targetUserId)->user_email;
+        $targetUserName = User::findOrFail($targetUserId)->name;
+        $duty_leave_subject = 'Duty Leave Assigned';
+        $duty_leave_message = "You have been assigned a duty leave from {$start_date} to {$end_date}. Reason: {$reason}";
+        $principal_duty_subject = 'Duty Leave Assigned For ' . $targetUserName;
+        $principal_duty_message = "Duty leave assigned for {$targetUserName} from {$start_date} to {$end_date}. Reason: {$reason}";
+
+        if ($user->role === 'CLERK' && $request->has('user_id')) {
+            $targetUser = User::findOrFail($targetUserId);
+            if ($targetUser->school_id !== $user->school_id) {
+                return redirect()->route('clerk.leave.create')->with('error', 'You can only submit leave applications for users in your school.');
+            }
+        }
+
+        $leaveApplication = new LeaveApplication();
+        $leaveApplication->user_id = $targetUserId;
+        $leaveApplication->submitted_by = Auth::id();
+        $leaveApplication->commence_date = $request->commence_date;
+        $leaveApplication->end_date = $request->end_date;
+        $leaveApplication->leave_type = $leaveType;
+        $leaveApplication->reason = $request->reason;
+
+        Log::info('Leave Application Dates', [
+            'commence_date' => $request->commence_date,
+            'end_date' => $request->end_date,
+            'leave_days' => $leaveApplication->leave_days,
+        ]);
+
+        $leaveDaysByYear = $leaveApplication->leave_days_by_year;
+
+        if (in_array($leaveType, ['CASUAL', 'MEDICAL'])) {
+            foreach ($leaveDaysByYear as $year => $days) {
+                $leaveCounter = LeaveCounter::getOrCreateForUser($targetUserId, $year);
+
+                if ($leaveType === 'CASUAL') {
+                    $remainingCasual = $leaveCounter->total_casual;
+                    if ($remainingCasual < $days) {
+                        return redirect()->route($user->role === 'CLERK' ? 'clerk.leave.create' : 'leave.create')
+                            ->with('error', "User only has {$remainingCasual} casual leave days remaining for {$year}.");
+                    }
+                } elseif ($leaveType === 'MEDICAL') {
+                    $remainingMedical = $leaveCounter->total_medical;
+                    if ($remainingMedical < $days) {
+                        return redirect()->route($user->role === 'CLERK' ? 'clerk.leave.create' : 'leave.create')
+                            ->with('error', "User only has {$remainingMedical} medical leave days remaining for {$year}.");
+                    }
+                }
+            }
+        } elseif ($leaveType === 'SHORT') {
+            $year = Carbon::parse($request->commence_date)->year;
+            $leaveCounter = LeaveCounter::getOrCreateForUser($targetUserId, $year);
+            if ($leaveCounter->total_short < 1) {
+                return redirect()->route($user->role === 'CLERK' ? 'clerk.leave.create' : 'leave.create')
+                    ->with('error', 'User has exhausted their short leave balance.');
+            }
+        }
+
+        // Handle multiple attachments from a single input
+        if ($request->hasFile('attachments')) {
+            // Filter valid files (non-empty and valid)
+            $attachments = array_filter($request->file('attachments'), function ($file) {
+                return $file->isValid() && $file->getSize() > 0;
+            });
+
+            $attachmentCount = count($attachments);
+
+            if ($attachmentCount > 3) {
+                return redirect()->route($user->role === 'CLERK' ? 'clerk.leave.create' : 'leave.create')
+                    ->with('error', 'You can upload a maximum of 3 attachments.');
+            }
+
+            foreach ($attachments as $index => $attachment) {
+                if ($index < 3) {
+                    $field = 'attachment_url_' . ($index + 1);
+                    $path = $attachment->store('', 'private_leave_attachments');
+                    $leaveApplication->$field = $path;
+                    Log::info('Attachment stored', [
+                        'field' => $field,
+                        'path' => $path,
+                        'exists' => Storage::disk('private_leave_attachments')->exists($path),
+                    ]);
+                }
+            }
+        }
+
+        $leaveApplication->save();
+
+        $status = $leaveType === 'DUTY' ? 'APPROVED' : 'PENDING';
+        LeaveStatus::create([
+            'leave_id' => $leaveApplication->id,
+            'user_id' => $targetUserId,
+            'status' => $status,
+        ]);
+
+        if ($leaveType === 'DUTY') {
+            Mail::to($targetUserEmail)->send(new DutyLeaveAssign($targetUserName, $duty_leave_subject, $leaveType, $start_date, $end_date, $reason));
+            Mail::to($principal_email)->send(new DutyLeaveAssignPrincipal($principal_name, $principal_email, $targetUserName, $principal_duty_subject, $leave_type, $start_date, $end_date, $reason));
+            Notification::create([
+                'user_id' => $targetUserId,
+                'title' => 'Duty Leave Assigned',
+                'message' => "You have been assigned a duty leave from {$start_date} to {$end_date}. Reason: {$reason}",
+                'read' => false,
+            ]);
+        } else {
+            Mail::to($user_email)->send(new LeaveRequestMail($name, $subject, $leaveType, $start_date, $end_date, $reason));
+            Mail::to($principal_email)->send(new LeaveReqestRecivedMail($principal_name, $principal_email, $name, $principal_subject, $leave_type, $start_date, $end_date, $reason));
+        }
+
+        return redirect()->route($user->role === 'CLERK' ? 'clerk.leave.create' : 'leave.create')
+            ->with('success', 'Leave application submitted successfully.');
+    }
     public function index()
     {
         if (Auth::user()->role !== 'PRINCIPAL') {

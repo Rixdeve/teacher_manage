@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -23,8 +24,9 @@
             }
         }
     </script>
-    <title>Clerk Dashboard</title>
+    <title>Clerk Dashboard | TLMS</title>
 </head>
+
 <body class="bg-white font-sans flex items-center justify-center min-h-screen antialiased">
     <div class="w-full h-screen flex flex-col lg:flex-row">
         <!-- Hamburger Menu for Mobile/Tablet (<1000px) -->
@@ -175,4 +177,5 @@
         });
     </script>
 </body>
+
 </html>

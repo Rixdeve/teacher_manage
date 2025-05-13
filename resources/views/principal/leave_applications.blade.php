@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leave Applications</title>
+    <title>Leave Applications | TLMS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script>
@@ -25,6 +26,7 @@
         }
     </script>
 </head>
+
 <body class="bg-white font-sans min-h-screen antialiased flex items-center justify-center">
     <div class="w-full h-screen flex flex-col lg:flex-row">
         <!-- Hamburger Menu for Mobile -->
@@ -123,110 +125,110 @@
             <h1 class="text-2xl lg:text-3xl font-semibold text-gray-800 mb-6">Pending Leave Applications</h1>
 
             @if (session('success'))
-                <div class="bg-green-100 text-green-700 p-4 rounded-2xl mb-6 shadow-custom transition-all duration-300 hover:shadow-custom-hover">
-                    {{ session('success') }}
-                </div>
+            <div class="bg-green-100 text-green-700 p-4 rounded-2xl mb-6 shadow-custom transition-all duration-300 hover:shadow-custom-hover">
+                {{ session('success') }}
+            </div>
             @endif
             @if (session('error'))
-                <div class="bg-red-100 text-red-500 p-4 rounded-2xl mb-6 shadow-custom transition-all duration-300 hover:shadow-custom-hover">
-                    {{ session('error') }}
-                </div>
+            <div class="bg-red-100 text-red-500 p-4 rounded-2xl mb-6 shadow-custom transition-all duration-300 hover:shadow-custom-hover">
+                {{ session('error') }}
+            </div>
             @endif
 
             @if ($applications->isEmpty())
-                <p class="text-gray-600 text-base">No pending leave applications.</p>
+            <p class="text-gray-600 text-base">No pending leave applications.</p>
             @else
-                <div class="overflow-auto max-h-[500px] border border-gray-200 rounded-2xl shadow-custom">
-                    <table class="w-full border-collapse">
-                        <thead class="bg-blue-100 sticky top-0 z-10">
-                            <tr>
-                                <th class="p-4 text-left text-gray-800 font-semibold">Teacher</th>
-                                <th class="p-4 text-left text-gray-800 font-semibold">From</th>
-                                <th class="p-4 text-left text-gray-800 font-semibold">To</th>
-                                <th class="p-4 text-left text-gray-800 font-semibold">Type</th>
-                                <th class="p-4 text-left text-gray-800 font-semibold">Reason</th>
-                                <th class="p-4 text-left text-gray-800 font-semibold">Attachments</th>
-                                <th class="p-4 text-left text-gray-800 font-semibold">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($applications as $application)
-                                <tr class="border-b hover:bg-blue-50 transition-all duration-300">
-                                    <td class="p-4">
-                                        @if ($application->user)
-                                            {{ $application->user->name ?? trim($application->user->first_name . ' ' . $application->user->last_name) ?? 'N/A' }}
-                                        @else
-                                            N/A
-                                        @endif
-                                    </td>
-                                    <td class="p-4">{{ $application->commence_date }}</td>
-                                    <td class="p-4">{{ $application->end_date }}</td>
-                                    <td class="p-4">{{ $application->leave_type }}</td>
-                                    <td class="p-4">{{ $application->reason ?? 'N/A' }}</td>
-                                    <td class="p-4">
-                                        @php
-                                            $hasAttachments = $application->has_attachment_1 || $application->has_attachment_2 || $application->has_attachment_3;
-                                        @endphp
-                                        @if ($hasAttachments)
-                                            <div class="space-y-2">
-                                                @if ($application->has_attachment_1)
-                                                    @php
-                                                        $extension = pathinfo($application->attachment_url_1, PATHINFO_EXTENSION);
-                                                        $icon = $extension === 'pdf' ? 'https://cdn-icons-png.flaticon.com/512/337/337946.png' : 'https://cdn-icons-png.flaticon.com/512/337/337949.png';
-                                                    @endphp
-                                                    <a href="{{ route('leave.attachment', [$application->id, 1]) }}" target="_blank" class="flex items-center text-blue-600 hover:text-blue-800 hover:underline transition-all duration-300">
-                                                        <img src="{{ $icon }}" class="w-4 h-4 mr-1" alt="{{ $extension }} icon">
-                                                        Attachment 1 ({{ strtoupper($extension) }})
-                                                    </a>
-                                                @endif
-                                                @if ($application->has_attachment_2)
-                                                    @php
-                                                        $extension = pathinfo($application->attachment_url_2, PATHINFO_EXTENSION);
-                                                        $icon = $extension === 'pdf' ? 'https://cdn-icons-png.flaticon.com/512/337/337946.png' : 'https://cdn-icons-png.flaticon.com/512/337/337949.png';
-                                                    @endphp
-                                                    <a href="{{ route('leave.attachment', [$application->id, 2]) }}" target="_blank" class="flex items-center text-blue-600 hover:text-blue-800 hover:underline transition-all duration-300">
-                                                        <img src="{{ $icon }}" class="w-4 h-4 mr-1" alt="{{ $extension }} icon">
-                                                        Attachment 2 ({{ strtoupper($extension) }})
-                                                    </a>
-                                                @endif
-                                                @if ($application->has_attachment_3)
-                                                    @php
-                                                        $extension = pathinfo($application->attachment_url_3, PATHINFO_EXTENSION);
-                                                        $icon = $extension === 'pdf' ? 'https://cdn-icons-png.flaticon.com/512/337/337946.png' : 'https://cdn-icons-png.flaticon.com/512/337/337949.png';
-                                                    @endphp
-                                                    <a href="{{ route('leave.attachment', [$application->id, 3]) }}" target="_blank" class="flex items-center text-blue-600 hover:text-blue-800 hover:underline transition-all duration-300">
-                                                        <img src="{{ $icon }}" class="w-4 h-4 mr-1" alt="{{ $extension }} icon">
-                                                        Attachment 3 ({{ strtoupper($extension) }})
-                                                    </a>
-                                                @endif
-                                            </div>
-                                        @else
-                                            <span class="text-gray-500">No attachments</span>
-                                        @endif
-                                    </td>
-                                    <td class="p-4">
-                                        <form action="{{ route('leave.updateStatus', $application->id) }}" method="POST" class="inline">
-                                            @csrf
-                                            @method('PATCH')
-                                            <input type="hidden" name="status" value="APPROVED">
-                                            <button type="submit" class="bg-green-400 text-gray-800 px-4 py-2 rounded-full hover:bg-green-300 shadow-md hover:shadow-custom-hover transition-all duration-300 hover:scale-105">Approve</button>
-                                        </form>
-                                        <form action="{{ route('leave.updateStatus', $application->id) }}" method="POST" class="inline ml-2">
-                                            @csrf
-                                            @method('PATCH')
-                                            <input type="hidden" name="status" value="REJECTED">
-                                            <textarea name="comment" placeholder="Reason for rejection" class="border border-gray-300 p-2 mt-1 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 shadow-sm bg-white transition-all duration-300" rows="2"></textarea>
-                                            @error('comment')
-                                                <span class="text-red-500 text-sm mt-1">{{ $message }}</span>
-                                            @enderror
-                                            <button type="submit" class="bg-red-500 text-gray-800 px-4 py-2 rounded-full hover:bg-red-300 shadow-md hover:shadow-custom-hover transition-all duration-300 hover:scale-105 mt-1">Reject</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
+            <div class="overflow-auto max-h-[500px] border border-gray-200 rounded-2xl shadow-custom">
+                <table class="w-full border-collapse">
+                    <thead class="bg-blue-100 sticky top-0 z-10">
+                        <tr>
+                            <th class="p-4 text-left text-gray-800 font-semibold">Teacher</th>
+                            <th class="p-4 text-left text-gray-800 font-semibold">From</th>
+                            <th class="p-4 text-left text-gray-800 font-semibold">To</th>
+                            <th class="p-4 text-left text-gray-800 font-semibold">Type</th>
+                            <th class="p-4 text-left text-gray-800 font-semibold">Reason</th>
+                            <th class="p-4 text-left text-gray-800 font-semibold">Attachments</th>
+                            <th class="p-4 text-left text-gray-800 font-semibold">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($applications as $application)
+                        <tr class="border-b hover:bg-blue-50 transition-all duration-300">
+                            <td class="p-4">
+                                @if ($application->user)
+                                {{ $application->user->name ?? trim($application->user->first_name . ' ' . $application->user->last_name) ?? 'N/A' }}
+                                @else
+                                N/A
+                                @endif
+                            </td>
+                            <td class="p-4">{{ $application->commence_date }}</td>
+                            <td class="p-4">{{ $application->end_date }}</td>
+                            <td class="p-4">{{ $application->leave_type }}</td>
+                            <td class="p-4">{{ $application->reason ?? 'N/A' }}</td>
+                            <td class="p-4">
+                                @php
+                                $hasAttachments = $application->has_attachment_1 || $application->has_attachment_2 || $application->has_attachment_3;
+                                @endphp
+                                @if ($hasAttachments)
+                                <div class="space-y-2">
+                                    @if ($application->has_attachment_1)
+                                    @php
+                                    $extension = pathinfo($application->attachment_url_1, PATHINFO_EXTENSION);
+                                    $icon = $extension === 'pdf' ? 'https://cdn-icons-png.flaticon.com/512/337/337946.png' : 'https://cdn-icons-png.flaticon.com/512/337/337949.png';
+                                    @endphp
+                                    <a href="{{ route('leave.attachment', [$application->id, 1]) }}" target="_blank" class="flex items-center text-blue-600 hover:text-blue-800 hover:underline transition-all duration-300">
+                                        <img src="{{ $icon }}" class="w-4 h-4 mr-1" alt="{{ $extension }} icon">
+                                        Attachment 1 ({{ strtoupper($extension) }})
+                                    </a>
+                                    @endif
+                                    @if ($application->has_attachment_2)
+                                    @php
+                                    $extension = pathinfo($application->attachment_url_2, PATHINFO_EXTENSION);
+                                    $icon = $extension === 'pdf' ? 'https://cdn-icons-png.flaticon.com/512/337/337946.png' : 'https://cdn-icons-png.flaticon.com/512/337/337949.png';
+                                    @endphp
+                                    <a href="{{ route('leave.attachment', [$application->id, 2]) }}" target="_blank" class="flex items-center text-blue-600 hover:text-blue-800 hover:underline transition-all duration-300">
+                                        <img src="{{ $icon }}" class="w-4 h-4 mr-1" alt="{{ $extension }} icon">
+                                        Attachment 2 ({{ strtoupper($extension) }})
+                                    </a>
+                                    @endif
+                                    @if ($application->has_attachment_3)
+                                    @php
+                                    $extension = pathinfo($application->attachment_url_3, PATHINFO_EXTENSION);
+                                    $icon = $extension === 'pdf' ? 'https://cdn-icons-png.flaticon.com/512/337/337946.png' : 'https://cdn-icons-png.flaticon.com/512/337/337949.png';
+                                    @endphp
+                                    <a href="{{ route('leave.attachment', [$application->id, 3]) }}" target="_blank" class="flex items-center text-blue-600 hover:text-blue-800 hover:underline transition-all duration-300">
+                                        <img src="{{ $icon }}" class="w-4 h-4 mr-1" alt="{{ $extension }} icon">
+                                        Attachment 3 ({{ strtoupper($extension) }})
+                                    </a>
+                                    @endif
+                                </div>
+                                @else
+                                <span class="text-gray-500">No attachments</span>
+                                @endif
+                            </td>
+                            <td class="p-4">
+                                <form action="{{ route('leave.updateStatus', $application->id) }}" method="POST" class="inline">
+                                    @csrf
+                                    @method('PATCH')
+                                    <input type="hidden" name="status" value="APPROVED">
+                                    <button type="submit" class="bg-green-400 text-gray-800 px-4 py-2 rounded-full hover:bg-green-300 shadow-md hover:shadow-custom-hover transition-all duration-300 hover:scale-105">Approve</button>
+                                </form>
+                                <form action="{{ route('leave.updateStatus', $application->id) }}" method="POST" class="inline ml-2">
+                                    @csrf
+                                    @method('PATCH')
+                                    <input type="hidden" name="status" value="REJECTED">
+                                    <textarea name="comment" placeholder="Reason for rejection" class="border border-gray-300 p-2 mt-1 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 shadow-sm bg-white transition-all duration-300" rows="2"></textarea>
+                                    @error('comment')
+                                    <span class="text-red-500 text-sm mt-1">{{ $message }}</span>
+                                    @enderror
+                                    <button type="submit" class="bg-red-500 text-gray-800 px-4 py-2 rounded-full hover:bg-red-300 shadow-md hover:shadow-custom-hover transition-all duration-300 hover:scale-105 mt-1">Reject</button>
+                                </form>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
             @endif
         </div>
     </div>
@@ -258,4 +260,5 @@
         });
     </script>
 </body>
+
 </html>
