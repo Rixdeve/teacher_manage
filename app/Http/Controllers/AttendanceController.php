@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\LeaveApplication;
+use Illuminate\Support\Facades\DB;
 
 
 
@@ -153,6 +154,17 @@ class AttendanceController
 
         return view('attendance.my_attendance', compact('attendances'));
     }
+    public function myAttendanceChart()
+    {
+        $user = auth()->user();
+
+        $present = $user->attendances()->where('status', 'PRESENT')->count();
+        $absent = $user->attendances()->where('status', 'ABSENT')->count();
+
+        return view('attendance.my_attendance', compact('present', 'absent'));
+    }
+
+
 
     public function markAbsentAfter131()
     {

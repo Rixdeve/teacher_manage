@@ -299,8 +299,8 @@ class LeaveApplicationController extends Controller
                 'read' => false,
             ]);
         } else {
-            Mail::to($user_email)->send(new LeaveRequestMail($name, $subject, $leaveType, $start_date, $end_date, $reason));
-            Mail::to($principal_email)->send(new LeaveReqestRecivedMail($principal_name, $principal_email, $name, $principal_subject, $leave_type, $start_date, $end_date, $reason));
+            Mail::to($targetUserEmail)->send(new LeaveRequestMail($targetUserName, $subject, $leaveType, $start_date, $end_date, $reason));
+            Mail::to($principal_email)->send(new LeaveReqestRecivedMail($principal_name, $principal_email, $targetUserName, $principal_subject, $leave_type, $start_date, $end_date, $reason));
         }
 
         return redirect()->route($user->role === 'CLERK' ? 'clerk.leave.create' : 'leave.create')
@@ -331,6 +331,7 @@ class LeaveApplicationController extends Controller
 
         return view('Principal.leave_applications', compact('applications'));
     }
+
 
     public function updateStatus(Request $request, $leaveId)
     {

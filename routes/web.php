@@ -9,6 +9,7 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\PrincipalController;
 use App\Http\Controllers\ClerkController;
 use App\Http\Controllers\PasswordResetController;
+use App\Http\Controllers\LeaveApplicationController;
 
 use App\Http\Controllers\SectionalController;
 use App\Models\Attendance;
@@ -175,7 +176,6 @@ Route::post('/change-password', [ProfileController::class, 'changePassword'])->n
 
 
 
-use App\Http\Controllers\LeaveApplicationController;
 
 // Route::get('/leave/create', [LeaveApplicationController::class, 'create'])->name('leave.create');
 // Route::post('/leave/store', [LeaveApplicationController::class, 'store'])->name('leave.store');
@@ -333,4 +333,3 @@ Route::post('/sectional/assign-relief/{leaveApplicationId}', [SectionalControlle
 Route::get('/teacher/notifications', [SectionalController::class, 'showNotifications'])->name('teacher.notifications');
 
 Route::post('/check-transfer-nic-sectional', [SectionalController::class, 'checkTransferNIC'])->name('sectionals.checkNIC');
-
