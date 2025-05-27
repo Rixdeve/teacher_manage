@@ -36,8 +36,6 @@
             <p><strong>Class:</strong> {{ $relief_teacher_class }}</p>
             <p><strong>Subject:</strong> {{ $relief_teacher_subjects }}</p>
 
-
-
             <p>Thank you!</p>
             <p>Best regards,</p>
             <p><strong>TLMS Team</strong></p>

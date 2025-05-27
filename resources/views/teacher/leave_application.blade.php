@@ -3,12 +3,33 @@
 
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />'
+    @include('partials.theme')
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    screens: {
+                        'lg': '1000px',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'custom': '0 4px 20px rgba(0, 0, 0, 0.1)',
+                        'custom-hover': '0 6px 30px rgba(0, 0, 0, 0.15)',
+                    },
+                }
+            }
+        }
+    </script>
+
     <title>Teacher Dashboard - Apply for Leave | TLMS</title>
 </head>
 
-<body class="bg-white flex flex-col min-h-screen">
+<body class="bg-white text-black dark:bg-gray-900 dark:text-white flex flex-col min-h-screen">
     <div class="w-full h-full flex flex-col sm:min-h-[600px]">
         <!-- Main Content -->
         <div class="w-full p-4 sm:p-6 lg:p-8 relative">

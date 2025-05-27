@@ -4,11 +4,32 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    include('partials.theme')
     <script src="https://cdn.tailwindcss.com"></script>
     <title>Sectional Head Dashboard - Leave Status | TLMS</title>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    screens: {
+                        'lg': '1000px',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'custom': '0 4px 20px rgba(0, 0, 0, 0.1)',
+                        'custom-hover': '0 6px 30px rgba(0, 0, 0, 0.15)',
+                    },
+                }
+            }
+        }
+    </script>
+
 </head>
 
-<body class="bg-gray-300 flex items-center justify-center min-h-screen">
+<body class="bg-white text-black dark:bg-gray-900 dark:text-white font-sans flex items-center justify-center min-h-screen antialiased">
     <div class="bg-white shadow-lg rounded-lg w-full h-screen flex">
 
         <div class="w-1/4 bg-gradient-to-b from-blue-100 to-gray-500 p-6 m-4 rounded-xl shadow-lg flex flex-col items-center">

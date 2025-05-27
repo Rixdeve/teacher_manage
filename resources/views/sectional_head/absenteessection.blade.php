@@ -3,11 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <title>Live Absentees | TLMS</title>
+    @include('partials.theme')
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    screens: {
+                        'lg': '1000px',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'custom': '0 4px 20px rgba(0, 0, 0, 0.1)',
+                        'custom-hover': '0 6px 30px rgba(0, 0, 0, 0.15)',
+                    },
+                }
+            }
+        }
+    </script>
+
     <meta http-equiv="refresh" content="15">
 </head>
-<body class="bg-gray-100 p-6">
+
+<body class="bg-gray-100 text-black dark:bg-gray-900 dark:text-white p-6">
     <div class="max-w-6xl mx-auto bg-white shadow-lg rounded-lg p-6">
         <button onclick="history.back()" class="absolute top-6 left-6 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg shadow-md flex items-center">
             <img src="https://cdn-icons-png.flaticon.com/512/271/271220.png" class="w-5 h-5 mr-2" alt="Back" />

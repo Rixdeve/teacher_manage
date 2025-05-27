@@ -5,21 +5,31 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My Profile | TLMS</title>
+    @include('partials.theme')
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     screens: {
-                        'lg': '1000px', // Override lg breakpoint to 1000px
-                    }
+                        'lg': '1000px',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'custom': '0 4px 20px rgba(0, 0, 0, 0.1)',
+                        'custom-hover': '0 6px 30px rgba(0, 0, 0, 0.15)',
+                    },
                 }
             }
-        }
+        };
     </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
-<body class="bg-gray-100">
+<body class="bg-white text-black dark:bg-gray-900 dark:text-white font-sans antialiased">
     <button onclick="history.back()"
         class="absolute top-6 left-6 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-1.5 lg:py-2 px-3 lg:px-4 rounded-lg shadow-md flex items-center">
         <img src="https://cdn-icons-png.flaticon.com/512/271/271220.png" class="w-4 lg:w-5 h-4 lg:h-5 mr-2"
@@ -35,8 +45,17 @@
                 <div class="w-12 lg:w-16 h-12 lg:h-16 bg-gray-300 rounded-full overflow-hidden mt-3 lg:mt-0">
                     <img src="{{ asset('storage/' . Auth::user()->profile_picture) }}" alt="Profile Picture"
                         class="w-full h-full object-cover" />
-                </div>
+                </div>                
             </div>
+
+            <div class="bg-gray-50 p-3 lg:p-6 rounded-lg shadow-sm mb-3 lg:mb-6">
+                <h2 class="text-lg lg:text-xl font-semibold text-gray-800 mb-2 lg:mb-4">Theme Toggle</h2>
+                <p class="text-base lg:text-lg text-gray-700">Toggle between light and dark mode.</p>
+                <button onclick="toggleTheme()" class="mt-6 bg-gray-300 dark:bg-gray-600 px-4 py-2 rounded shadow text-black dark:text-white">
+                    Toggle Theme
+                </button>
+            </div>        
+
 
             <div class="bg-gray-50 p-3 lg:p-6 rounded-lg shadow-sm mb-3 lg:mb-6">
                 <h2 class="text-lg lg:text-xl font-semibold text-gray-800 mb-2 lg:mb-4">Account Details</h2>

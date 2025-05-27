@@ -9,12 +9,15 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\PrincipalController;
 use App\Http\Controllers\ClerkController;
 use App\Http\Controllers\PasswordResetController;
+use App\Http\Controllers\LeaveApplicationController;
 
 use App\Http\Controllers\SectionalController;
 use App\Models\Attendance;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ZonalController;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Auth;
+
 
 
 
@@ -175,12 +178,11 @@ Route::post('/change-password', [ProfileController::class, 'changePassword'])->n
 
 
 
-use App\Http\Controllers\LeaveApplicationController;
 
 // Route::get('/leave/create', [LeaveApplicationController::class, 'create'])->name('leave.create');
 // Route::post('/leave/store', [LeaveApplicationController::class, 'store'])->name('leave.store');
 // Route::get('/leave/index', [LeaveApplicationController::class, 'index'])->name('leave.index');
-Route::patch('/leave/{leaveId}/status', [LeaveApplicationController::class, 'updateStatus'])->name('leave.updateStatus');
+Route::patch('/leave/{leaveId}/status', [LeaveApplicationController::class, 'updateStatus'])->name('principal.leave.updateStatus');
 
 
 Route::get('/leave/attachment/{id}/{index}', [LeaveApplicationController::class, 'serveAttachment'])
@@ -194,7 +196,7 @@ Route::get('/leave/attachment/{id}/{index}', [LeaveApplicationController::class,
 
 // Principal routes
 Route::get('/principal/dashboard', [PrincipalController::class, 'dashboard'])->name('principal.dashboard');
-Route::patch('/leave/{id}/status', [PrincipalController::class, 'updateLeaveStatus'])->name('leave.updateStatus');
+// Route::patch('/leave/{id}/status', [PrincipalController::class, 'updateLeaveStatus'])->name('leave.updateStatus');
 
 // Other Principal routes
 Route::get('/registerPrincipal', [PrincipalController::class, 'index'])->name('principal.register');
@@ -239,7 +241,7 @@ Route::get('/run-schedule', function () {
 // Route::get('/leave', [LeaveApplicationController::class, 'index'])->name('leave.index');
 // Route::get('/leave/record', [LeaveApplicationController::class, 'record'])->name('leave.record');
 // Route::get('/leave/history', [LeaveApplicationController::class, 'history'])->name('leave.history');
-Route::post('/leave/{leaveId}/status', [LeaveApplicationController::class, 'updateStatus'])->name('leave.updateStatus');
+// Route::post('/leave/{leaveId}/status', [LeaveApplicationController::class, 'updateStatus'])->name('leave.updateStatus');
 
 
 
@@ -248,7 +250,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/leave/create', [LeaveApplicationController::class, 'create'])->name('leave.create');
     Route::post('/leave', [LeaveApplicationController::class, 'store'])->name('leave.store');
     Route::get('/leave', [LeaveApplicationController::class, 'index'])->name('leave.index');
-    Route::post('/leave/{leaveId}/status', [LeaveApplicationController::class, 'updateStatus'])->name('leave.updateStatus');
+    // Route::post('/leave/{leaveId}/status', [LeaveApplicationController::class, 'updateStatus'])->name('leave.updateStatus');
     Route::get('/leave/history', [LeaveApplicationController::class, 'history'])->name('leave.history');
     Route::get('/leave/record', [LeaveApplicationController::class, 'record'])->name('leave.record');
 
@@ -317,7 +319,8 @@ Route::get('/clerk/assign-duty-leave', [App\Http\Controllers\ClerkController::cl
 
 Route::get('/sectional/approved-leaves', [SectionalController::class, 'approvedLeaves'])->name('sectional.approved_leaves');
 
-Route::get('/assign-relief', [SectionalController::class, 'assignRelief'])->name('sectional.assign_relief');
+Route::get('/assign-relief/{leaveApplicationId}', [SectionalController::class, 'assignReliefForm'])->name('sectional.assign_relief');
+Route::post('/sectional/relief/{leaveApplicationId}', [SectionalController::class, 'storeRelief'])->name('sectional.store_relief');
 
 
 
@@ -326,12 +329,45 @@ Route::post('/password/email', [PasswordResetController::class, 'sendResetLinkEm
 Route::get('/password/reset/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
 Route::post('/password/reset', [PasswordResetController::class, 'reset'])->name('password.update');
 
-    
-    Route::get('/teacher/notifications', [SectionalController::class, 'showNotifications'])->name('teacher.notifications');
-    Route::get('/sectional/absentees/export-pdf', [SectionalController::class, 'exportAbsenteesPdf'])->name('sectional.absentees.pdf');
+
+Route::get('/teacher/notifications', [SectionalController::class, 'showNotifications'])->name('teacher.notifications');
 
 
+<<<<<<< HEAD
     Route::get('/attendanceReport/pdf', [PrincipalController::class, 'downloadPdf'])->name('attendanceReport.pdf');
     Route::get('/sectional/approved-leaves', [SectionalController::class, 'approvedLeaves'])->name('sectional.approved_leaves');
     Route::get('/sectional/assign-relief/{leaveApplicationId}', [SectionalController::class, 'assignReliefForm'])->name('sectional.assign_relief');
     Route::post('/sectional/assign-relief/{leaveApplicationId}', [SectionalController::class, 'storeRelief'])->name('sectional.store_relief');
+=======
+Route::post('/toggle-theme', function (\Illuminate\Http\Request $request) {
+    /** @var \App\Models\User $user */
+    $user = Auth::user();
+    $theme = $request->input('theme');
+
+    if ($user && in_array($theme, ['light', 'dark'])) {
+        $user->theme = $theme;
+        $user->save();
+        return response()->json(['success' => true]);
+    }
+
+    return response()->json(['success' => false], 400);
+})->middleware('auth');
+Route::get('/sectional/absentees/export-pdf', [SectionalController::class, 'exportAbsenteesPdf'])->name('sectional.absentees.pdf');
+Route::post('/sectionals/check-nic', [SectionalController::class, 'checkTransferNIC'])->name('sectionals.checkNIC');
+
+Route::post('/toggle-theme', function (\Illuminate\Http\Request $request) {
+    /** @var \App\Models\User $user */
+    $user = Auth::user();
+    $theme = $request->input('theme');
+
+    if ($user && in_array($theme, ['light', 'dark'])) {
+        $user->theme = $theme;
+        $user->save();
+        return response()->json(['success' => true]);
+    }
+
+    return response()->json(['success' => false], 400);
+})->middleware('auth');
+
+Route::get('/attendanceReport/pdf', [PrincipalController::class, 'downloadPdf'])->name('attendanceReport.pdf');
+>>>>>>> 6e4e6c85530809b26e0e950ca320b3252e81058d
