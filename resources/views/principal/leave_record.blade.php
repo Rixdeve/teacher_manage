@@ -26,10 +26,10 @@
         <span class="text-2xl">☰</span>
     </button>
 
-    <div class="bg-white shadow-lg rounded-lg w-full h-screen flex">
+    <div class="bg-white shadow-lg rounded-lg w-full h-screen flex flex-col lg:flex-row">
         <!-- Sidebar (hidden by default on mobile, unchanged on desktop) -->
         <div id="sidebar"
-            class="hidden lg:flex w-full lg:w-1/4 bg-gradient-to-b from-blue-100 to-gray-500 p-4 lg:p-6 m-0 lg:m-4 rounded-none lg:rounded-xl shadow-none lg:shadow-lg flex-col items-center fixed lg:static top-0 left-0 h-[90vh] lg:h-auto z-40 bg-opacity-95">
+            class="hidden lg:flex w-full lg:w-1/4 bg-gradient-to-b from-blue-100 to-gray-500 p-4 lg:p-6 m-0 lg:m-4 rounded-none lg:rounded-xl shadow-none lg:shadow-lg flex-col items-center fixed lg:static top-0 left-0 h-[90vh] lg:h-auto z-40 bg-opacity-95 overflow-y-auto">
             <img src="{{ asset('storage/photos/boss.png') }}"
                 class="w-20 lg:w-24 h-20 lg:h-24 rounded-full border-4 border-white shadow-md mb-4" alt="Profile" />
 
@@ -91,14 +91,6 @@
                     </a>
                 </li>
                 <li
-                    class="w-full lg:w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
-                    <a href="{{ route('leave.record') }}" class="flex items-center w-full">
-                        <img src="{{ asset('storage/photos/classroom.png') }}" class="w-6 lg:w-8 h-6 lg:h-8 mr-2"
-                            alt="View Users" />
-                        Leave Records
-                    </a>
-                </li>
-                <li
                     class="mt-8 lg:mt-12 w-full lg:w-48 py-2 flex items-center text-red-500 font-bold hover:text-red-700 cursor-pointer hover:bg-gray-300 rounded-lg p-2 mx-auto">
                     <a href="{{ url('/logout') }}" class="flex items-center w-full">
                         <img src="{{ asset('storage/photos/logout.png') }}" class="w-6 lg:w-8 h-6 lg:h-8 mr-2"
@@ -155,19 +147,19 @@
                 @if ($approvedLeaves->isEmpty())
                 <p class="text-gray-600 text-sm lg:text-base">No approved leave records found.</p>
                 @else
-                <div class="overflow-x-auto">
-                    <table class="w-full border-collapse">
+                <div class="overflow-x-auto max-w-full">
+                    <table class="w-full border-collapse table-auto">
                         <thead>
                             <tr class="bg-gray-200">
-                                <th class="p-2 lg:p-3 text-left text-sm lg:text-base">Applicant</th>
-                                <th class="p-2 lg:p-3 text-left text-sm lg:text-base">Role</th>
-                                <th class="p-2 lg:p-3 text-left text-sm lg:text-base">From</th>
-                                <th class="p-2 lg:p-3 text-left text-sm lg:text-base">To</th>
-                                <th class="p-2 lg:p-3 text-left text-sm lg:text-base">Days</th>
-                                <th class="p-2 lg:p-3 text-left text-sm lg:text-base">Type</th>
-                                <th class="p-2 lg:p-3 text-left text-sm lg:text-base">Reason</th>
-                                <th class="p-2 lg:p-3 text-left text-sm lg:text-base">Attachments</th>
-                                <th class="p-2 lg:p-3 text-left text-sm lg:text-base">Approved At</th>
+                                <th class="p-2 lg:p-3 text-left text-sm lg:text-base min-w-[120px]">Applicant</th>
+                                <th class="p-2 lg:p-3 text-left text-sm lg:text-base min-w-[100px]">Role</th>
+                                <th class="p-2 lg:p-3 text-left text-sm lg:text-base min-w-[100px]">From</th>
+                                <th class="p-2 lg:p-3 text-left text-sm lg:text-base min-w-[100px]">To</th>
+                                <th class="p-2 lg:p-3 text-left text-sm lg:text-base min-w-[80px]">Days</th>
+                                <th class="p-2 lg:p-3 text-left text-sm lg:text-base min-w-[100px]">Type</th>
+                                <th class="p-2 lg:p-3 text-left text-sm lg:text-base min-w-[150px]">Reason</th>
+                                <th class="p-2 lg:p-3 text-left text-sm lg:text-base min-w-[120px]">Attachments</th>
+                                <th class="p-2 lg:p-3 text-left text-sm lg:text-base min-w-[150px]">Approved At</th>
                             </tr>
                         </thead>
                         <tbody>

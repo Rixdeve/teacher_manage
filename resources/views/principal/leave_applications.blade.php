@@ -71,22 +71,18 @@
                         Apply Leave
                     </a>
                 </li>
-                <li class="w-full py-3 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-3 transition-colors duration-200 hover:scale-105">
-                    <a href="{{ url('') }}" class="flex items-center w-full">
-                        <img src="{{ asset('storage/photos/chat-box.png') }}" class="w-8 h-8 mr-3" alt="Notifications" />
-                        Write Notification
+                <li
+                    class="w-full py-3 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-3 mx-auto transition-colors duration-200">
+                    <a href="{{ route('leave.history') }}" class="flex items-center w-full">
+                        <img src="{{ asset('storage/photos/status.png') }}" class="w-8 h-8 mr-3"
+                            alt="Leave Application Status" />
+                        Leave Application Status
                     </a>
                 </li>
                 <li class="w-full py-3 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-3 transition-colors duration-200 hover:scale-105">
                     <a href="{{ route('leave.record') }}" class="flex items-center w-full">
                         <img src="{{ asset('storage/photos/folder.png') }}" class="w-8 h-8 mr-3" alt="Leave Record" />
-                        Leave Record
-                    </a>
-                </li>
-                <li class="w-full py-3 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-3 transition-colors duration-200 hover:scale-105">
-                    <a href="{{ url('/viewUsers') }}" class="flex items-center w-full">
-                        <img src="{{ asset('storage/photos/classroom.png') }}" class="w-8 h-8 mr-3" alt="View Users" />
-                        View Users
+                        Leave Records
                     </a>
                 </li>
                 <li class="mt-8 w-full py-3 flex items-center text-red-500 font-bold cursor-pointer hover:bg-gray-300 rounded-lg p-3 transition-colors duration-200 hover:scale-105">

@@ -332,3 +332,6 @@ Route::post('/password/reset', [PasswordResetController::class, 'reset'])->name(
 
 
     Route::get('/attendanceReport/pdf', [PrincipalController::class, 'downloadPdf'])->name('attendanceReport.pdf');
+    Route::get('/sectional/approved-leaves', [SectionalController::class, 'approvedLeaves'])->name('sectional.approved_leaves');
+    Route::get('/sectional/assign-relief/{leaveApplicationId}', [SectionalController::class, 'assignReliefForm'])->name('sectional.assign_relief');
+    Route::post('/sectional/assign-relief/{leaveApplicationId}', [SectionalController::class, 'storeRelief'])->name('sectional.store_relief');

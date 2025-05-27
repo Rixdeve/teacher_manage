@@ -66,12 +66,7 @@
                         Leave Application Status
                     </a>
                 </li>
-                <li class="w-full lg:w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
-                    <a href="{{ url('/viewUsers') }}" class="flex items-center w-full">
-                        <img src="{{ asset('storage/photos/classroom.png') }}" class="w-6 lg:w-8 h-6 lg:h-8 mr-2" alt="View Users" />
-                        View Users
-                    </a>
-                </li>
+                
                 <li class="w-full lg:w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
                     <a href="{{ route('leave.record') }}" class="flex items-center w-full">
                         <img src="{{ asset('storage/photos/classroom.png') }}" class="w-6 lg:w-8 h-6 lg:h-8 mr-2" alt="View Users" />
