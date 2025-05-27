@@ -333,12 +333,11 @@ Route::post('/password/reset', [PasswordResetController::class, 'reset'])->name(
 Route::get('/teacher/notifications', [SectionalController::class, 'showNotifications'])->name('teacher.notifications');
 
 
-<<<<<<< HEAD
     Route::get('/attendanceReport/pdf', [PrincipalController::class, 'downloadPdf'])->name('attendanceReport.pdf');
     Route::get('/sectional/approved-leaves', [SectionalController::class, 'approvedLeaves'])->name('sectional.approved_leaves');
     Route::get('/sectional/assign-relief/{leaveApplicationId}', [SectionalController::class, 'assignReliefForm'])->name('sectional.assign_relief');
     Route::post('/sectional/assign-relief/{leaveApplicationId}', [SectionalController::class, 'storeRelief'])->name('sectional.store_relief');
-=======
+
 Route::post('/toggle-theme', function (\Illuminate\Http\Request $request) {
     /** @var \App\Models\User $user */
     $user = Auth::user();
@@ -370,4 +369,4 @@ Route::post('/toggle-theme', function (\Illuminate\Http\Request $request) {
 })->middleware('auth');
 
 Route::get('/attendanceReport/pdf', [PrincipalController::class, 'downloadPdf'])->name('attendanceReport.pdf');
->>>>>>> 6e4e6c85530809b26e0e950ca320b3252e81058d
+
