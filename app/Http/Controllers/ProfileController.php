@@ -11,12 +11,26 @@ use Illuminate\Database\QueryException;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Models\Attendance;
 
+
 class ProfileController extends Controller
 {
     public function show()
     {
         $user = Auth::user();
-        return view('profile.show', compact('user'));
+        $qrCode = QrCode::size(110)->generate($user->id);
+
+        return view('profile.show', compact('user', 'qrCode'));
+    }
+
+    public function showQRCode()
+    {
+        $user = Auth::user();
+        $qrContent = $user->id;
+
+        return view('profile.show', [
+            'teacher' => $user,
+            'qrCode' => QrCode::size(180)->generate($qrContent),
+        ]);
     }
 
 
