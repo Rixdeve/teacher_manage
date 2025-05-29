@@ -107,7 +107,7 @@ if (!session()->has('zone_office_id')) {
                     <p class="text-xl font-bold text-accent-green mt-1">{{ \App\Models\School::where('zonal_id', session('zone_office_id'))->count() }}</p>
                 </div>
                 <div class="bg-white dark:bg-dark-gray p-4 rounded-lg text-center shadow-custom hover:shadow-custom-hover transition-all duration-300 transform hover:scale-[1.01] animate-fade-in">
-                    <a href="{{ url('/zone/schools') }}" class="block">
+                    
                         <div class="flex justify-center mb-2">
                             <img src="https://cdn-icons-png.flaticon.com/512/4304/4304009.png" alt="Registered Users" class="w-10 h-10" />
                         </div>
