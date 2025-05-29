@@ -195,99 +195,116 @@
         </div>
 
         <div class="font-segoe flex flex-col items-center justify-center px-4 mb-8 py-8 w-full max-w-screen-md mx-auto">
-            <h2 class="text-2xl font-bold text-gray-800 mb-6">MY ID Card</h2>
-            <!-- ID CARD -->
-            <div
-                class="group relative z-20 flex h-[300px] w-[500px] flex-col gap-[10px] overflow-hidden rounded-[10px] bg-gradient-to-b from-[#7f6065] to-[#638e8d] p-[15px]">
-                <!-- TOP PART -->
-                <div class="relative flex justify-evenly gap-[15px]">
-                    <div>
-                        <p class="text-[19px] font-medium">Identity Card</p>
-                        <p class="mt-[-5px] text-[14px]">TLMS Lanka</p>
-                    </div>
-                    <div class="flex ml-16">
-                        <div class="ml-16 pl-24">{!! $qrCode !!}</div>
-                    </div>
-
-                </div>
-                <!-- BOTTOM PART -->
-                <div class="relative flex flex-1">
-                    <!-- ID IMAGE -->
-
-                    <!-- ID DATA -->
-                    <div class="relative z-20 ml-[8px] flex flex-1 flex-col">
-                        <div>
-                            <span class="block text-[9px]"> Last Name </span>
-                            <p class="font-rubik font-medium">{{ Auth::user()->last_name }}</p>
-                        </div>
-                        <div>
-                            <span class="block text-[9px]"> First Name </span>
-                            <p class="font-rubik font-medium">{{ Auth::user()->first_name }}</p>
-                        </div>
-                        <div class="mt-[12px] flex w-full justify-between gap-[15px]">
-                            <div>
-                                <span class="block text-[9px]"> Date of birth </span>
-                                <p class="font-medium">{{ Auth::user()->user_dob->format('Y-m-d') }}</p>
-                                <span class="invisible block text-[9px]"> Signature </span>
-
-                            </div>
-                            <div>
-                                <span class="block text-[9px]"> ID serial number </span>
-                                <p class="font-medium">{{ Auth::user()->id }}</p>
-                                <span class="mt-1 block text-[9px]"> IF FOUND PLEASE RETURUN TO </span>
-
-                                <p class="text-[10px]">
-                                    {{ Auth::user()->school->school_address_no . ', ' . Auth::user()->school->school_address_street . ', ' . Auth::user()->school->school_address_city }}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- ABSOLUTE ELEMENT - CIRCLE WITH IMAGE -->
-                    <div
-                        class="absolute top-[-4px] left-[77px] z-10 h-[120px] w-[120px] overflow-hidden rounded-full bg-white opacity-10">
-                        <img class="mt-[6px] h-[120px] w-[120px]"
-                            src="{{ asset('storage/' . Auth::user()->profile_picture) }}" />
-                        <p class="mt-[35px] ml-[35px] text-[15px] font-[900] text-[#d4af3a]">TLMS</p>
-                        <p class="mt-[-39px] ml-[50px] text-[15px] font-[900] text-[#d4af3a]">TLMS</p>
-                        <p class="mt-[-39px] ml-[65px] text-[15px] font-[900] text-[#d4af3a]">TLMS</p>
-                        <p class="mt-[-39px] ml-[80px] text-[15px] font-[900] text-[#d4af3a]">TLMS</p>
-                    </div>
-                    <!-- COUNTRY CODE ABSOLUTE -->
-                    <!-- <svg width="400" height="100" class="font-rubik absolute top-[7px] left-[212px]">
-            <text fill="white" fill-opacity="0.1" font-size="80" x="200" y="70" text-anchor="middle" stroke="#e3c5a0" stroke-opacity="0.1">CG</text>
-          </svg> -->
-                    <!-- ABSOLUTE ELEMENT - PROFILE IMAGE -->
-
-                </div>
-                <!-- ABSOLUTE ELEMENTS - RIGHT LINES -->
-                <div
-                    class="absolute top-[100px] left-[290px] z-10 h-[300px] w-[220px] rounded-tl-[120%] border-[0.2px] border-r-0 border-b-0 border-[#aa485c] bg-transparent opacity-50">
-                </div>
-                <div
-                    class="absolute top-[133px] left-[290px] z-10 h-[300px] w-[220px] rounded-tl-[120%] border-[0.2px] border-r-0 border-b-0 border-[#aa485c] bg-transparent opacity-30">
-                </div>
-                <div
-                    class="absolute top-[164px] left-[290px] z-10 h-[300px] w-[220px] rounded-tl-[120%] border-[0.2px] border-r-0 border-b-0 border-[#aa485c] bg-transparent opacity-25">
-                </div>
-                <div
-                    class="absolute top-[195px] left-[290px] z-10 h-[300px] w-[220px] rounded-tl-[120%] border-[0.2px] border-r-0 border-b-0 border-[#aa485c] bg-transparent opacity-20">
-                </div>
-                <!-- ABSOLUTE ELEMENTS - LEFT LINES -->
-                <div
-                    class="absolute top-[-47px] left-[-126px] z-10 h-[450px] w-[350px] rotate-[65deg] transform rounded-[150%] border-[0.2px] border-[#aa485c] bg-transparent opacity-50">
-                </div>
-                <div
-                    class="absolute top-[-39px] left-[-147px] z-10 h-[450px] w-[350px] rotate-[65deg] transform rounded-[150%] border-[0.2px] border-[#aa485c] bg-transparent opacity-30">
-                </div>
-                <div
-                    class="absolute top-[-31px] left-[-168px] z-10 h-[450px] w-[350px] rotate-[65deg] transform rounded-[150%] border-[0.2px] border-[#aa485c] bg-transparent opacity-25">
-                </div>
-                <div
-                    class="absolute top-[-24px] left-[-189px] z-10 h-[450px] w-[350px] rotate-[65deg] transform rounded-[150%] border-[0.2px] border-[#aa485c] bg-transparent opacity-20">
-                </div>
-                <!-- WRAPPER HOVER EFFECT -->
+    <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">MY ID Card</h2>
+    <!-- ID CARD -->
+    <div class="group relative z-20 flex h-[360px] w-[580px] flex-row gap-[20px] overflow-hidden rounded-[15px] bg-gradient-to-br from-[#6b4e56] to-[#4a7c7a] p-[20px] shadow-lg hover:shadow-xl transition-shadow duration-300">
+        <!-- LEFT PART: QR CODE -->
+        <div class="flex flex-col justify-center">
+            <div class="bg-white p-[8px] rounded-[10px] shadow-md hover:scale-105 transition-transform duration-200" style="width: 196px; height: 196px; z-index: 30; margin-left: 5px;">
+                {!! $qrCode !!}
             </div>
         </div>
+        <!-- RIGHT PART: PROFILE PICTURE AND DATA -->
+        <div class="flex flex-col flex-1">
+            <!-- TOP: IDENTITY TEXT -->
+            <div class="flex justify-end">
+                <div class="text-right">
+                    <p class="text-[22px] font-bold text-white tracking-wide">Identity Card</p>
+                    <p class="mt-[-4px] text-[16px] font-medium text-gray-200">TLMS Lanka</p>
+                </div>
+            </div>
+            <!-- BOTTOM: USER DATA -->
+            <div class="relative flex flex-1 mt-[15px]">
+                <!-- ID DATA -->
+                <div class="relative z-20 flex flex-1 flex-col justify-between">
+                    <div>
+                        <div>
+                            <span class="block text-[10px] font-semibold text-gray-200 uppercase tracking-wider">Last Name</span>
+                            <p class="font-rubik font-bold text-[16px] text-white">{{ Auth::user()->last_name }}</p>
+                        </div>
+                        <div class="mt-[8px]">
+                            <span class="block text-[10px] font-semibold text-gray-200 uppercase tracking-wider">First Name</span>
+                            <p class="font-rubik font-bold text-[16px] text-white">{{ Auth::user()->first_name }}</p>
+                        </div>
+                        <div class="mt-[15px] flex w-full gap-[20px]">
+                            <div>
+                                <span class="block text-[10px] font-semibold text-gray-200 uppercase tracking-wider">Date of Birth</span>
+                                <p class="font-medium text-[14px] text-white">{{ Auth::user()->user_dob->format('Y-m-d') }}</p>
+                            </div>
+                            <div>
+                                <span class="block text-[10px] font-semibold text-gray-200 uppercase tracking-wider">ID Serial Number</span>
+                                <p class="font-medium text-[14px] text-white">{{ Auth::user()->id }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- IF FOUND SECTION -->
+                    <div class="mt-[10px]">
+                        <span class="block text-[10px] font-semibold text-gray-200 uppercase tracking-wider">If Found Please Return To</span>
+                        <p class="text-[11px] text-white leading-tight">
+                            {{ Auth::user()->school->school_address_no . ', ' . Auth::user()->school->school_address_street . ', ' . Auth::user()->school->school_address_city }}
+                        </p>
+                    </div>
+                </div>
+                <!-- ABSOLUTE ELEMENT - CIRCLE WITH IMAGE -->
+                <div class="absolute top-[15px] left-[220px] z-10 h-[130px] w-[130px] overflow-hidden rounded-full bg-white opacity-90 shadow-lg border-4 border-[#d4af3a] hover:scale-105 transition-transform duration-200">
+                    <img class="h-[130px] w-[130px]" src="{{ asset('storage/' . Auth::user()->profile_picture) }}" />
+                </div>
+            </div>
+        </div>
+        <!-- ABSOLUTE ELEMENTS - RIGHT LINES -->
+        <div class="absolute top-[140px] left-[340px] z-5 h-[300px] w-[240px] rounded-tl-[120%] border-[0.3px] border-r-0 border-b-0 border-[#d4af3a] bg-transparent opacity-20"></div>
+        <div class="absolute top-[170px] left-[340px] z-5 h-[300px] w-[240px] rounded-tl-[120%] border-[0.3px] border-r-0 border-b-0 border-[#d4af3a] bg-transparent opacity-15"></div>
+        <!-- ABSOLUTE ELEMENTS - LEFT LINES -->
+        <div class="absolute top-[-60px] left-[-140px] z-5 h-[480px] w-[380px] rotate-[65deg] transform rounded-[150%] border-[0.3px] border-[#d4af3a] bg-transparent opacity-20"></div>
+        <div class="absolute top-[-50px] left-[-160px] z-5 h-[480px] w-[380px] rotate-[65deg] transform rounded-[150%] border-[0.3px] border-[#d4af3a] bg-transparent opacity-15"></div>
+    </div>
+</div>
+<style>
+    @media (max-width: 640px) {
+        .group {
+            width: 100%;
+            max-width: 440px;
+            height: 320px;
+            padding: 15px;
+        }
+        .group .flex-col.justify-center > div {
+            width: 150px;
+            height: 150px;
+            margin-left: 3px;
+            padding: 6px;
+        }
+        .group .absolute.top-\[15px\].left-\[220px\] {
+            left: 180px;
+            width: 100px;
+            height: 100px;
+        }
+        .group .absolute.top-\[15px\].left-\[220px\] img {
+            width: 100px;
+            height: 100px;
+        }
+        .group .text-\[22px\] {
+            font-size: 18px;
+        }
+        .group .text-\[16px\] {
+            font-size: 14px;
+        }
+        .group .text-\[14px\] {
+            font-size: 12px;
+        }
+        .group .text-\[11px\] {
+            font-size: 10px;
+        }
+        .group .text-\[10px\] {
+            font-size: 9px;
+        }
+        .group .mt-\[15px\] {
+            margin-top: 10px;
+        }
+        .group .gap-\[20px\] {
+            gap: 15px;
+        }
+    }
+</style>
 
         <!-- Duty Status -->
         <div

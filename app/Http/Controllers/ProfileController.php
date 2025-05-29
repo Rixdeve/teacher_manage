@@ -17,7 +17,7 @@ class ProfileController extends Controller
     public function show()
     {
         $user = Auth::user();
-        $qrCode = QrCode::size(110)->generate($user->id);
+        $qrCode = QrCode::size(180)->generate($user->id);
 
         return view('profile.show', compact('user', 'qrCode'));
     }
