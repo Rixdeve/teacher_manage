@@ -1,73 +1,122 @@
+<?php
+if (!session()->has('school_id')) {
+    return redirect('/login');
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
-    <title>Edit Teacher | TLMS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    screens: {
+                        'lg': '1000px',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'custom': '0 4px 20px rgba(0, 0, 0, 0.1)',
+                        'custom-hover': '0 6px 30px rgba(0, 0, 0, 0.15)',
+                    },
+                }
+            }
+        }
+    </script>
+    <title>Edit Teacher | TLMS</title>
 </head>
 
-<body class="bg-gray-300 flex items-center justify-center min-h-screen">
-    <div class="bg-white shadow-lg rounded-lg w-full h-screen flex">
-        {{-- Sidebar --}}
-        <div class="w-1/4 bg-gradient-to-b from-blue-100 to-gray-500 p-6 m-4 rounded-xl shadow-lg flex flex-col items-center">
-            <img src="{{ asset('/storage/photos/school.png') }}" class="w-24 h-24 rounded-full border-4 border-white shadow-md mb-4" alt="School Logo" />
-            <ul class="space-y-4 w-full">
-                <li
-                    class="w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
-                    <a href="{{ url('/schoolDashboard') }}" class="flex items-center w-full"> <img
-                            src="{{asset('storage/photos/dashboard.png')}}" class="w-8 h-8 mr-2" alt="Dashboard" />
-                        Dashboard</a>
-                </li>
-                <li
-                    class="w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
-                    <a href="{{ url('/registerPrincipal') }}" class="flex items-center w-full"> <img
-                            src="{{asset('storage/photos/boss.png')}}" class="w-8 h-8 mr-2" alt="Assign Principal" />
-                        Assign Principal</a>
-                </li>
-                <li
-                    class="w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
-                    <a href="{{ url('/registerClerk') }}" class="flex items-center w-full"> <img
-                            src="{{asset('storage/photos/immigration.png')}}" class="w-8 h-8 mr-2" alt="Assign Clerk" />
-                        Assign Clerk</a>
-                </li>
-                <li
-                    class="w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
-                    <a href="{{ url('/registerTeacher') }}" class="flex items-center w-full"> <img
-                            src="{{asset('storage/photos/classroom.png')}}" class="w-8 h-8 mr-2" alt="Assign Teacher" />
-                        Assign Teacher</a>
-                </li>
-                <li
-                    class="w-48 py-2 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-2 mx-auto">
-                    <a href="{{ url('/registerSectionhead') }}" class="flex items-center w-full"> <img
-                            src="{{asset('storage/photos/teachernew.png')}}" class="w-8 h-8 mr-2"
-                            alt="Assign Section" />
-                        Assign Sectional Head</a>
-                </li>
+<body class="bg-gray-100 font-sans flex items-center justify-center min-h-screen antialiased">
+    <div class="w-full h-screen flex flex-col lg:flex-row">
+        <!-- Hamburger Menu for Mobile/Tablet (<1000px) -->
+        <button id="hamburger" class="lg:hidden fixed top-4 left-4 z-50 p-3 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-full shadow-md hover:shadow-custom-hover transition-shadow duration-300">
+            <span class="text-2xl">☰</span>
+        </button>
 
-                <li
-                    class="mt-12 w-48 py-2 flex items-center text-red-500 font-bold hover:text-red-700 cursor-pointer hover:bg-gray-300 rounded-lg p-2 mx-auto">
-                    <a href="{{ url('/logout') }}" class="flex items-center w-full"> <img
-                            src="{{asset('storage/photos/logout.png')}}" class="w-8 h-8 mr-2" alt="Logout" />
-                        Logout</a>
+        <!-- Sidebar -->
+        <div id="sidebar" class="hidden lg:flex w-full lg:w-1/4 bg-gradient-to-b from-blue-100 to-gray-500 p-6 m-0 lg:m-4 rounded-none lg:rounded-2xl shadow-none lg:shadow-custom flex-col items-center fixed lg:static top-0 left-0 h-[100vh] lg:h-[100vh] max-h-[95vh] z-40 transition-transform duration-300 ease-in-out transform lg:transform-none bg-opacity-95 overflow-y-auto">
+            <div class="relative group">
+                <img src="{{ asset('/storage/photos/school.png') }}" class="w-24 h-24 rounded-full border-4 border-white shadow-md mb-6 transition-transform duration-300 group-hover:scale-105" alt="School Logo" />
+                <div class="absolute inset-0 rounded-full bg-gray-500 opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
+            </div>
+
+            <ul class="space-y-3 w-full">
+                <li class="w-full py-3 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-3 mx-auto transition-colors duration-200">
+                    <a href="{{ url('/schoolDashboard') }}" class="flex items-center w-full">
+                        <img src="{{ asset('storage/photos/dashboard.png') }}" class="w-8 h-8 mr-3" alt="Dashboard" />
+                        Dashboard
+                    </a>
+                </li>
+                <li class="w-full py-3 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-3 mx-auto transition-colors duration-200">
+                    <a href="{{ url('/registerPrincipal') }}" class="flex items-center w-full">
+                        <img src="{{ asset('storage/photos/boss.png') }}" class="w-8 h-8 mr-3" alt="Assign Principal" />
+                        Assign Principal
+                    </a>
+                </li>
+                <li class="w-full py-3 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-3 mx-auto transition-colors duration-200">
+                    <a href="{{ url('/registerClerk') }}" class="flex items-center w-full">
+                        <img src="{{ asset('storage/photos/immigration.png') }}" class="w-8 h-8 mr-3" alt="Assign Clerk" />
+                        Assign Clerk
+                    </a>
+                </li>
+                <li class="w-full py-3 flex items-center text-black font-semibold cursor-pointer bg-gray-200 rounded-lg p-3 mx-auto transition-colors duration-200">
+                    <a href="{{ url('/registerTeacher') }}" class="flex items-center w-full">
+                        <img src="{{ asset('storage/photos/classroom.png') }}" class="w-8 h-8 mr-3" alt="Assign Teacher" />
+                        Assign Teacher
+                    </a>
+                </li>
+                <li class="w-full py-3 flex items-center text-black font-semibold cursor-pointer hover:bg-gray-200 rounded-lg p-3 mx-auto transition-colors duration-200">
+                    <a href="{{ url('/registerSectionhead') }}" class="flex items-center w-full">
+                        <img src="{{ asset('storage/photos/teachernew.png') }}" class="w-8 h-8 mr-3" alt="Assign Section" />
+                        Assign Sectional Head
+                    </a>
+                </li>
+                <li class="mt-8 w-full py-3 flex items-center text-red-500 font-bold cursor-pointer hover:bg-gray-300 rounded-lg p-3 mx-auto transition-colors duration-200">
+                    <a href="{{ url('/logout') }}" class="flex items-center w-full">
+                        <img src="{{ asset('storage/photos/logout.png') }}" class="w-8 h-8 mr-3" alt="Logout" />
+                        Logout
+                    </a>
                 </li>
             </ul>
         </div>
 
-        {{-- Main Content --}}
-        <div class="w-3/4 p-10 overflow-y-auto">
-            <h2 class="text-2xl font-semibold mb-6 text-center">Edit Teacher Details</h2>
+        <!-- Main Content -->
+        <div class="w-full lg:w-3/4 p-4 lg:p-6 relative bg-white rounded-2xl m-0 lg:m-4 shadow-custom">
+            @php
+            $school = \App\Models\School::find(session('school_id'));
+            @endphp
 
-            @if(session('success'))
-            <div class="bg-green-200 text-green-800 p-3 rounded mb-4 text-center">
-                {{ session('success') }}
+            @if($school)
+            <div class="absolute top-4 lg:top-4 right-4 lg:right-4 flex items-center space-x-4 group z-10">
+                <img src="{{ asset('storage/photos/school2.png') }}" class="h-8 w-8 rounded-full border-2 border-gray-400 shadow-md transition-transform duration-300 group-hover:scale-105" alt="School Logo" />
+                <div class="text-right">
+                    <h3 class="font-semibold text-sm text-gray-800">{{ $school->school_name }}</h3>
+                    <h3 class="text-gray-600 text-xs">School</h3>
+                </div>
             </div>
             @endif
 
-            <a href="{{ route('teachers.manage') }}" class="inline-block bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded shadow mb-6">
-                < Back
-                    </a>
+            <div class="mt-16 lg:mt-12">
+                <a href="{{ route('teachers.manage') }}" class="inline-block bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-1.5 px-3 rounded-full shadow-md hover:shadow-custom-hover flex items-center transition-shadow duration-300 mb-4">
+                    <img src="https://cdn-icons-png.flaticon.com/512/271/271220.png" class="w-4 h-4 mr-2" alt="Back" />
+                    Back
+                </a>
 
+                <h2 class="text-xl lg:text-2xl font-semibold text-gray-800 mb-4 text-center">Edit Teacher Details</h2>
+
+                @if(session('success'))
+                <div class="bg-green-100 text-green-800 px-4 py-2 rounded-lg mb-4 text-sm text-center">
+                    {{ session('success') }}
+                </div>
+                @endif
+
+                <div class="max-h-[85vh] overflow-y-auto px-2 pr-4">
                     @php
                     $selectedSubjects = is_array($teacher->subjects) ? $teacher->subjects : json_decode($teacher->subjects, true);
                     @endphp
@@ -76,114 +125,182 @@
                         @csrf
                         @method('PUT')
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block font-medium">First Name</label>
-                                <input type="text" name="first_name" value="{{ $teacher->first_name }}" class="w-full border rounded p-2" required>
-                            </div>
-                            <div>
-                                <label class="block font-medium">Last Name</label>
-                                <input type="text" name="last_name" value="{{ $teacher->last_name }}" class="w-full border rounded p-2" required>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block font-medium">School Index</label>
-                                <input type="text" name="school_index" value="{{ $teacher->school_index }}" class="w-full border rounded p-2" required>
-                            </div>
-                            <div>
-                                <label class="block font-medium">Email</label>
-                                <input type="email" name="user_email" value="{{ $teacher->user_email }}" class="w-full border rounded p-2" required>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block font-medium">Phone Number</label>
-                                <input type="text" name="user_phone" value="{{ $teacher->user_phone }}" class="w-full border rounded p-2" required>
-                            </div>
-                            <div>
-                                <label class="block font-medium">NIC</label>
-                                <input type="text" name="user_nic" value="{{ $teacher->user_nic }}" class="w-full border rounded p-2" required>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block font-medium">Address No</label>
-                                <input type="text" name="user_address_no" value="{{ $teacher->user_address_no }}" class="w-full border rounded p-2" required>
-                            </div>
-                            <div>
-                                <label class="block font-medium">Address Street</label>
-                                <input type="text" name="user_address_street" value="{{ $teacher->user_address_street }}" class="w-full border rounded p-2" required>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block font-medium">Address City</label>
-                                <input type="text" name="user_address_city" value="{{ $teacher->user_address_city }}" class="w-full border rounded p-2" required>
-                            </div>
-                            <div>
-                                <label class="block font-medium">Date of Birth</label>
-                                <input type="date" name="user_dob" value="{{ \Carbon\Carbon::parse($teacher->user_dob)->format('Y-m-d') }}" class="w-full border rounded p-2" required>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            {{-- Existing profile picture preview --}}
-                            <div>
-                                <label class="block font-medium">Current Profile Picture</label>
-                                @if ($teacher->profile_picture)
-                                <img src="{{ asset('storage/' . $teacher->profile_picture) }}" alt="Profile Picture" class="h-24 w-24 mt-2 rounded-full border shadow">
-                                @else
-                                <p class="text-sm text-gray-500 mt-2">No profile picture uploaded.</p>
-                                @endif
+                        <div class="space-y-3">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                                <div>
+                                    <label for="first_name" class="block text-sm font-medium text-gray-800">First Name</label>
+                                    <input type="text" id="first_name" name="first_name" value="{{ $teacher->first_name }}" class="mt-1 p-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+                                </div>
+                                <div>
+                                    <label for="last_name" class="block text-sm font-medium text-gray-800">Last Name</label>
+                                    <input type="text" id="last_name" name="last_name" value="{{ $teacher->last_name }}" class="mt-1 p-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+                                </div>
+                                <div>
+                                    <label for="school_index" class="block text-sm font-medium text-gray-800">School Index</label>
+                                    <input type="text" id="school_index" name="school_index" value="{{ $teacher->school_index }}" class="mt-1 p-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+                                </div>
                             </div>
 
-                            {{-- New profile picture upload --}}
-                            <div>
-                                <label class="block font-medium">Upload New Picture</label>
-                                <input type="file" name="profile_picture" class="mt-2 w-full border rounded p-2">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                                <div>
+                                    <label for="user_email" class="block text-sm font-medium text-gray-800">Email</label>
+                                    <input type="email" id="user_email" name="user_email" value="{{ $teacher->user_email }}" class="mt-1 p-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+                                </div>
+                                <div>
+                                    <label for="user_phone" class="block text-sm font-medium text-gray-800">Phone Number</label>
+                                    <input type="text" id="user_phone" name="user_phone" value="{{ $teacher->user_phone }}" class="mt-1 p-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+                                </div>
+                                <div>
+                                    <label for="user_nic" class="block text-sm font-medium text-gray-800">NIC</label>
+                                    <input type="text" id="user_nic" name="user_nic" value="{{ $teacher->user_nic }}" class="mt-1 p-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+                                </div>
                             </div>
-                        </div>
 
-                        <div>
-                            <label class="block font-medium">Section</label>
-                            <select name="section" class="w-full border rounded p-2" required>
-                                <option value="1-5" {{ $teacher->section == '1-5' ? 'selected' : '' }}>1-5</option>
-                                <option value="6-7" {{ $teacher->section == '6-7' ? 'selected' : '' }}>6-7</option>
-                                <option value="8-9" {{ $teacher->section == '8-9' ? 'selected' : '' }}>8-9</option>
-                                <option value="10-11" {{ $teacher->section == '10-11' ? 'selected' : '' }}>10-11</option>
-                                <option value="12-13" {{ $teacher->section == '12-13' ? 'selected' : '' }}>12-13</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label class="block font-medium">Subjects</label>
-                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                                @foreach([
-                                'English Language', 'Mathematics', 'Religion', 'Science', 'History',
-                                'Business and Accounting Studies', 'ICT', 'Geography', 'Civic Education',
-                                'Sinhala Literature', 'English Literature', 'Physics', 'Chemistry',
-                                'Biology', 'Economics', 'Aesthetic Studies', 'Agriculture'
-                                ] as $subject)
-                                <label class="flex items-center">
-                                    <input type="checkbox" name="subjects[]" value="{{ $subject }}" class="mr-2"
-                                        {{ in_array($subject, $selectedSubjects ?? []) ? 'checked' : '' }}>
-                                    {{ $subject }}
-                                </label>
-                                @endforeach
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                                <div>
+                                    <label for="user_address_no" class="block text-sm font-medium text-gray-800">Address No</label>
+                                    <input type="text" id="user_address_no" name="user_address_no" value="{{ $teacher->user_address_no }}" class="mt-1 p-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+                                </div>
+                                <div>
+                                    <label for="user_address_street" class="block text-sm font-medium text-gray-800">Address Street</label>
+                                    <input type="text" id="user_address_street" name="user_address_street" value="{{ $teacher->user_address_street }}" class="mt-1 p-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+                                </div>
+                                <div>
+                                    <label for="user_address_city" class="block text-sm font-medium text-gray-800">Address City</label>
+                                    <input type="text" id="user_address_city" name="user_address_city" value="{{ $teacher->user_address_city }}" class="mt-1 p-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="flex justify-center mt-6">
-                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded">Update</button>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                                <div>
+                                    <label for="user_dob" class="block text-sm font-medium text-gray-800">Date of Birth</label>
+                                    <input type="date" id="user_dob" name="user_dob" value="{{ \Carbon\Carbon::parse($teacher->user_dob)->format('Y-m-d') }}" class="mt-1 p-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+                                </div>
+                                <div>
+                                    <label for="profile_picture" class="block text-sm font-medium text-gray-800">Upload New Profile Picture</label>
+                                    <input type="file" id="profile_picture" name="profile_picture" class="mt-1 p-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                </div>
+                                <div>
+                                    <label for="section" class="block text-sm font-medium text-gray-800">Section</label>
+                                    <select id="section" name="section" class="mt-1 p-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                        <option value="1-5" {{ $teacher->section == '1-5' ? 'selected' : '' }}>1-5</option>
+                                        <option value="6-7" {{ $teacher->section == '6-7' ? 'selected' : '' }}>6-7</option>
+                                        <option value="8-9" {{ $teacher->section == '8-9' ? 'selected' : '' }}>8-9</option>
+                                        <option value="10-11" {{ $teacher->section == '10-11' ? 'selected' : '' }}>10-11</option>
+                                        <option value="12-13" {{ $teacher->section == '12-13' ? 'selected' : '' }}>12-13</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                                <div id="current-photo-preview" {{ $teacher->profile_picture ? '' : 'class="hidden"' }}>
+                                    <label class="block text-xs font-medium text-gray-700">Current Profile Picture:</label>
+                                    @if ($teacher->profile_picture)
+                                    <img id="current-profile-pic" src="{{ asset('storage/' . $teacher->profile_picture) }}" alt="Profile Picture" class="w-20 h-20 rounded-lg border shadow-md mt-1" />
+                                    @else
+                                    <p class="text-xs text-gray-500 mt-1">No profile picture uploaded.</p>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <div class="space-y-2">
+                                <label for="subjects" class="block text-sm font-medium text-gray-800">Subjects</label>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700">Grades 1-5</label>
+                                    @foreach([
+                                        'Sinhala (First Language)', 'Tamil (First Language)', 'English Language', 'Mathematics',
+                                        'Environmental Studies', 'Religion', 'Aesthetic Studies', 'Health and Physical Education',
+                                        'Life Competencies and Civic Education'
+                                    ] as $subject)
+                                    <label class="flex items-center text-sm">
+                                        <input type="checkbox" name="subjects[]" value="{{ $subject }}" class="mr-2" {{ in_array($subject, $selectedSubjects ?? []) ? 'checked' : '' }}>
+                                        {{ $subject }}
+                                    </label>
+                                    @endforeach
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mt-2">Grades 6-11</label>
+                                    @foreach([
+                                        'Sinhala (First Language)', 'Tamil (First Language)', 'English Language', 'Mathematics',
+                                        'Science', 'History', 'Religion', 'Geography', 'Civic Education',
+                                        'Business and Accounting Studies', 'Information and Communication Technology',
+                                        'Agriculture and Food Technology', 'Health and Physical Education', 'Second Language',
+                                        'Aesthetic Studies'
+                                    ] as $subject)
+                                    <label class="flex items-center text-sm">
+                                        <input type="checkbox" name="subjects[]" value="{{ $subject }}" class="mr-2" {{ in_array($subject, $selectedSubjects ?? []) ? 'checked' : '' }}>
+                                        {{ $subject }}
+                                    </label>
+                                    @endforeach
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mt-2">Grades 12-13</label>
+                                    @foreach([
+                                        'Sinhala Literature', 'Tamil Literature', 'English Literature', 'History', 'Geography',
+                                        'Political Science', 'Logic and Scientific Method', 'Economics', 'Buddhism', 'Hinduism',
+                                        'Islam', 'Christianity', 'Aesthetic Studies Art', 'Aesthetic Studies Music',
+                                        'Aesthetic Studies Dance', 'Aesthetic Studies Drama', 'Media Studies',
+                                        'Information Technology', 'Entrepreneurship Studies', 'Physics', 'Chemistry', 'Biology',
+                                        'Combined Mathematics', 'Agriculture', 'Science for Technology', 'Bio-systems Technology',
+                                        'Information and Communication Technology'
+                                    ] as $subject)
+                                    <label class="flex items-center text-sm">
+                                        <input type="checkbox" name="subjects[]" value="{{ $subject }}" class="mr-2" {{ in_array($subject, $selectedSubjects ?? []) ? 'checked' : '' }}>
+                                        {{ $subject }}
+                                    </label>
+                                    @endforeach
+                                </div>
+                            </div>
+
+                            <div class="flex justify-center mt-4">
+                                <button type="submit" class="bg-blue-500 text-white font-semibold py-2 px-5 rounded-lg shadow-md hover:bg-blue-600 transition-colors duration-300">
+                                    Update
+                                </button>
+                            </div>
                         </div>
                     </form>
+                </div>
+            </div>
         </div>
     </div>
+
+    <script>
+        // Calculate the maximum allowed date (18 years ago from today)
+        const today = new Date();
+        const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate())
+            .toISOString().split("T")[0];
+
+        // Set the max attribute to enforce the age restriction
+        document.getElementById("user_dob").setAttribute("max", maxDate);
+
+        // Hamburger menu toggle
+        document.getElementById('hamburger').addEventListener('click', function() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('hidden');
+            sidebar.classList.toggle('translate-x-0');
+            sidebar.classList.toggle('-translate-x-full');
+        });
+
+        // Close sidebar when clicking outside
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const hamburger = document.getElementById('hamburger');
+            if (!sidebar.contains(event.target) && !hamburger.contains(event.target) && !sidebar.classList.contains('hidden')) {
+                sidebar.classList.add('hidden');
+                sidebar.classList.remove('translate-x-0');
+                sidebar.classList.add('-translate-x-full');
+            }
+        });
+
+        // Close sidebar when clicking a link
+        document.querySelectorAll('#sidebar a').forEach(link => {
+            link.addEventListener('click', function() {
+                document.getElementById('sidebar').classList.add('hidden');
+                document.getElementById('sidebar').classList.remove('translate-x-0');
+                document.getElementById('sidebar').classList.add('-translate-x-full');
+            });
+        });
+    </script>
 </body>
 
 </html>
