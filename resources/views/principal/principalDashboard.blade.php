@@ -114,7 +114,7 @@
 
         <!-- Main Content -->
         <div class="w-full lg:w-3/4 p-4 lg:p-8 relative">
-            <div class="absolute top-16 lg:top-6 right-4 lg:right-6 flex items-center space-x-3">
+            <div class="absolute top-4 right-4 lg:top-6 lg:right-6 flex items-center space-x-3">
                 <img src="{{ asset('storage/' . Auth::user()->profile_picture) }}"
                     class="h-8 lg:h-10 w-8 lg:w-10 rounded-full border border-gray-400 dark:border-gray-600"
                     alt="Profile" />
