@@ -7,20 +7,22 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Auth;
 
-class AuthCheck
+class PrincipalMiddleware
 {
     /**
      * Handle an incoming request.
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request, Closure $next): Response
     {
-        // Check if the user is logged in
-        if (!Auth::check()) {
-            return redirect()->route('/')->with('error', 'You must be logged in to access this page.');
+        if (! Auth::check()) {
+            return redirect()->route('login');
         }
 
+        if (Auth::user()->role !== 'PRINCIPAL') {
+            abort(403, 'Access denied. You do not have permission to access this resource.');
+        }
         return $next($request);
     }
 }

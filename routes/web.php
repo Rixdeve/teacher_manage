@@ -17,13 +17,14 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ZonalController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Middleware\PrincipalMiddleware;
+use App\Http\Middleware\ZonalMiddleware;
+use App\Http\Middleware\SectionMiddleware;
+use App\Http\Middleware\SchoolMiddleware;
+use App\Http\Middleware\TeacherMiddleware;
+use App\Http\Middleware\ClerkMiddleware;
 
-Route::get('/registerPrincipal', action: [PrincipalController::class, "index"])->name(name: 'school.registerPrincipal');
 
-Route::post('/registerPrincipal', [PrincipalController::class, "store"])->name('principal.store');
-
-Route::get('/registerPrincipal', [PrincipalController::class, 'index'])->name('principal.register');
-Route::post('/registerPrincipal', [PrincipalController::class, 'store'])->name('principal.store');
 
 
 Route::middleware(['auth'])->group(function () {
@@ -43,19 +44,12 @@ Route::middleware(['auth'])->group(function () {
     //     dd('post request here');
     // });
 
-    Route::get('/zonalDashboard', function () {
-        return view('zonal.zonalDashboard');
-    });
 
 
 
-    Route::get('/principalDashboard', [PrincipalController::class, 'dashboardview'])->name('principal.principalDashboard');
 
 
 
-    Route::get('/clerkDashbord', function () {
-        return view('clerk.clerkDashboard');
-    });
 
     // Route::get('/clerkDashboard', [AttendanceController::class, 'dashboardView'])->name('clerk.dashboard');
     // Route::get('/sectionheadDashboard', [TeacherController::class, 'dashboardview'])->name('sectional_head.sectionheadDashboard');
@@ -63,13 +57,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/liveAttendance', [SectionalController::class, 'liveAttendanceView'])->name('sectional_head.liveAttendance');
 
 
-    Route::get('/schoolDashboard', function () {
-        if (!session('school_id')) {
-            return redirect('/')->with('error', 'Unauthorized access.');
-        }
-
-        return view('school.schoolDashboard');
-    });
 
     // // Route::get('/registerZonal', action: [ZonalController::class, "index"])->name(name: 'registerZonal');
 
@@ -88,12 +75,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/my_attendance', [AttendanceController::class, 'myAttendance'])->name('attendance.index');
 
 
-    Route::get('/absenteesprin', [PrincipalController::class, 'liveAbsentees'])->name('principal.absentee');
-    Route::get('/absenteesclerk', [ClerkController::class, 'liveAbsentees'])->name('clerk.absenteesclerk');
-    Route::get('/absenteessection', [SectionalController::class, 'liveAbsentees'])->name('sectional_head.absenteessection');
 
-    Route::get('/liveAttendanceclerk', [ClerkController::class, 'liveAttendanceView'])->name('clerk.liveAttendanceclerk');
-    Route::get('/liveAttendanceprin', [PrincipalController::class, 'liveAttendanceView'])->name('principal.liveAttendanceprin');
 
     // Route::get('/absenteessection', [SectionalController::class, 'liveAbsentees'])->name('sectional_head.absenteessection');
 
@@ -105,20 +87,7 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/', [AuthController::class, 'index'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 Route::get('/logout', [AuthController::class, 'destroy'])->name('logout');
-Route::get('/schoolDashboard', [SchoolController::class, 'schoolDashboard'])->name('school.dashboard');
-Route::get('/registerTeacher', action: [TeacherController::class, "index"])->name(name: 'school.registerTeacher');
 
-Route::post('/registerTeacher', [TeacherController::class, "store"])->name('teacher.store');
-
-Route::get('/registerSectionhead', action: [SectionalController::class, "index"])->name(name: 'school.registerSectionhead');
-
-Route::post('/registerSectionhead', [SectionalController::class, "store"])->name('sectionhead.store');
-
-
-
-Route::get('/registerClerk', action: [ClerkController::class, "index"])->name(name: 'school.registerClerk');
-
-Route::post('/registerClerk', [ClerkController::class, "store"])->name('clerk.store');
 
 
 
@@ -130,20 +99,15 @@ Route::post('/registerClerk', [ClerkController::class, "store"])->name('clerk.st
 
 Route::get('/registerZonal', [ZonalController::class, 'index'])->name('registerZonal');
 Route::post('/registerZonal', [ZonalController::class, 'store'])->name('zone.store');
-Route::get('/zonalDashboard', fn() => view('zonal.zonalDashboard'));
-Route::get('/registerschool', action: [SchoolController::class, "index"])->name(name: 'zonal.registerschool');
 
-Route::post('/registerschool', [SchoolController::class, "store"])->name('school.store');
+
 Route::middleware(['auth'])->group(function () {
 
 
-    Route::get('/principalDashboard', fn() => view('principal.principalDashboard'));
-    Route::get('/teacherDashboard', fn() => view('teacher.teacherDashboard'));
-    Route::get('/clerkDashboard', fn() => view('clerk.clerkDashboard'));
+
     // Route::get('/schoolDashboard', fn() => view('school.schoolDashboard'));
 
 
-    Route::get('/sectionheadDashboard', fn() => view('sectional_head.sectionheadDashboard'));
 });
 Route::get('/scan-qr', function () {
     return view('clerk.scan_qr');
@@ -162,11 +126,7 @@ Route::get('/scan', function () {
 Route::middleware(['auth'])->group(function () {
 
     // Route::get('/attendanceReport', action: [PrincipalController::class, "index"])->name(name: 'school.registerPrincipal');
-    Route::get('/attendanceReport', function () {
-        return view('principal.attendanceReport');
-    });
 
-    Route::get('/attendanceReport', action: [PrincipalController::class, "showAttendanceTable"])->name(name: 'attendance.Report');
 
     Route::get('/show', [ProfileController::class, 'show'])->name('profile.show');
     // Route::get('/change-password', [App\Http\Controllers\ProfileController::class, 'changePassword'])->name('password.change');
@@ -189,7 +149,6 @@ Route::middleware(['auth'])->group(function () {
     // Route::get('/leave/create', [LeaveApplicationController::class, 'create'])->name('leave.create');
     // Route::post('/leave/store', [LeaveApplicationController::class, 'store'])->name('leave.store');
     // Route::get('/leave/index', [LeaveApplicationController::class, 'index'])->name('leave.index');
-    Route::patch('/leave/{leaveId}/status', [LeaveApplicationController::class, 'updateStatus'])->name('principal.leave.updateStatus');
 });
 
 Route::get('/leave/attachment/{id}/{index}', [LeaveApplicationController::class, 'serveAttachment'])
@@ -202,17 +161,10 @@ Route::middleware(['auth'])->group(function () {
     // Route::post('/leave/store', [LeaveApplicationController::class, 'store'])->name('leave.store');
 
     // Principal routes
-    Route::get('/principal/dashboard', [PrincipalController::class, 'dashboard'])->name('principal.dashboard');
     // Route::patch('/leave/{id}/status', [PrincipalController::class, 'updateLeaveStatus'])->name('leave.updateStatus');
 
     // Other Principal routes
 
-    Route::get('/principal/qrcode/{id}', [PrincipalController::class, 'showQRCode'])->name('principal.qrcode');
-    Route::get('/principal/log-attendance/{id}', [PrincipalController::class, 'logAttendance'])->name('principal.logAttendance');
-    Route::get('/principal/dashboardview', [PrincipalController::class, 'dashboardview'])->name('principal.dashboardview');
-    Route::get('/principal/attendance-report', [PrincipalController::class, 'showAttendanceTable'])->name('principal.attendanceReport');
-    Route::get('/principal/absentees', [PrincipalController::class, 'liveAbsentees'])->name('principal.absentees');
-    Route::get('/principal/live-attendance', [PrincipalController::class, 'liveAttendanceView'])->name('principal.liveAttendance');
 
 
     Route::get('/teacher/leave-history', [LeaveApplicationController::class, 'history'])->name('leave.history');
@@ -238,9 +190,8 @@ Route::get('/run-schedule', function () {
     Artisan::call('schedule:run');
     return 'Schedule executed';
 });
-Route::get('/school/manage-teachers', [SchoolController::class, 'manageTeachers'])->name('school.manageTeachers');
 
-Route::get('/manageUsers', [SchoolController::class, 'manageUsers'])->name('users.manage');
+
 
 //sec
 // Leave-related routes
@@ -261,9 +212,6 @@ Route::middleware('auth')->group(function () {
     // Route::post('/leave/{leaveId}/status', [LeaveApplicationController::class, 'updateStatus'])->name('leave.updateStatus');
     Route::get('/leave/history', [LeaveApplicationController::class, 'history'])->name('leave.history');
     Route::get('/leave/record', [LeaveApplicationController::class, 'record'])->name('leave.record');
-
-    Route::get('/clerk/leave/create', [LeaveApplicationController::class, 'clerkCreate'])->name('clerk.leave.create');
-    Route::post('/clerk/leave/store', [LeaveApplicationController::class, 'clerkStore'])->name('clerk.leave.store');
 });
 
 
@@ -276,7 +224,6 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(['auth'])->group(function () {
     // Sectional Head Routes
-    Route::get('/sectional_head/dashboard', [SectionalController::class, 'dashboard'])->name('sectional_head.dashboard');
     Route::post('/sectional_head/leave/{id}/status', [SectionalController::class, 'updateLeaveStatus'])->name('sectional_head.update_leave_status');
     Route::get('/sectional_head/teachers/{leaveApplicationId}', [SectionalController::class, 'getTeachers'])->name('sectional_head.get_teachers');
 
@@ -287,45 +234,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/leave/history', [LeaveApplicationController::class, 'history'])->name('leave.history');
 });
 
-Route::get('/teachers/{id}/edit', [TeacherController::class, 'edit'])->name('teachers.edit');
-Route::put('/teachers/{id}/update', [TeacherController::class, 'update'])->name('teachers.update');
-Route::post('/teachers/{id}/status/{status}', [TeacherController::class, 'updateStatus'])->name('teachers.updateStatus');
-Route::put('/teachers/{id}/reactivate', [TeacherController::class, 'reactivate'])->name('teachers.reactivate');
-Route::get('/teacher_manage', [TeacherController::class, 'manage'])->name('teachers.manage');
-
-
-
-// Principal Management
-Route::get('/managePrincipals', [PrincipalController::class, 'managePrincipals'])->name('principals.manage');
-Route::get('/principals/{id}/edit', [PrincipalController::class, 'edit'])->name('principals.edit');
-Route::put('/principals/{id}/update', [PrincipalController::class, 'update'])->name('principals.update');
-Route::post('/principals/{id}/status/{status}', [PrincipalController::class, 'updateStatus'])->name('principals.updateStatus');
-Route::put('/principals/{id}/reactivate', [PrincipalController::class, 'reactivate'])->name('principals.reactivate');
-
-// Clerk Management Routes
-Route::get('/manageClerks', [ClerkController::class, 'manageClerks'])->name('clerks.manage');
-Route::get('/clerks/{id}/edit', [ClerkController::class, 'edit'])->name('clerks.edit');
-Route::put('/clerks/{id}/update', [ClerkController::class, 'update'])->name('clerks.update');
-Route::post('/clerks/{id}/status/{status}', [ClerkController::class, 'updateStatus'])->name('clerks.updateStatus');
-Route::put('/clerks/{id}/reactivate', [ClerkController::class, 'reactivate'])->name('clerks.reactivate');
-
-Route::get('/manageSectionals', [SectionalController::class, 'manageSectionals'])->name('sectionals.manage');
-Route::get('/sectionals/{id}/edit', [SectionalController::class, 'edit'])->name('sectionals.edit');
-Route::put('/sectionals/{id}/update', [SectionalController::class, 'update'])->name('sectionals.update');
-Route::post('/sectionals/{id}/status/{status}', [SectionalController::class, 'updateStatus'])->name('sectionals.updateStatus');
-Route::put('/sectionals/{id}/reactivate', [SectionalController::class, 'reactivate'])->name('sectionals.reactivate');
-
-Route::post('/check-transfer-nic', [TeacherController::class, 'checkTransferNIC'])->name('teachers.checkNIC');
-Route::post('/check-transfer-nic-principal', [PrincipalController::class, 'checkTransferNIC'])->name('principals.checkNIC');
-
-Route::post('/check-transfer-nic-clerk', [ClerkController::class, 'checkTransferNIC'])->name('clerks.checkNIC');
 
 Route::middleware(['auth'])->group(function () {
 
 
-    Route::get('/clerk/assign-duty-leave', [App\Http\Controllers\ClerkController::class, 'assignDutyLeave'])->name('clerk.assign.duty.leave');
 
-    Route::get('/sectional/approved-leaves', [SectionalController::class, 'approvedLeaves'])->name('sectional.approved_leaves');
 
     Route::get('/assign-relief/{leaveApplicationId}', [SectionalController::class, 'assignReliefForm'])->name('sectional.assign_relief');
     Route::post('/sectional/relief/{leaveApplicationId}', [SectionalController::class, 'storeRelief'])->name('sectional.store_relief');
@@ -336,12 +249,6 @@ Route::middleware(['auth'])->group(function () {
 
 
     Route::get('/teacher/notifications', [SectionalController::class, 'showNotifications'])->name('teacher.notifications');
-
-
-    Route::get('/attendanceReport/pdf', [PrincipalController::class, 'downloadPdf'])->name('attendanceReport.pdf');
-    Route::get('/sectional/approved-leaves', [SectionalController::class, 'approvedLeaves'])->name('sectional.approved_leaves');
-    Route::get('/sectional/assign-relief/{leaveApplicationId}', [SectionalController::class, 'assignReliefForm'])->name('sectional.assign_relief');
-    Route::post('/sectional/assign-relief/{leaveApplicationId}', [SectionalController::class, 'storeRelief'])->name('sectional.store_relief');
 });
 Route::get('/password/reset', [PasswordResetController::class, 'showRequestForm'])->name('password.request');
 Route::post('/password/email', [PasswordResetController::class, 'sendResetLinkEmail'])->name('password.email');
@@ -360,8 +267,10 @@ Route::post('/toggle-theme', function (\Illuminate\Http\Request $request) {
 
     return response()->json(['success' => false], 400);
 })->middleware('auth');
-Route::get('/sectional/absentees/export-pdf', [SectionalController::class, 'exportAbsenteesPdf'])->name('sectional.absentees.pdf');
-Route::post('/sectionals/check-nic', [SectionalController::class, 'checkTransferNIC'])->name('sectionals.checkNIC');
+
+
+
+
 
 Route::post('/toggle-theme', function (\Illuminate\Http\Request $request) {
     /** @var \App\Models\User $user */
@@ -377,4 +286,144 @@ Route::post('/toggle-theme', function (\Illuminate\Http\Request $request) {
     return response()->json(['success' => false], 400);
 })->middleware('auth');
 
-Route::get('/attendanceReport/pdf', [PrincipalController::class, 'downloadPdf'])->name('attendanceReport.pdf');
+
+
+Route::middleware([PrincipalMiddleware::class])->group(function () {
+    Route::get('/principalDashboard', [PrincipalController::class, 'dashboardview'])->name('principal.principalDashboard');
+    Route::get('/liveAttendanceprin', [PrincipalController::class, 'liveAttendanceView'])->name('principal.liveAttendanceprin');
+    Route::get('/absenteesprin', [PrincipalController::class, 'liveAbsentees'])->name('principal.absentee');
+    // Route::get('/principalDashboard', fn() => view('principal.principalDashboard'));
+
+    Route::get('/attendanceReport', function () {
+        return view('principal.attendanceReport');
+    });
+
+    Route::get('/attendanceReport', action: [PrincipalController::class, "showAttendanceTable"])->name(name: 'attendance.Report');
+    Route::patch('/leave/{leaveId}/status', [LeaveApplicationController::class, 'updateStatus'])->name('principal.leave.updateStatus');
+    Route::get('/principal/dashboard', [PrincipalController::class, 'dashboard'])->name('principal.dashboard');
+
+    Route::get('/principal/qrcode/{id}', [PrincipalController::class, 'showQRCode'])->name('principal.qrcode');
+    Route::get('/principal/log-attendance/{id}', [PrincipalController::class, 'logAttendance'])->name('principal.logAttendance');
+    Route::get('/principal/dashboardview', [PrincipalController::class, 'dashboardview'])->name('principal.dashboardview');
+    Route::get('/principal/attendance-report', [PrincipalController::class, 'showAttendanceTable'])->name('principal.attendanceReport');
+    Route::get('/principal/absentees', [PrincipalController::class, 'liveAbsentees'])->name('principal.absentees');
+    Route::get('/principal/live-attendance', [PrincipalController::class, 'liveAttendanceView'])->name('principal.liveAttendance');
+    Route::get('/attendanceReport/pdf', [PrincipalController::class, 'downloadPdf'])->name('attendanceReport.pdf');
+    Route::get('/attendanceReport/pdf', [PrincipalController::class, 'downloadPdf'])->name('attendanceReport.pdf');
+});
+
+Route::middleware(['auth', 'role:PRINCIPAL'])->get('/test', function () {
+    return 'You are a principal!';
+});
+
+Route::middleware([SectionMiddleware::class])->group(function () {
+    Route::get('/sectionheadDashboard', fn() => view('sectional_head.sectionheadDashboard'));
+    Route::get('/sectional/approved-leaves', [SectionalController::class, 'approvedLeaves'])->name('sectional.approved_leaves');
+    Route::get('/sectional/approved-leaves', [SectionalController::class, 'approvedLeaves'])->name('sectional.approved_leaves');
+    Route::get('/sectional/assign-relief/{leaveApplicationId}', [SectionalController::class, 'assignReliefForm'])->name('sectional.assign_relief');
+    Route::post('/sectional/assign-relief/{leaveApplicationId}', [SectionalController::class, 'storeRelief'])->name('sectional.store_relief');
+    Route::get('/sectional/absentees/export-pdf', [SectionalController::class, 'exportAbsenteesPdf'])->name('sectional.absentees.pdf');
+    Route::get('/sectional_head/dashboard', [SectionalController::class, 'dashboard'])->name('sectional_head.dashboard');
+    Route::get('/absenteessection', [SectionalController::class, 'liveAbsentees'])->name('sectional_head.absenteessection');
+});
+
+Route::middleware([ZonalMiddleware::class])->group(function () {
+    Route::get('/zonalDashboard', function () {
+        return view('zonal.zonalDashboard');
+    });
+
+
+    Route::get('/zonalDashboard', fn() => view('zonal.zonalDashboard'));
+    Route::get('/registerschool', action: [SchoolController::class, "index"])->name(name: 'zonal.registerschool');
+
+    Route::post('/registerschool', [SchoolController::class, "store"])->name('school.store');
+});
+
+
+Route::middleware([TeacherMiddleware::class])->group(function () {
+
+    Route::get('/teacherDashboard', fn() => view('teacher.teacherDashboard'));
+});
+
+Route::middleware([SchoolMiddleware::class])->group(function () {
+
+    Route::get('/registerPrincipal', action: [PrincipalController::class, "index"])->name(name: 'school.registerPrincipal');
+
+    Route::post('/registerPrincipal', [PrincipalController::class, "store"])->name('principal.store');
+
+    Route::get('/registerPrincipal', [PrincipalController::class, 'index'])->name('principal.register');
+    Route::post('/registerPrincipal', [PrincipalController::class, 'store'])->name('principal.store');
+    Route::get('/schoolDashboard', function () {
+        if (!session('school_id')) {
+            return redirect('/')->with('error', 'Unauthorized access.');
+        }
+
+        return view('school.schoolDashboard');
+    });
+
+    Route::get('/schoolDashboard', [SchoolController::class, 'schoolDashboard'])->name('school.dashboard');
+    Route::get('/registerTeacher', action: [TeacherController::class, "index"])->name(name: 'school.registerTeacher');
+
+    Route::post('/registerTeacher', [TeacherController::class, "store"])->name('teacher.store');
+
+    Route::get('/registerSectionhead', action: [SectionalController::class, "index"])->name(name: 'school.registerSectionhead');
+
+    Route::post('/registerSectionhead', [SectionalController::class, "store"])->name('sectionhead.store');
+
+
+
+    Route::get('/registerClerk', action: [ClerkController::class, "index"])->name(name: 'school.registerClerk');
+
+    Route::post('/registerClerk', [ClerkController::class, "store"])->name('clerk.store');
+    Route::get('/school/manage-teachers', [SchoolController::class, 'manageTeachers'])->name('school.manageTeachers');
+
+    Route::get('/manageUsers', [SchoolController::class, 'manageUsers'])->name('users.manage');
+    Route::get('/teachers/{id}/edit', [TeacherController::class, 'edit'])->name('teachers.edit');
+    Route::put('/teachers/{id}/update', [TeacherController::class, 'update'])->name('teachers.update');
+    Route::post('/teachers/{id}/status/{status}', [TeacherController::class, 'updateStatus'])->name('teachers.updateStatus');
+    Route::put('/teachers/{id}/reactivate', [TeacherController::class, 'reactivate'])->name('teachers.reactivate');
+    Route::get('/teacher_manage', [TeacherController::class, 'manage'])->name('teachers.manage');
+
+
+
+    // Principal Management
+    Route::get('/managePrincipals', [PrincipalController::class, 'managePrincipals'])->name('principals.manage');
+    Route::get('/principals/{id}/edit', [PrincipalController::class, 'edit'])->name('principals.edit');
+    Route::put('/principals/{id}/update', [PrincipalController::class, 'update'])->name('principals.update');
+    Route::post('/principals/{id}/status/{status}', [PrincipalController::class, 'updateStatus'])->name('principals.updateStatus');
+    Route::put('/principals/{id}/reactivate', [PrincipalController::class, 'reactivate'])->name('principals.reactivate');
+
+    // Clerk Management Routes
+    Route::get('/manageClerks', [ClerkController::class, 'manageClerks'])->name('clerks.manage');
+    Route::get('/clerks/{id}/edit', [ClerkController::class, 'edit'])->name('clerks.edit');
+    Route::put('/clerks/{id}/update', [ClerkController::class, 'update'])->name('clerks.update');
+    Route::post('/clerks/{id}/status/{status}', [ClerkController::class, 'updateStatus'])->name('clerks.updateStatus');
+    Route::put('/clerks/{id}/reactivate', [ClerkController::class, 'reactivate'])->name('clerks.reactivate');
+
+    Route::get('/manageSectionals', [SectionalController::class, 'manageSectionals'])->name('sectionals.manage');
+    Route::get('/sectionals/{id}/edit', [SectionalController::class, 'edit'])->name('sectionals.edit');
+    Route::put('/sectionals/{id}/update', [SectionalController::class, 'update'])->name('sectionals.update');
+    Route::post('/sectionals/{id}/status/{status}', [SectionalController::class, 'updateStatus'])->name('sectionals.updateStatus');
+    Route::put('/sectionals/{id}/reactivate', [SectionalController::class, 'reactivate'])->name('sectionals.reactivate');
+
+    Route::post('/check-transfer-nic', [TeacherController::class, 'checkTransferNIC'])->name('teachers.checkNIC');
+    Route::post('/check-transfer-nic-principal', [PrincipalController::class, 'checkTransferNIC'])->name('principals.checkNIC');
+
+    Route::post('/check-transfer-nic-clerk', [ClerkController::class, 'checkTransferNIC'])->name('clerks.checkNIC');
+    Route::post('/sectionals/check-nic', [SectionalController::class, 'checkTransferNIC'])->name('sectionals.checkNIC');
+});
+
+Route::middleware([SchoolMiddleware::class])->group(function () {
+
+    Route::get('/clerkDashbord', function () {
+        return view('clerk.clerkDashboard');
+    });
+    Route::get('/absenteesclerk', [ClerkController::class, 'liveAbsentees'])->name('clerk.absenteesclerk');
+
+    Route::get('/liveAttendanceclerk', [ClerkController::class, 'liveAttendanceView'])->name('clerk.liveAttendanceclerk');
+    Route::get('/clerkDashboard', fn() => view('clerk.clerkDashboard'));
+
+    Route::get('/clerk/leave/create', [LeaveApplicationController::class, 'clerkCreate'])->name('clerk.leave.create');
+    Route::post('/clerk/leave/store', [LeaveApplicationController::class, 'clerkStore'])->name('clerk.leave.store');
+    Route::get('/clerk/assign-duty-leave', [App\Http\Controllers\ClerkController::class, 'assignDutyLeave'])->name('clerk.assign.duty.leave');
+});
