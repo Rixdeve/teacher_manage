@@ -36,11 +36,11 @@ class LeaveApplicationController extends Controller
         $user = Auth::user();
 
         if ($user->role === 'PRINCIPAL') {
-            return view('Principal.leaveform', compact('leaveCounter'));
+            return view('principal.leaveform', compact('leaveCounter'));
         } elseif ($user->role === 'SECTION_HEAD') {
-            return view('Sectional_head.leave_applications', compact('leaveCounter'));
+            return view('sectional_head.leave_applications', compact('leaveCounter'));
         } else {
-            return view('Teacher.leave_application', compact('leaveCounter'));
+            return view('teacher.leave_application', compact('leaveCounter'));
         }
     }
 
@@ -329,7 +329,7 @@ class LeaveApplicationController extends Controller
                 return $application;
             });
 
-        return view('Principal.leave_applications', compact('applications'));
+        return view('principal.leave_applications', compact('applications'));
     }
 
 
@@ -432,7 +432,7 @@ class LeaveApplicationController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('Teacher.LeaveStatus', compact('pastApplications'));
+        return view('teacher.LeaveStatus', compact('pastApplications'));
     }
 
     public function record()
@@ -459,7 +459,7 @@ class LeaveApplicationController extends Controller
                 return $leave;
             });
 
-        return view('Principal.leave_record', compact('approvedLeaves'));
+        return view('principal.leave_record', compact('approvedLeaves'));
     }
 
     public function serveAttachment($id, $index)

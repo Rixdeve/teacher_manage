@@ -413,7 +413,7 @@ Route::middleware([SchoolMiddleware::class])->group(function () {
     Route::post('/sectionals/check-nic', [SectionalController::class, 'checkTransferNIC'])->name('sectionals.checkNIC');
 });
 
-Route::middleware([SchoolMiddleware::class])->group(function () {
+Route::middleware([ClerkMiddleware::class])->group(function () {
 
     Route::get('/clerkDashbord', function () {
         return view('clerk.clerkDashboard');
